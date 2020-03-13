@@ -1,0 +1,5 @@
+**.DS_Store
+**.sql
+node_modules/
+build/
+npm-debug.log*
