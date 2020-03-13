@@ -1,0 +1,39 @@
+{
+    "extends": [
+      "airbnb-base",
+      "eslint:recommended",
+      "plugin:react/recommended"
+    ],
+    "env": {
+      "browser": true,
+      "node": true,
+      "es2020": true,
+      "jquery": true,
+      "jest": true,
+      "mocha": true
+    },
+    "plugins": [
+      "jquery", // eslint-plugin-jquery
+      "react" // eslint-plugin-react
+    ],
+    "parserOptions": {
+      "ecmaVersion": 11,
+      "sourceType": "module",
+      "ecmaFeatures": {
+        "jsx": true
+      }
+    },
+    "settings": {
+      "react": {
+        "version": "detect"
+      }
+    },
+    "rules": {
+      "no-plusplus": "off",
+      "max-classes-per-file": "off",
+      "comma-dangle": ["error", "never"],
+      "class-methods-use-this": "off",
+      "react/no-multi-comp": 0,
+      "react/prop-types": 0
+    }
+  }
