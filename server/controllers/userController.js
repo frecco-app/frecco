@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const db = require('../models/models.js');
 
 const userController = {};
 
@@ -47,5 +48,50 @@ userController.authenticate = (req, res, next) => {
     })
     .catch((err) => next(err)); // For bcrypt internal errors
 };
+
+/*
+* Creates the user and saves in database
+* Expects format of req.body and 
+*
+*/
+
+userController.createUser = (req, res, next) => {
+  const {lastname, firstname, username} = req.body;
+  const password = res.locals.user.password;
+  const str = 'INSERT into user (lastname, firstname, username, password) VALUES ($1, $2, $3, $4)';
+  const params = [lastname, firstname, username, password];
+  db.query(str, params)
+  .then(data => {
+    console.log(data);
+    console.log(user);
+    return next();
+  })
+  .catch(err => next(err))}
+};
+
+/*
+* Verifies the user
+*
+*/
+
+userController.getUser = (req, res, next) => {
+  const {lastname, firstname, username, password} = req.body;
+  const str = 'SELECT * from user WHERE username = $1';
+  const params = username;
+  db.query(str, params)
+  .then(data => {
+    res.locals.user.password = data.password;
+    console.log(res.locals.user);
+    return next();
+  })
+  .catch (err => next(err));
+}
+
+
+
+
+
+
+
 
 module.exports = userController;
