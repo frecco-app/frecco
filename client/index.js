@@ -1,11 +1,13 @@
-import React from 'react';
-import { render } from 'react-dom';
-import App from './components/App';
+import React from 'react'
+import { render } from 'react-dom'
+import { createStore } from 'redux'
+import { composeWithDevTools } from 'redux-devtools-extension';
+import reducers from './reducers/index';
+import Root from './components/Root';
 
-// uncomment so that webpack can bundle styles
-// import styles from './scss/application.scss';
-
-render(
-  <App />,
-  document.getElementById('root')
+const store = createStore(
+  reducers,
+  composeWithDevTools()
 );
+
+render(<Root store={store} />, document.getElementById('root'));
