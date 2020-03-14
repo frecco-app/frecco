@@ -4,6 +4,7 @@ import { createStore } from 'redux'
 import { composeWithDevTools } from 'redux-devtools-extension';
 import reducers from './reducers/index';
 import Root from './components/Root';
+import styles from './stylesheets/styles.scss'
 
 const store = createStore(
   reducers,
