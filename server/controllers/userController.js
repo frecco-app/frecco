@@ -22,4 +22,30 @@ userController.encrypt = (req, res, next) => {
     .catch((err) => next(err)); // For bcrypt internal errors
 };
 
+/*
+ * Expects format of req.body and res.locals.user to both be:
+ *   {
+ *     "firstname":
+ *     "lastname":
+ *     "username":
+ *     "password":
+ *   }
+ *   Where "password" is plain text in req.body and hashed in res.locals.user
+ */
+userController.authenticate = (req, res, next) => {
+  bcrypt.compare(req.body.password, res.locals.user.password)
+    .then((result) => {
+      // If password correct, move to next middleware
+      if (result) return next();
+
+      // If password incorrect, call global error handler
+      return next({
+        log: 'Username or password incorrect',
+        status: 400,
+        message: { err: 'Username or password incorrect' }
+      });
+    })
+    .catch((err) => next(err)); // For bcrypt internal errors
+};
+
 module.exports = userController;
