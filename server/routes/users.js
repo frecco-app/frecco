@@ -1,7 +1,6 @@
 const express = require ('express');
 const router = express.Router();
 const userController = require('../controllers/userController.js');
-const db = require('../models/models.js');
 
 
 
@@ -22,11 +21,15 @@ router.post('/signup', userController.encrypt, userController.createUser, (req,r
 });
 
 router.post('/login', userController.getUser, userController.authenticate, (req,res) => {
-  res.sendStatus(200);
-  res.redirect('/loginpage') //
+//   console.log(res.locals.user);
+  res.status(200).json(res.locals.user.password);
+//   res.redirect('/loginpage') //
   // Render some sort of success message?
 });
 
+router.get('/', (req, res) => {
+    res.sendStatus(200);
+});
 
 router.use((err, req, res, next) => {
   const defaultErr = {
@@ -36,7 +39,7 @@ router.use((err, req, res, next) => {
   };
   const errorObj = Object.assign(defaultErr, err);
   return res.status(errorObj.status).send(errorObj.message);
-}
+});
 
 
 module.exports = router;

@@ -1,10 +1,13 @@
 const express = require ('express');
-
+const app = express();
 const path = require ('path');
-const users = require ('../routes/users.js');
+const userRouter = require ('./routes/users');
+const bodyParser = require('body-parser');
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const PORT = 3000;
-const app = express();
 
 
 // statically serve everything in the build folder on the route '/build'
@@ -13,6 +16,7 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/index.html'));
 });
 
-app.get('/users', users);
+
+app.use('/users', userRouter);
 
 app.listen(PORT, () => console.log('Listening on Port ' + PORT));

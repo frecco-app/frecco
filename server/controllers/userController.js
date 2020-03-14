@@ -58,15 +58,13 @@ userController.authenticate = (req, res, next) => {
 userController.createUser = (req, res, next) => {
   const {lastname, firstname, username} = req.body;
   const password = res.locals.user.password;
-  const str = 'INSERT into user (lastname, firstname, username, password) VALUES ($1, $2, $3, $4)';
+  const str = 'INSERT into "user" (lastname, firstname, username, password) VALUES ($1, $2, $3, $4);';
   const params = [lastname, firstname, username, password];
   db.query(str, params)
-  .then(data => {
-    console.log(data);
-    console.log(user);
-    return next();
-  })
-  .catch(err => next(err))}
+    .then(data => {
+      return next();
+    })
+    .catch((err) => next(err))
 };
 
 /*
@@ -75,15 +73,15 @@ userController.createUser = (req, res, next) => {
 */
 
 userController.getUser = (req, res, next) => {
-  const {lastname, firstname, username, password} = req.body;
-  const str = 'SELECT * from user WHERE username = $1';
-  const params = username;
+  const { username } = req.body;
+  const str = 'SELECT * from "user" WHERE username = $1;';
+  const params = [username];
   db.query(str, params)
-  .then(data => {
-    res.locals.user.password = data.password;
-    console.log(res.locals.user);
-    return next();
-  })
+    .then((data) => {
+      res.locals.user = { 'password': data.rows[0].password };
+      // console.log(res.locals.user);
+      return next();
+    })
   .catch (err => next(err));
 }
 
