@@ -82,14 +82,8 @@ userController.getUser = (req, res, next) => {
       // console.log(res.locals.user);
       return next();
     })
-  .catch (err => next(err));
-}
-
-
-
-
-
-
+    .catch ((err) => next(err));
+};
 
 
 module.exports = userController;
