@@ -54,6 +54,7 @@
     "express": "^4.17.1",
     "history": "^4.10.1",
     "prop-types": "^15.7.2",
+    "pg": "^7.18.2",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
     "react-redux": "^7.2.0",
