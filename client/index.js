@@ -1,14 +1,8 @@
 import React, { forwardRef } from 'react'
+import App from './components/App'
 import { render } from 'react-dom'
-import { createStore } from 'redux'
-import { composeWithDevTools } from 'redux-devtools-extension';
-import reducers from './reducers/index';
-import Root from './components/Root';
 import styles from './stylesheets/styles.scss'
+import { Router } from 'react-router-dom';
 
-const store = createStore(
-  reducers,
-  composeWithDevTools()
-);
 
-render(<Root store={store} />, document.getElementById('root'));
+render(<App />, document.getElementById('root'));

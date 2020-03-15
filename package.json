@@ -6,7 +6,7 @@
   "scripts": {
     "start": "NODE_ENV=production nodemon server/server.js",
     "build": "NODE_ENV=production webpack",
-    "dev": "NODE_ENV=development concurrently \"nodemon server/server.js\" \"webpack-dev-server --open\""
+    "dev": "NODE_ENV=development concurrently \"nodemon server/server.js\" \"webpack-dev-server --open --hot\""
   },
   "nodemonConfig": {
     "ignore": [
@@ -48,9 +48,11 @@
   },
   "dependencies": {
     "@material-ui/core": "^4.9.5",
+    "axios": "^0.19.2",
     "bcrypt": "^4.0.1",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
+    "history": "^4.10.1",
     "prop-types": "^15.7.2",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
