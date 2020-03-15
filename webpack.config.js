@@ -18,6 +18,14 @@ module.exports = {
         query: {
           presets: ['@babel/preset-env', '@babel/preset-react'],
         },
+      },
+      {
+        test: /\.scss$/i,
+        use: [ 
+           { loader: 'style-loader' },
+           { loader: 'css-loader' },
+           { loader: 'sass-loader' }
+        ]
       }
     ]
   },
