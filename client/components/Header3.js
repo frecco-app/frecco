@@ -9,11 +9,8 @@ const Header3 = (props) => {
         <input id="lastname" placeholder="Last Name"/>
         <input id="username" placeholder="Username"/>
         <input id="password" placeholder="Password"/>
-        
-        <Link to='/header2'>
-          <button id="btn-login">Signup</button>
-        </Link>
-        <Link to="/header2">
+        <button id="btn-submit" onClick={props.signup}>Submit</button>
+        <Link to="/">
             <button id="btn-login">Login</button>
         </Link>
 

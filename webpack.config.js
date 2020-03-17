@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  mode: "production", 
+  mode: process.env.NODE_ENV, 
   entry: {
     index: './client/index.js',
   },
@@ -30,6 +30,7 @@ module.exports = {
     ]
   },
   devServer: {
+    historyApiFallback: true,
     publicPath: '/build/',
     contentBase: path.join(__dirname, './client'), // path from which static file should be served. if not specified, static files will not be served.
     proxy: {

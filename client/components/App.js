@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Link, BrowserRouter as Router, Route, Switch, withRouter } from 'react-router-dom';
+import { Redirect } from 'react-router';
 import axios from 'axios';
 import Header1 from "./Header1";
 import Header2 from "./Header2";
@@ -7,11 +8,11 @@ import Header3 from "./Header3";
 import LeftContainer from "./LeftContainer";
 import RightContainer from "./RightContainer";
 import FilterForm from "./FilterForm";
-import history from './history';
+// import history from './history';
 
 class App extends Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
       username: null,
       password: null
@@ -27,8 +28,12 @@ class App extends Component {
   handleChangePassword() {
     this.setState({ password: event.target.value });
   }
+
   signup() {
-    //console.log(this.props.history);
+    console.log('signup fired')
+    //post data. if successfull go to header3
+    console.log(this.props)
+    this.props.history.push('/header2')
     const data = { 
       username: this.state.username,
       password: this.state.password
@@ -38,19 +43,23 @@ class App extends Component {
     //     if (!res.ok) { console.log('signup error') } 
     //   });
   }
+
   login() {
     console.log('Check: login called')
   }
   render() {
     return (
       <div>
-        <Router history={history}>
           <Switch>
-            <Route exact path='/' render={() => <Header1 signup={this.signup} login={this.login} handleChangeUsername={this.handleChangeUsername} handleChangePassword={this.handleChangePassword}/>}/>
-            <Route path='/header2' component={Header2}/>
-            <Route path='/header3' component={Header3}/>
+            <Route exact path='/' render={() => 
+              <Header1 
+              login={this.login} 
+              handleChangeUsername={this.handleChangeUsername} 
+              handleChangePassword={this.handleChangePassword}/>
+            }/>
+            <Route exact path='/header2' render={()=> <Header2 />}/>
+            <Route path='/header3' render={()=> <Header3 signup={this.signup} />}/>
           </Switch>
-        </Router>
         <FilterForm />
         <div id='wrapper'>
           <LeftContainer />
