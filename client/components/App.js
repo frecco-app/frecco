@@ -32,16 +32,16 @@ class App extends Component {
   signup() {
     console.log('signup fired')
     //post data. if successfull go to header3
-    console.log(this.props)
-    this.props.history.push('/header2')
     const data = { 
       username: this.state.username,
       password: this.state.password
     };
-    // axios.post('http://localhost:3000/signup', data)
-    //   .then((res) => {
-    //     if (!res.ok) { console.log('signup error') } 
-    //   });
+    axios.post('http://localhost:8080/users/signup', data)
+      .then((res) => {
+        if (!res.ok) { 
+          console.log('signup error') 
+        } 
+      });
   }
 
   login() {
@@ -58,7 +58,7 @@ class App extends Component {
               handleChangePassword={this.handleChangePassword}/>
             }/>
             <Route exact path='/header2' render={()=> <Header2 />}/>
-            <Route path='/header3' render={()=> <Header3 signup={this.signup} />}/>
+            <Route exact path='/header3' render={()=> <Header3 signup={this.signup} />}/>
           </Switch>
         <FilterForm />
         <div id='wrapper'>

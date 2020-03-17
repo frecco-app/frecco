@@ -15,8 +15,10 @@ const userController = require('../controllers/userController.js');
  * 
 */
 
-router.post('/signup', userController.encrypt, userController.createUser, (req,res) => {
-  res.sendStatus(200);
+router.post('/signup', (req,res) => {
+  res.status(200).redirect(url.format({
+    pathname:'/header2'
+  }))
   // Render some sort of success message?
 });
 
