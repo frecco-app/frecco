@@ -29,18 +29,22 @@ router.post('/login', userController.getUser, userController.authenticate, (req,
 
 router.post('/submitreview', userController.submitReview, (req, res) => {
   res.status(200).json('Submitted.');
-})
+});
+
+router.post('/deletereview', userController.deleteReview, (req, res) => {
+  res.status(200).json('Deleted.');
+});
 
 router.post('/follow', userController.follow, (req, res) => {
   res.status(200).json('Followed');
-})
+});
 
 router.post('/filterreview', userController.filterReview, (req, res) => {
   res.status(200).json(res.locals.reviews);
 });
 
 router.get('/', (req, res) => {
-    res.sendStatus(200);
+  res.sendStatus(200);
 });
 
 router.use((err, req, res, next) => {
