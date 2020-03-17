@@ -5,10 +5,8 @@ import { Link } from 'react-router-dom';
 const Header2 = (props) => {
   return (
         <div id="header2">
-            <div>{"Username"}</div>
-            <Link to="/">
-                <button id="btn-logout">Logout</button>
-            </Link>
+            <div>Welcome to Explore Genie, {props.username}!</div>
+            <button id="btn-logout" onClick={props.logout}>Logout</button>
         </div>
   )
 };

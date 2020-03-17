@@ -13,12 +13,24 @@ class App extends Component {
     this.state = {
       username: null,
       password: null,
-      loggedin: false
+      firstname: null,
+      lastname: null,
+      loginMessage: null,
+      signupMessage: null,
     };
     this.signup = this.signup.bind(this);
     this.login = this.login.bind(this);
+    this.logout = this.logout.bind(this);
+    this.handleChangeFirstname = this.handleChangeFirstname.bind(this);
+    this.handleChangeLastname = this.handleChangeLastname.bind(this);
     this.handleChangeUsername = this.handleChangeUsername.bind(this);
     this.handleChangePassword = this.handleChangePassword.bind(this);
+  }
+  handleChangeFirstname() {
+    this.setState({ firstname: event.target.value });
+  }
+  handleChangeLastname() {
+    this.setState({ lastname: event.target.value });
   }
   handleChangeUsername() {
     this.setState({ username: event.target.value });
@@ -26,24 +38,26 @@ class App extends Component {
   handleChangePassword() {
     this.setState({ password: event.target.value });
   }
-
   signup() {
-    console.log('signup fired')
     //post data. if successfull go to header3
     const data = { 
+      firstname: this.state.firstname,
+      lastname: this.state.lastname,
       username: this.state.username,
-      password: this.state.password
+      password: this.state.password,
     };
+    console.log('signup data object',data);
     fetch('/users/signup', { 
       method:'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(data) 
+      body: JSON.stringify(data)
     })
       .then((res) => {
         if (!res.ok) { 
           console.log('signup error') 
+          this.setState({signupMessage:'Invalid signup information.'})
         } 
         else {
           // redirect to new page
@@ -57,6 +71,7 @@ class App extends Component {
       username: this.state.username,
       password: this.state.password
     };
+    console.log('login fired')
     fetch('/users/login', { 
       method:'POST',
       headers: {
@@ -67,6 +82,7 @@ class App extends Component {
       .then((res) => {
         if (!res.ok) { 
           console.log('login error') 
+          this.setState({loginMessage: 'Invalid login information'})
         } 
         else {
           // redirect to new page
@@ -74,16 +90,27 @@ class App extends Component {
         }
       });
   }
+
+  logout(){
+    this.setState({
+      username: null,
+      password: null,
+      firstname: null,
+      lastname: null,
+    })
+    this.props.history.push('/')
+  }
+
   render() {
     return (
       <div>
           <Switch>
-              <Route exact path='/header2' render={()=> 
-                <Header2 />}/>
               <Route exact path='/' render={() => 
-                <Header1 login={this.login} handleChangeUsername={this.handleChangeUsername} handleChangePassword={this.handleChangePassword}/>}/>
+                <Header1 message={this.state.loginMessage} login={this.login} handleChangeUsername={this.handleChangeUsername} handleChangePassword={this.handleChangePassword} />}/>
+              <Route exact path='/header2' render={()=> 
+                <Header2 username={this.state.username} logout={this.logout}/>}/>
               <Route exact path='/header3' render={()=> 
-                <Header3 signup={this.signup} signup={this.signup}/>}/>
+                <Header3 message={this.state.signupMessage} signup={this.signup} handleChangeUsername={this.handleChangeUsername} handleChangePassword={this.handleChangePassword} handleChangeFirstname={this.handleChangeFirstname} handleChangeLastname={this.handleChangeLastname}/>}/>
           </Switch>
           <FilterForm />
           <div id='wrapper'>

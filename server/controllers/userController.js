@@ -13,6 +13,7 @@ const userController = {};
  *   }
  */
 userController.encrypt = (req, res, next) => {
+  console.log("encrypt: req.body",req.body);
   const { password } = req.body;
 
   bcrypt.hash(password, 10)
@@ -36,6 +37,7 @@ userController.encrypt = (req, res, next) => {
 userController.authenticate = (req, res, next) => {
   bcrypt.compare(req.body.password, res.locals.user.password)
     .then((result) => {
+      console.log('hello');
       // If password correct, move to next middleware
       if (result) return next();
 
@@ -62,6 +64,7 @@ userController.createUser = (req, res, next) => {
   const params = [lastname, firstname, username, password];
   db.query(str, params)
     .then(data => {
+      console.log(data)
       return next();
     })
     .catch((err) => next(err))
@@ -73,6 +76,7 @@ userController.createUser = (req, res, next) => {
 */
 
 userController.getUser = (req, res, next) => {
+  console.log('userController.getuser:', req.body);
   const { username } = req.body;
   const str = 'SELECT * from "user" WHERE username = $1;';
   const params = [username];

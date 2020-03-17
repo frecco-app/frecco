@@ -15,14 +15,12 @@ const userController = require('../controllers/userController.js');
  * 
 */
 
-router.post('/signup', (req,res) => {
-  console.log('server: /signup endpoint');
-  res.redirect('/header2');
+router.post('/signup', userController.encrypt, userController.createUser, (req,res) => {
+  res.sendStatus(200);
   // Render some sort of success message?
 });
 
 router.post('/login', userController.getUser, userController.authenticate, (req,res) => {
-//   console.log(res.locals.user);
   res.status(200).json(res.locals.user.password);
 //   res.redirect('/loginpage') //
   // Render some sort of success message?

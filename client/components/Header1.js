@@ -11,6 +11,7 @@ const Header1 = (props) => {
         <Link to="/header3">
           <button id="btn-signup">Signup</button>
         </Link>
+        <span>  {props.message}</span>
     </div>
   )
 };
