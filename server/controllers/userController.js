@@ -104,7 +104,6 @@ userController.submitReview = (req, res, next) => {
   const params = [username, location, category, rating, recommendation, review_text];
   db.query(str, params)
   .then((data) => {
-    console.log('is this working????')
     console.log(data);
     return next();
   })
@@ -127,15 +126,62 @@ userController.submitReview = (req, res, next) => {
  
  */
 
- userController.follow = (req, res, next) => {
-   const { user_id, followedUser } =  req.body;
-   const str = `INSERT INTO "follows" (user_id, followed_user) VALUES ($1, $2)`;
-   const params = [user_id, followedUser]
-   db.query(str, params)
-   .then((data) => {
-     return next();
-   })
-   .catch(err => next(err));
- }
+userController.follow = (req, res, next) => {
+  const { user_id, followedUser } =  req.body;
+  const str = `INSERT INTO "follows" (user_id, followed_user) VALUES ($1, $2)`;
+  const params = [user_id, followedUser]
+  db.query(str, params)
+    .then((data) => {
+      return next();
+    })
+    .catch((err) => next(err));
+};
+
+
+/* Category should be a dropdown, city/location from user text input, Rating minimum filter (1-5 stars)
+ * Expects req.body to be in same format as submitReview with values either null if left blank (which would show all the posts) or send through req body:
+ *   {
+ *     "location": , eg paris 
+ *     "category": , eg attraction
+ *     "rating": integer from 1 to 5,
+ *
+ *   }
+ * Returns an array of review posts with objects:
+ *   {
+        "id": 3,
+        "created_by": "100",
+        "location": "London",
+        "category": "Attraction",
+        "rating": 4,
+        "recommendation": "Stonehenge",
+        "review_text": "Saw some rocks outside of London",
+        "likes": null
+    },
+*/
+
+userController.filterReview = (req, res, next) => {
+  const { location, category, rating } = req.body;
+  let str = 'SELECT * from review '; // initial query string given no constraints
+  const filterObj = {'location': location, 'category': category, 'rating >': rating};
+  const filterArr = [location, category, rating];
+  // check if any of the elements are populated (if all the elements are NOT empty)
+  if (!filterArr.every((element) => element === '')) {
+    str += 'WHERE'; // add a WHERE to query string if detects there is a constraint passed
+    // filters through object and concatenates e.g. "location = 'London' AND" if value is not empty
+    for (let key in filterObj) {
+      if (filterObj[key] !== '') str+= ` ${key}= '${filterObj[key]}' AND`
+    }
+    str = str.slice(0, -4); // removes trailing 'AND'
+  }
+  str += 'ORDER BY likes DESC;'; // appends ranking filter by highest likes and final semicolon necessary for query command
+
+  db.query(str)
+    .then((data) => {
+      res.locals.reviews = data.rows;
+      return next();
+    })
+    .catch((err) => next(err));
+};
+
 
 module.exports = userController;

@@ -35,6 +35,10 @@ router.post('/follow', userController.follow, (req, res) => {
   res.status(200).json('Followed');
 })
 
+router.post('/filterreview', userController.filterReview, (req, res) => {
+  res.status(200).json(res.locals.reviews);
+});
+
 router.get('/', (req, res) => {
     res.sendStatus(200);
 });
