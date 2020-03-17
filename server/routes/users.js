@@ -21,7 +21,6 @@ router.post('/signup', userController.encrypt, userController.createUser, (req,r
 });
 
 router.post('/login', userController.getUser, userController.authenticate, (req,res) => {
-//   console.log(res.locals.user);
   res.status(200).json(res.locals.user.password);
 //   res.redirect('/loginpage') //
   // Render some sort of success message?
@@ -34,6 +33,7 @@ router.post('/submitreview', userController.submitReview, (req, res) => {
 router.post('/deletereview', userController.deleteReview, (req, res) => {
   res.status(200).json('Deleted.');
 });
+
 
 router.post('/follow', userController.follow, (req, res) => {
   res.status(200).json('Followed');
