@@ -190,7 +190,6 @@ userController.filterReview = (req, res, next) => {
     str = str.slice(0, -4); // removes trailing 'AND'
   }
   str += 'ORDER BY likes DESC;'; // appends ranking filter by highest likes and final semicolon necessary for query command
-
   db.query(str)
     .then((data) => {
       res.locals.reviews = data.rows;

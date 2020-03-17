@@ -35,9 +35,6 @@ router.post('/deletereview', userController.deleteReview, (req, res) => {
   res.status(200).json('Deleted.');
 });
 
-router.post('/editreview', userController.editReview, (req, res) => {
-  res.status(200).json('Edited.');
-});
 
 router.post('/follow', userController.follow, (req, res) => {
   res.status(200).json('Followed');
