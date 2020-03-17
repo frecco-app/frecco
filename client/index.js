@@ -5,4 +5,4 @@ import styles from './stylesheets/styles.scss'
 import { Link, BrowserRouter as Router, Route, Switch, withRouter } from 'react-router-dom';
 import history from './components/history';
 
-render(<Router ><App history={history} /></Router>, document.getElementById('root'));
+render(<Router history={history}><App /></Router>, document.getElementById('root'));

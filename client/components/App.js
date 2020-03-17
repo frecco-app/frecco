@@ -1,21 +1,19 @@
 import React, { Component } from "react";
-import { Link, BrowserRouter as Router, Route, Switch, withRouter } from 'react-router-dom';
-import { Redirect } from 'react-router';
-import axios from 'axios';
+import { Link, Route, Switch, withRouter } from 'react-router-dom';
 import Header1 from "./Header1";
 import Header2 from "./Header2";
 import Header3 from "./Header3";
 import LeftContainer from "./LeftContainer";
 import RightContainer from "./RightContainer";
 import FilterForm from "./FilterForm";
-// import history from './history';
 
 class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
       username: null,
-      password: null
+      password: null,
+      loggedin: false
     };
     this.signup = this.signup.bind(this);
     this.login = this.login.bind(this);
@@ -36,38 +34,65 @@ class App extends Component {
       username: this.state.username,
       password: this.state.password
     };
-    axios.post('http://localhost:8080/users/signup', data)
+    fetch('/users/signup', { 
+      method:'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data) 
+    })
       .then((res) => {
         if (!res.ok) { 
           console.log('signup error') 
         } 
+        else {
+          // redirect to new page
+          this.props.history.push('/header2')
+        }
       });
   }
 
   login() {
-    console.log('Check: login called')
+    const data = { 
+      username: this.state.username,
+      password: this.state.password
+    };
+    fetch('/users/login', { 
+      method:'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data) 
+    })
+      .then((res) => {
+        if (!res.ok) { 
+          console.log('login error') 
+        } 
+        else {
+          // redirect to new page
+          this.props.history.push('/header2')
+        }
+      });
   }
   render() {
     return (
       <div>
           <Switch>
-            <Route exact path='/' render={() => 
-              <Header1 
-              login={this.login} 
-              handleChangeUsername={this.handleChangeUsername} 
-              handleChangePassword={this.handleChangePassword}/>
-            }/>
-            <Route exact path='/header2' render={()=> <Header2 />}/>
-            <Route exact path='/header3' render={()=> <Header3 signup={this.signup} />}/>
+              <Route exact path='/header2' render={()=> 
+                <Header2 />}/>
+              <Route exact path='/' render={() => 
+                <Header1 login={this.login} handleChangeUsername={this.handleChangeUsername} handleChangePassword={this.handleChangePassword}/>}/>
+              <Route exact path='/header3' render={()=> 
+                <Header3 signup={this.signup} signup={this.signup}/>}/>
           </Switch>
-        <FilterForm />
-        <div id='wrapper'>
-          <LeftContainer />
-          <RightContainer />
-        </div>
+          <FilterForm />
+          <div id='wrapper'>
+            <LeftContainer />
+            <RightContainer />
+          </div>
       </div>
     );
   }
 }
 
-export default App;
+export default withRouter(App);

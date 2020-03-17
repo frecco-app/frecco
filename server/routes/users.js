@@ -16,9 +16,8 @@ const userController = require('../controllers/userController.js');
 */
 
 router.post('/signup', (req,res) => {
-  res.status(200).redirect(url.format({
-    pathname:'/header2'
-  }))
+  console.log('server: /signup endpoint');
+  res.redirect('/header2');
   // Render some sort of success message?
 });
 
