@@ -4,6 +4,71 @@ const db = require('../models/models.js');
 const userController = {};
 
 /*
+ * Verifies user
+ * Input format of req.body is:
+ *   {
+ *     "username":
+ *     "password":
+ *   }
+ * Output format of res.locals.user is:
+ *   {
+ *     "firstname":
+ *     "lastname":
+ *     "username":
+ *     "password": <plain text>
+ *   }
+ * Output of plain text password exists on res.locals.user
+ */
+userController.verifyUser = (req, res, next) => {
+  const { username, password } = req.body;
+  const str = 'SELECT * from users WHERE username = $1;';
+  const params = [username];
+
+  db.query(str, params)
+    .then((data) => {
+      // If user exists, send data to next middleware
+      if (data.rows !== []) {
+        res.locals.user = data.rows[0];
+        res.locals.password = password;
+        return next();
+      }
+
+      // If user does not exist, call global error handler
+      return next({
+        log: 'Username or password incorrect',
+        status: 400,
+        message: { err: 'Username or password incorrect' }
+      });
+    })
+    .catch((err) => next(err)); // internal pg error
+};
+
+/*
+ * Expects res.locals.user to be:
+ *   {
+ *     "firstname":
+ *     "lastname":
+ *     "username":
+ *     "password": <hashed>
+ *   }
+ */
+userController.authenticate = (req, res, next) => {
+  bcrypt.compare(res.locals.password, res.locals.user.password)
+    .then((result) => {
+      // If password correct, move to next middleware
+      if (result) return next();
+
+      // If password incorrect, call global error handler
+      return next({
+        log: 'Username or password incorrect',
+        status: 400,
+        message: { err: 'Username or password incorrect' }
+      });
+    })
+    .catch((err) => next(err)); // For bcrypt internal errors
+};
+
+/*
  * Expects format of req.body to be be:
  *   {
  *     "firstname":
@@ -24,32 +89,6 @@ userController.encrypt = (req, res, next) => {
 };
 
 /*
- * Expects format of req.body and res.locals.user to both be:
- *   {
- *     "firstname":
- *     "lastname":
- *     "username":
- *     "password":
- *   }
- *   Where "password" is plain text in req.body and hashed in res.locals.user
- */
-userController.authenticate = (req, res, next) => {
-  bcrypt.compare(req.body.password, res.locals.user.password)
-    .then((result) => {
-      // If password correct, move to next middleware
-      if (result) return next();
-
-      // If password incorrect, call global error handler
-      return next({
-        log: 'Username or password incorrect',
-        status: 400,
-        message: { err: 'Username or password incorrect' }
-      });
-    })
-    .catch((err) => next(err)); // For bcrypt internal errors
-};
-
-/*
 * Creates the user and saves in database
 * Expects format of req.body and
 *
@@ -62,24 +101,6 @@ userController.createUser = (req, res, next) => {
   const params = [lastname, firstname, username, password];
   db.query(str, params)
     .then((data) => next())
-    .catch((err) => next(err));
-};
-
-/*
-* Verifies the user
-*
-*/
-
-userController.getUser = (req, res, next) => {
-  const { username } = req.body;
-  const str = 'SELECT * from "user" WHERE username = $1;';
-  const params = [username];
-  db.query(str, params)
-    .then((data) => {
-      res.locals.user = { password: data.rows[0].password };
-      // console.log(res.locals.user);
-      return next();
-    })
     .catch((err) => next(err));
 };
 
