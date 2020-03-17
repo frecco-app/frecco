@@ -27,6 +27,14 @@ router.post('/login', userController.getUser, userController.authenticate, (req,
   // Render some sort of success message?
 });
 
+router.post('/submitreview', userController.submitReview, (req, res) => {
+  res.status(200).json('Submitted.');
+})
+
+router.post('/follow', userController.follow, (req, res) => {
+  res.status(200).json('Followed');
+})
+
 router.get('/', (req, res) => {
     res.sendStatus(200);
 });
