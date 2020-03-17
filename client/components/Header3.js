@@ -5,18 +5,12 @@ import { Link } from 'react-router-dom';
 const Header3 = (props) => {
   return (
     <div id="header3">
-        <input id="firstname" placeholder="First Name"/>
-        <input id="lastname" placeholder="Last Name"/>
-        <input id="username" placeholder="Username"/>
-        <input id="password" placeholder="Password"/>
-        
-        <Link to='/header2'>
-          <button id="btn-login">Signup</button>
-        </Link>
-        <Link to="/header2">
-            <button id="btn-login">Login</button>
-        </Link>
-
+        <input id="firstname" placeholder="First Name" onChange={props.handleChangeFirstname}/>
+        <input id="lastname" placeholder="Last Name" onChange={props.handleChangeLastname}/>
+        <input id="username" placeholder="Username" onChange={props.handleChangeUsername}/>
+        <input id="password" placeholder="Password" onChange={props.handleChangePassword}/>
+        <button id="btn-submit" onClick={props.signup}>Signup</button>
+        <span>  {props.message}</span>
     </div>
   )
 };
