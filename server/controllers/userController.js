@@ -3,15 +3,7 @@ const db = require('../models/models.js');
 
 const userController = {};
 
-/*
- * Expects format of req.body to be be:
- *   {
- *     "firstname":
- *     "lastname":
- *     "username":
- *     "password": <plain text>
- *   }
- */
+// Encrypts user password
 userController.encrypt = (req, res, next) => {
   const { password } = req.body;
 
@@ -20,11 +12,12 @@ userController.encrypt = (req, res, next) => {
       res.locals.user = { ...req.body, password: hash };
       return next();
     })
-    // For bcrypt internal errors
+
+    // Internal bcrypt error
     .catch(() => next({
-      log: 'A problem occured hashing password',
-      status: 500,
-      message: { err: 'A problem occured hashing password' }
+      log: 'Incorrect input format',
+      status: 400,
+      message: { err: 'Incorrect input format' }
     }));
 };
 
@@ -47,24 +40,10 @@ userController.create = (req, res, next) => {
     }));
 };
 
-/*
- * Verifies user
- * Input format of req.body is:
- *   {
- *     "username":
- *     "password":
- *   }
- * Output format of res.locals.user is:
- *   {
- *     "firstname":
- *     "lastname":
- *     "username":
- *     "password": <plain text>
- *   }
- * Output of plain text password exists on res.locals.user
- */
+// Verifies that user exists and returns row from users table
 userController.verify = (req, res, next) => {
   const { username, password } = req.body;
+
   const str = 'SELECT * from users WHERE username = $1;';
   const params = [username];
 
@@ -84,24 +63,60 @@ userController.verify = (req, res, next) => {
         message: { err: 'Username or password incorrect' }
       });
     })
-    .catch((err) => next(err)); // internal pg error
+
+    // Internal server error
+    .catch(() => next({
+      log: 'A problem occured verifying user',
+      status: 500,
+      message: { err: 'A problem occured verifying user' }
+    }));
 };
 
 // Compares plain text password on res.locals.password to hashed password
 userController.authenticate = (req, res, next) => {
-  bcrypt.compare(res.locals.password, res.locals.user.password)
-    .then((result) => {
-      // If password correct, move to next middleware
-      if (result) return next();
+  try {
+    bcrypt.compare(res.locals.password, res.locals.user.password)
+      .then((result) => {
+        // If password correct, move to next middleware
+        if (result) return next();
+        // If password incorrect, call global error handler
+        return next({
+          log: 'Username or password incorrect',
+          status: 400,
+          message: { err: 'Username or password incorrect' }
+        });
+      })
 
-      // If password incorrect, call global error handler
-      return next({
-        log: 'Username or password incorrect',
+      // Formatting error
+      .catch(() => next({
+        log: 'Incorrect input format',
         status: 400,
-        message: { err: 'Username or password incorrect' }
-      });
-    })
-    .catch((err) => next(err)); // For bcrypt internal errors
+        message: { err: 'Incorrect input format' }
+      }));
+
+  // Formatting error
+  } catch {
+    return next({
+      log: 'Incorrect input format',
+      status: 400,
+      message: { err: 'Incorrect input format' }
+    });
+  }
+};
+
+// Removes user from users table
+userController.destroy = (req, res, next) => {
+  const queryStr = `DELETE FROM users
+                    WHERE id = $1`;
+  const params = [res.locals.user_id];
+
+  db.query(queryStr, params)
+    .then(() => next())
+    .catch(() => next({
+      log: 'A problem occured removing account',
+      status: 500,
+      message: { err: 'A problem occured removing account' }
+    }));
 };
 
 /* Expects format of req.body and to  be:

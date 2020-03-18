@@ -10,7 +10,8 @@ router.get('/', (req, res) => {
 });
 
 /*
- * Sign up for new user; expects res.locals.user to be:
+ * Sign up for new user
+ * Expects req.body to be:
  *   {
  *     "firstname":
  *     "lastname":
@@ -18,13 +19,19 @@ router.get('/', (req, res) => {
  *     "password": <plain text>
  *   }
  */
-// Endpoint for user signup
 router.post('/signup',
   userController.encrypt,
   userController.create,
   (req, res) => res.redirect(307, './login'));
 
-// Endpoint for user login
+/*
+ * Login user
+ * Expects req.body to be:
+ *   {
+ *     "username":
+ *     "password": <plain text>
+ *   }
+ */
 router.post('/login',
   userController.verify,
   userController.authenticate,
@@ -35,10 +42,16 @@ router.post('/login',
 
 // Endpoint for user logout
 router.post('/logout',
+  sessionController.verify,
   sessionController.end,
   cookieController.removeSSID,
   (req, res) => res.sendStatus(204));
 
+// Endpoint for user delete
+router.post('/delete',
+  sessionController.verify,
+  userController.destroy,
+  (req, res) => res.redirect(307, './logout'));
 
 router.post('/submitreview',
   userController.submitReview,
@@ -51,7 +64,7 @@ router.post('/follow',
 router.use((err, req, res, next) => {
   const defaultErr = {
     log: 'Express error handler caught unknown middleware error',
-    status: 400,
+    status: 500,
     message: { err: 'An error occurred' }
   };
   const errorObj = Object.assign(defaultErr, err);
