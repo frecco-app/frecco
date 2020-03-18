@@ -199,7 +199,8 @@ userController.follow = (req, res, next) => {
  *     "location": , eg paris 
  *     "category": , eg attraction
  *     "rating": integer from 1 to 5,
- *
+ *      "userid": <- this might be in cookies or something,
+ *     "toggleFollowing": has a value if user only wants to see posts by those s/he is following, otherwise empty
  *   }
  * Returns an array of review posts with multiple objects in format of:
  *   {
@@ -216,7 +217,14 @@ userController.follow = (req, res, next) => {
 
 userController.filterReview = (req, res, next) => {
   const { location, category, rating } = req.body;
-  let str = 'SELECT * from review '; // initial query string given no constraints
+  let str = `SELECT review.*, u.username from review 
+    LEFT JOIN "user" as u ON review.created_by = u.id `; // initial query string given no constraints
+  
+  // INNER JOIN follows if user only wants to see posts by people s/he follows
+  if (req.body.toggleFollowing) {
+    str += `INNER JOIN follows ON review.created_by = follows.followed_user AND follows.user_id = ${req.body.userid} `
+  };
+  
   const filterObj = { 'location': location, 'category': category, 'rating >': rating };
   const filterArr = [location, category, rating];
   // check if any of the elements are populated (if all the elements are NOT empty)
