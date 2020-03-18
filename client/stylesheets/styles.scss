@@ -11,8 +11,12 @@
 }
 
 #filter-form {
-    height: 10%;
-    background-color: cornflowerblue;
+    height: auto;
+    padding: 10px;
+    background-color: #ecf0f1;
+    display: flex;
+    align-content: center;
+    justify-content: center;
 }
 #right-container {
     flex: 1;

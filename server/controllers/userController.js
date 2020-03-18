@@ -181,18 +181,18 @@ userController.follow = (req, res, next) => {
 userController.filterReview = (req, res, next) => {
   const { location, category, rating } = req.body;
   let str = 'SELECT * from review '; // initial query string given no constraints
-  const filterObj = { 'location': location, 'category': category, 'rating >': rating };
-  const filterArr = [location, category, rating];
-  // check if any of the elements are populated (if all the elements are NOT empty)
-  if (!filterArr.every((element) => element === '')) {
-    str += 'WHERE'; // add a WHERE to query string if detects there is a constraint passed
-    // filters through object and concatenates e.g. "location = 'London' AND" if value is not empty
-    for (let key in filterObj) {
-      if (filterObj[key] !== '') str+= ` ${key}= '${filterObj[key]}' AND`
-    };
-    str = str.slice(0, -4); // removes trailing 'AND'
-  }
-  str += 'ORDER BY likes DESC;'; // appends ranking filter by highest likes and final semicolon necessary for query command
+  // const filterObj = { 'location': location, 'category': category, 'rating >': rating };
+  // const filterArr = [location, category, rating];
+  // // check if any of the elements are populated (if all the elements are NOT empty)
+  // if (!filterArr.every((element) => element === '')) {
+  //   str += 'WHERE'; // add a WHERE to query string if detects there is a constraint passed
+  //   // filters through object and concatenates e.g. "location = 'London' AND" if value is not empty
+  //   for (let key in filterObj) {
+  //     if (filterObj[key] !== '') str+= ` ${key}= '${filterObj[key]}' AND`
+  //   };
+  //   str = str.slice(0, -4); // removes trailing 'AND'
+  // }
+  // str += 'ORDER BY likes DESC;'; // appends ranking filter by highest likes and final semicolon necessary for query command
   db.query(str)
     .then((data) => {
       res.locals.reviews = data.rows;
