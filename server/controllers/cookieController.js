@@ -22,7 +22,7 @@ cookieController.encrypt = (req, res, next) => {
 // Sets authentication cookie
 cookieController.setSSID = (req, res, next) => {
   try {
-    res.cookie('ssid', res.locals.cookie);
+    res.cookie('xpgnssid', res.locals.cookie);
     return next();
   } catch {
     return next({
@@ -33,8 +33,17 @@ cookieController.setSSID = (req, res, next) => {
   }
 };
 
-cookieController.removeSSID = () => {
-
+cookieController.removeSSID = (req, res, next) => {
+  try {
+    res.clearCookie('xpgnssid');
+    return next();
+  } catch {
+    return next({
+      log: 'A problem occured removing authentication cookie',
+      status: 500,
+      message: { err: 'A problem occured removing authentication cookie' }
+    });
+  }
 };
 
 module.exports = cookieController;

@@ -14,13 +14,14 @@ const userController = {};
  */
 userController.encrypt = (req, res, next) => {
   const { password } = req.body;
+
   bcrypt.hash(password, 10)
     .then((hash) => {
       res.locals.user = { ...req.body, password: hash };
       return next();
     })
     // For bcrypt internal errors
-    .catch((err) => next({
+    .catch(() => next({
       log: 'A problem occured hashing password',
       status: 500,
       message: { err: 'A problem occured hashing password' }
@@ -32,11 +33,13 @@ userController.create = (req, res, next) => {
   const {
     firstname, lastname, username, password
   } = res.locals.user;
+
   const queryStr = `INSERT INTO users (firstname, lastname, username, password)
                     VALUES ($1, $2, $3, $4)`;
   const params = [firstname, lastname, username, password];
+
   db.query(queryStr, params)
-    .then((data) => next())
+    .then(() => next())
     .catch(() => next({
       log: 'Username already exists',
       status: 400,
@@ -69,7 +72,7 @@ userController.verify = (req, res, next) => {
     .then((data) => {
       // If user exists, send data to next middleware
       if (data.rows !== []) {
-        res.locals.user = data.rows[0];
+        [res.locals.user] = data.rows;
         res.locals.password = password;
         return next();
       }

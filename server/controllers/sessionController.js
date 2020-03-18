@@ -23,7 +23,16 @@ sessionController.verify = (req, res, next) => {
 };
 
 sessionController.end = (req, res, next) => {
-
+  const queryStr = `DELETE FROM sessions
+                    WHERE ssid = $1`;
+  const params = [req.cookies.xpgnssid];
+  db.query(queryStr, params)
+    .then(() => next())
+    .catch(() => next({
+      log: 'A problem occured ending the session',
+      status: 500,
+      message: { err: 'A problem occured ending the session' }
+    }));
 };
 
 module.exports = sessionController;

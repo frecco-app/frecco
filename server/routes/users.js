@@ -6,7 +6,7 @@ const cookieController = require('../controllers/cookieController.js');
 const sessionController = require('../controllers/sessionController.js');
 
 router.get('/', (req, res) => {
-  res.sendStatus(200);
+  res.sendStatus(204);
 });
 
 /*
@@ -31,7 +31,14 @@ router.post('/login',
   cookieController.encrypt,
   cookieController.setSSID,
   sessionController.start,
-  (req, res) => res.sendStatus(200));
+  (req, res) => res.sendStatus(204));
+
+// Endpoint for user logout
+router.post('/logout',
+  sessionController.end,
+  cookieController.removeSSID,
+  (req, res) => res.sendStatus(204));
+
 
 router.post('/submitreview',
   userController.submitReview,
