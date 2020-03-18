@@ -5,26 +5,24 @@ const userController = require('../controllers/userController.js');
 const cookieController = require('../controllers/cookieController.js');
 const sessionController = require('../controllers/sessionController.js');
 
+router.get('/', (req, res) => {
+  res.sendStatus(200);
+});
+
 /*
-* Sign up for new user; expects res.locals.newUser to be
+ * Sign up for new user; expects res.locals.user to be:
  *   {
  *     "firstname":
  *     "lastname":
  *     "username":
  *     "password": <plain text>
  *   }
- *
-*/
-
-router.get('/', (req, res) => {
-  res.sendStatus(200);
-});
-
+ */
 // Endpoint for user signup
 router.post('/signup',
   userController.encrypt,
   userController.create,
-  (req, res) => res.sendStatus(200));
+  (req, res) => res.redirect(307, './login'));
 
 // Endpoint for user login
 router.post('/login',

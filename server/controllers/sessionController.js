@@ -2,6 +2,7 @@ const db = require('../models/models.js');
 
 const sessionController = {};
 
+// Adds authentication cookie and user_id to sessions table
 sessionController.start = (req, res, next) => {
   const { cookie } = res.locals;
   const { id } = res.locals.user;
@@ -18,12 +19,7 @@ sessionController.start = (req, res, next) => {
 };
 
 sessionController.verify = (req, res, next) => {
-  const queryStr = 'SELECT * FROM sessions';
-  db.query(queryStr)
-    .then((data) => {
-      res.locals.ssid = data.rows[0];
-      return next();
-    });
+
 };
 
 sessionController.end = (req, res, next) => {

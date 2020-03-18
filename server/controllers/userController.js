@@ -4,6 +4,47 @@ const db = require('../models/models.js');
 const userController = {};
 
 /*
+ * Expects format of req.body to be be:
+ *   {
+ *     "firstname":
+ *     "lastname":
+ *     "username":
+ *     "password": <plain text>
+ *   }
+ */
+userController.encrypt = (req, res, next) => {
+  const { password } = req.body;
+  bcrypt.hash(password, 10)
+    .then((hash) => {
+      res.locals.user = { ...req.body, password: hash };
+      return next();
+    })
+    // For bcrypt internal errors
+    .catch((err) => next({
+      log: 'A problem occured hashing password',
+      status: 500,
+      message: { err: 'A problem occured hashing password' }
+    }));
+};
+
+// Adds user to user table
+userController.create = (req, res, next) => {
+  const {
+    firstname, lastname, username, password
+  } = res.locals.user;
+  const queryStr = `INSERT INTO users (firstname, lastname, username, password)
+                    VALUES ($1, $2, $3, $4)`;
+  const params = [firstname, lastname, username, password];
+  db.query(queryStr, params)
+    .then((data) => next())
+    .catch(() => next({
+      log: 'Username already exists',
+      status: 400,
+      message: { err: 'Username already exists' }
+    }));
+};
+
+/*
  * Verifies user
  * Input format of req.body is:
  *   {
@@ -43,15 +84,7 @@ userController.verify = (req, res, next) => {
     .catch((err) => next(err)); // internal pg error
 };
 
-/*
- * Expects res.locals.user to be:
- *   {
- *     "firstname":
- *     "lastname":
- *     "username":
- *     "password": <hashed>
- *   }
- */
+// Compares plain text password on res.locals.password to hashed password
 userController.authenticate = (req, res, next) => {
   bcrypt.compare(res.locals.password, res.locals.user.password)
     .then((result) => {
@@ -68,47 +101,6 @@ userController.authenticate = (req, res, next) => {
     .catch((err) => next(err)); // For bcrypt internal errors
 };
 
-/*
- * Expects format of req.body to be be:
- *   {
- *     "firstname":
- *     "lastname":
- *     "username":
- *     "password": <plain text>
- *   }
- */
-userController.encrypt = (req, res, next) => {
-  const { password } = req.body;
-
-  bcrypt.hash(password, 10)
-    .then((hash) => {
-      res.locals.user = { ...req.body, password: hash };
-      return next();
-    })
-    // For bcrypt internal errors
-    .catch((err) => next({
-      log: 'A problem occured hashing password',
-      status: 500,
-      message: { err: 'A problem occured hashing password' }
-    }));
-};
-
-/*
-* Creates the user and saves in database
-* Expects format of req.body and
-*
-*/
-
-userController.create = (req, res, next) => {
-  const { lastname, firstname, username } = req.body;
-  const { password } = res.locals.user;
-  const str = 'INSERT into "user" (lastname, firstname, username, password) VALUES ($1, $2, $3, $4);';
-  const params = [lastname, firstname, username, password];
-  db.query(str, params)
-    .then((data) => next())
-    .catch((err) => next(err));
-};
-
 /* Expects format of req.body and to  be:
  *   {
  *     "username":  <- this should probably be in req.cookies or something
@@ -119,7 +111,6 @@ userController.create = (req, res, next) => {
  *     "review_text": eg it was pointy
  *
  *   }
-
  */
 userController.submitReview = (req, res, next) => {
   const {
@@ -142,16 +133,12 @@ userController.submitReview = (req, res, next) => {
  *     "username":  <- his should probably be in req.cookies or something,
  *     "user2 id or username:
  *
- *  }
- *
+ *   }
  * However you want to get to to us - could be req.params in case 1, req.body in case 2 below
- *    1. user1 can visit user2's profile. on user2's profile, there's a "follow" button (if user1 visits profile/user2, serve SELECT * from review WHERE created_by = user2)
+ *    1. user1 can visit user2's profile. on user2's profile, there's a "follow" button (if user1
+ *       visits profile/user2, serve SELECT * from review WHERE created_by = user2)
  *    2. or is there just a search bar on user1's homepage to follow  user2?
- *
- *
-
  */
-
 userController.follow = (req, res, next) => {
   const { user_id, followedUser } = req.body;
   const str = 'INSERT INTO "follows" (user_id, followed_user) VALUES ($1, $2)';

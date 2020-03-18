@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 
 const cookieController = {};
 
+// Encrypts user_id and stores hash on res.locals.cookie
 cookieController.encrypt = (req, res, next) => {
   const { username } = res.locals.user;
 
@@ -11,13 +12,14 @@ cookieController.encrypt = (req, res, next) => {
       return next();
     })
     // For bcrypt internal errors
-    .catch((err) => next({
+    .catch(() => next({
       log: 'A problem occured encrypting authentication cookie',
       status: 500,
       message: { err: 'A problem occured encrypting authentication cookie' }
     }));
 };
 
+// Sets authentication cookie
 cookieController.setSSID = (req, res, next) => {
   try {
     res.cookie('ssid', res.locals.cookie);
