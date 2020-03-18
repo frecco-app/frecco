@@ -138,9 +138,7 @@ userController.submitReview = (req, res, next) => {
                VALUES ($1, $2, $3, $4, $5, $6);`;
   const params = [username, location, category, rating, recommendation, review_text];
   db.query(str, params)
-    .then((data) => {
-      return next();
-    })
+    .then(() => next())
     .catch((err) => next(err));
 };
 
@@ -163,9 +161,7 @@ userController.deleteReview = (req, res, next) => {
   const { id } = req.body;
   const str = `DELETE from "review" WHERE id = ${id};`;
   db.query(str)
-    .then((data) => {
-      return next();
-    })
+    .then(() => next())
     .catch((err) => next(err));
 };
 
@@ -186,9 +182,7 @@ userController.follow = (req, res, next) => {
   const str = 'INSERT INTO "follows" (user_id, followed_user) VALUES ($1, $2);';
   const params = [user_id, followedUser];
   db.query(str, params)
-    .then((data) => {
-      return next();
-    })
+    .then(() => next())
     .catch((err) => next(err));
 };
 
@@ -219,12 +213,11 @@ userController.filterReview = (req, res, next) => {
   const { location, category, rating } = req.body;
   let str = `SELECT review.*, u.username from review 
     LEFT JOIN "user" as u ON review.created_by = u.id `; // initial query string given no constraints
-  
   // INNER JOIN follows if user only wants to see posts by people s/he follows
   if (req.body.toggleFollowing) {
     str += `INNER JOIN follows ON review.created_by = follows.followed_user AND follows.user_id = ${req.body.userid} `
-  };
-  
+  }
+
   const filterObj = { 'location': location, 'category': category, 'rating >': rating };
   const filterArr = [location, category, rating];
   // check if any of the elements are populated (if all the elements are NOT empty)
@@ -237,10 +230,7 @@ userController.filterReview = (req, res, next) => {
     str = str.slice(0, -4); // removes trailing 'AND'
   }
   str += 'ORDER BY likes DESC;'; // appends ranking filter by highest likes and final semicolon necessary for query command
-<<<<<<< HEAD
-  
-=======
->>>>>>> dev
+
   db.query(str)
     .then((data) => {
       res.locals.reviews = data.rows;
