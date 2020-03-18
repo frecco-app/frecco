@@ -19,7 +19,7 @@ const userController = {};
  *   }
  * Output of plain text password exists on res.locals.user
  */
-userController.verifyUser = (req, res, next) => {
+userController.verify = (req, res, next) => {
   const { username, password } = req.body;
   const str = 'SELECT * from users WHERE username = $1;';
   const params = [username];
@@ -85,7 +85,12 @@ userController.encrypt = (req, res, next) => {
       res.locals.user = { ...req.body, password: hash };
       return next();
     })
-    .catch((err) => next(err)); // For bcrypt internal errors
+    // For bcrypt internal errors
+    .catch((err) => next({
+      log: 'A problem occured hashing password',
+      status: 500,
+      message: { err: 'A problem occured hashing password' }
+    }));
 };
 
 /*
@@ -94,7 +99,7 @@ userController.encrypt = (req, res, next) => {
 *
 */
 
-userController.createUser = (req, res, next) => {
+userController.create = (req, res, next) => {
   const { lastname, firstname, username } = req.body;
   const { password } = res.locals.user;
   const str = 'INSERT into "user" (lastname, firstname, username, password) VALUES ($1, $2, $3, $4);';
@@ -130,11 +135,6 @@ userController.submitReview = (req, res, next) => {
       return next();
     })
     .catch((err) => next(err));
-};
-
-userController.setCookie = (req, res, next) => {
-  const { username } = res.locals.user;
-  res.cookie('ssid');
 };
 
 /* Expects format of req.body for user1 to follow user2:

@@ -13,16 +13,25 @@ cookieController.encrypt = (req, res, next) => {
     // For bcrypt internal errors
     .catch((err) => next({
       log: 'A problem occured encrypting authentication cookie',
-      status: 400,
+      status: 500,
       message: { err: 'A problem occured encrypting authentication cookie' }
     }));
 };
 
-cookieController.setSSIDCookie = (res, req, next) => {
-  res.cookie('ssid', '');
+cookieController.setSSID = (req, res, next) => {
+  try {
+    res.cookie('ssid', res.locals.cookie);
+    return next();
+  } catch {
+    return next({
+      log: 'A problem occured setting authentication cookie',
+      status: 500,
+      message: { err: 'A problem occured setting authentication cookie' }
+    });
+  }
 };
 
-cookieController.removeSSIDCookie = () => {
+cookieController.removeSSID = () => {
 
 };
 
