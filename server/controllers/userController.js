@@ -132,14 +132,18 @@ userController.destroy = (req, res, next) => {
  */
 userController.submitReview = (req, res, next) => {
   const {
-    username, location, category, rating, recommendation, review_text
+    location, category, rating, recommendation, review_text
   } = req.body;
   const str = `INSERT INTO "review" (created_by, location, category, rating, recommendation, review_text)
                VALUES ($1, $2, $3, $4, $5, $6);`;
-  const params = [username, location, category, rating, recommendation, review_text];
+  const params = [res.locals.user_id, location, category, rating, recommendation, review_text];
   db.query(str, params)
     .then(() => next())
-    .catch((err) => next(err));
+    .catch(() => next({
+      log: 'problem with db query',
+      status: 500,
+      message: {err: 'problem with db query'}
+    }));
 };
 
 /* 

@@ -1,6 +1,8 @@
 import React, {Component} from "react";
-
-
+import Button from '@material-ui/core/Button';
+import Input from '@material-ui/core/Input';
+import TextField from '@material-ui/core/TextField';
+import InputLabel from '@material-ui/core/InputLabel';
 
 function PostForm(props) {
     let i = 0
@@ -31,13 +33,15 @@ function PostForm(props) {
                     <option value='5'>5</option>
                 </select>
             <br/>
-            <label for='recommendation'>Recommendation:</label>
-            <input id='recommendation' name='recommendation'></input>
+            <InputLabel>Recommendation</InputLabel>
+            <Input id='recommendation' name='recommendation'></Input>
             <br/>
-            <label for='review'>Review:</label><br/>
-            <textarea id='review' name='review' rows='5' cols='80'></textarea>
             <br/>
-            <input type='button' value='Post Review' onClick={props.handlePostForm} />
+            <InputLabel>Review</InputLabel>
+            <br/>
+            <TextField multiline rows='4' id='review' style={{width: '100%'}} />
+            <br/>
+            <Button onClick={props.handlePostForm}>Post</Button>
         </form>
     )
 }

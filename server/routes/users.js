@@ -54,6 +54,7 @@ router.post('/delete',
   (req, res) => res.redirect(307, './logout'));
 
 router.post('/submitreview',
+  sessionController.verify,
   userController.submitReview,
   (req, res) => res.status(200).json('Submitted.'));
 
@@ -61,15 +62,8 @@ router.post('/follow',
   userController.follow,
   (req, res) => res.status(200).json('Followed'));
 
-router.use((err, req, res, next) => {
-  const defaultErr = {
-    log: 'Express error handler caught unknown middleware error',
-    status: 500,
-    message: { err: 'An error occurred' }
-  };
-  const errorObj = Object.assign(defaultErr, err);
-  return res.status(errorObj.status).send(errorObj.message);
+router.post('/filterreview', userController.filterReview, (req, res) => {
+    res.status(200).json(res.locals.reviews);
 });
-
 
 module.exports = router;

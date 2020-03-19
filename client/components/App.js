@@ -73,14 +73,13 @@ class App extends Component {
     this.setState({ postFilter: {...this.state.postFilter, 'minrating': e.target.value}})
   }
   handlePostForm() {
-    console.log('form posted!!')
     //post form data to server
     const data = {
       username: this.state.username,
       location: this.state.postData.location,
       category: this.state.postData.category,
       rating: this.state.postData.rating,
-      recommendation: this.state.postData.recommenation,
+      recommendation: this.state.postData.recommendation,
       review_text: this.state.postData.review_text
     }
     fetch('/users/submitreview', {
@@ -173,8 +172,10 @@ class App extends Component {
     })
       .then((res) => res.json())
       .then((json)=> {
-        this.setState({posts: json});
-        console.log(this.state.posts);
+        this.setState({
+          posts: json, 
+          filteredPosts: json
+        });
       })
   }
   filterPosts(){
@@ -193,8 +194,7 @@ class App extends Component {
       }
       return result;
     });
-    this.setState( {filteredPosts: newfilteredPosts});
-    console.log(this.state.filteredPosts)
+    this.setState( { filteredPosts: newfilteredPosts });
   }
   render() {
     return (
