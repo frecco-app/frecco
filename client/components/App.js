@@ -19,6 +19,7 @@ class App extends Component {
       signupMessage: null,
       posts: [],
       filteredPosts: [],
+      friends: [],
       postFilter: {
         'location': null, 
         'category': null, 
@@ -51,27 +52,34 @@ class App extends Component {
     // methods for posting
     this.handlePostForm = this.handlePostForm.bind(this);
   }
+
   handleChangeFirstname() {
     this.setState({ firstname: event.target.value });
   }
+
   handleChangeLastname() {
     this.setState({ lastname: event.target.value });
   }
+
   handleChangeUsername() {
     this.setState({ username: event.target.value });
   }
+
   handleChangePassword() {
     this.setState({ password: event.target.value });
   }
   handleChangeLocation(e) {
     this.setState({ postFilter: {...this.state.postFilter, 'location': e.target.value}})
   }
+
   handleChangeCategory(e) {
     this.setState({ postFilter: {...this.state.postFilter, 'category': e.target.value}})
   }
+
   handleChangeRating(e) {
     this.setState({ postFilter: {...this.state.postFilter, 'minrating': e.target.value}})
   }
+
   handlePostForm() {
     //post form data to server
     const data = {
@@ -81,7 +89,8 @@ class App extends Component {
       rating: this.state.postData.rating,
       recommendation: this.state.postData.recommendation,
       review_text: this.state.postData.review_text
-    }
+    };
+
     fetch('/users/submitreview', {
       method: 'POST', 
       headers: {
@@ -97,6 +106,7 @@ class App extends Component {
       });
   }
   signup() {
+
     //post data. if successfull go to header3
     const data = { 
       firstname: this.state.firstname,
@@ -104,6 +114,7 @@ class App extends Component {
       username: this.state.username,
       password: this.state.password,
     };
+
     fetch('/users/signup', { 
       method:'POST',
       headers: {
@@ -122,6 +133,7 @@ class App extends Component {
         }
       });
   }
+
   login() {
     const data = { 
       username: this.state.username,
@@ -145,6 +157,7 @@ class App extends Component {
         }
       });
   }
+
   logout(){
     this.setState({
       username: null,
@@ -154,21 +167,25 @@ class App extends Component {
     })
     this.props.history.push('/')
   }
+
   componentDidMount(){
     // fetch posts only once, then fetch again every 20 seconds
+    console.log('Fetching posts ?')
     this.fetchPosts();
+
     //this.timer = setInterval(() => this.fetchPosts(),5000)
   }
+
   componentWillUnmount(){
     clearInterval(this.timer)
   }
+
   fetchPosts(){
-    fetch('users/filterreview', {
-      method: 'POST',
+    fetch('users/getreview', {
       headers : { 
         'Content-Type': 'application/json',
         'Accept': 'application/json'
-       }
+       },
     })
       .then((res) => res.json())
       .then((json)=> {
@@ -178,6 +195,7 @@ class App extends Component {
         });
       })
   }
+
   filterPosts(){
     // filter posts to show, based on user selection
     let newfilteredPosts = this.state.posts;
@@ -196,6 +214,23 @@ class App extends Component {
     });
     this.setState( { filteredPosts: newfilteredPosts });
   }
+
+  fetchFriends() {
+    fetch('users/getFriends', {
+      method: 'GET',
+      headers : { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+       }
+    })
+      .then((res) => res.json())
+      .then((json)=> {
+        this.setState({
+          friends: json, 
+        });
+      })
+  }
+
   render() {
     return (
       <div>
@@ -214,6 +249,7 @@ class App extends Component {
             locations={this.state.locations} />
             <RightContainer 
              filterPosts={this.filterPosts}
+             filteredPosts={this.state.filteredPosts}
              handleChangeCategory={this.handleChangeCategory}
              handleChangeLocation={this.handleChangeLocation}
              handleChangeRating={this.handleChangeRating}
