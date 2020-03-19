@@ -27,11 +27,11 @@ class App extends Component {
       categories: ['Attraction', 'Food', 'Accomodation'],
       locations: ['Paris', 'Texas', 'Taylors Condo'],
       postData: {
-        location: 'Florida',
-        category: 'Adventure',
-        rating: 3,
-        recommendation: 'Canal',
-        review_text: 'Got eaten by gator :('
+        location: null,
+        category: null,
+        rating: null,
+        recommendation: null,
+        review_text: null
       }
     };
     // methods to handle signup/login
@@ -50,6 +50,11 @@ class App extends Component {
     this.filterPosts = this.filterPosts.bind(this);
     // methods for posting
     this.handlePostForm = this.handlePostForm.bind(this);
+    this.handleChangeRecommendation = this.handleChangeRecommendation.bind(this);
+    this.handleChangeReview = this.handleChangeReview.bind(this);
+    this.handleChangePostRating = this.handleChangePostRating.bind(this);
+    this.handleChangePostLocation = this.handleChangePostLocation.bind(this);
+    this.handleChangePostCategory = this.handleChangePostCategory.bind(this);
   }
   handleChangeFirstname() {
     this.setState({ firstname: event.target.value });
@@ -72,6 +77,24 @@ class App extends Component {
   handleChangeRating(e) {
     this.setState({ postFilter: {...this.state.postFilter, 'minrating': e.target.value}})
   }
+
+  //Post form Handles
+  handleChangeRecommendation(e) {
+    this.setState({ postData: {...this.state.postData, recommendation: e.target.value}})
+  }
+  handleChangeReview(e) {
+    this.setState({ postData: {...this.state.postData, review_text: e.target.value}})
+  }
+  handleChangePostLocation(e) {
+    this.setState({ postData: {...this.state.postData, location: e.target.value}})
+  }
+  handleChangePostCategory(e) {
+    this.setState({ postData: {...this.state.postData, category: e.target.value}})
+  }
+  handleChangePostRating(e) {
+    this.setState({ postData: {...this.state.postData, rating: e.target.value}})
+  }
+
   handlePostForm() {
     //post form data to server
     const data = {
@@ -209,6 +232,11 @@ class App extends Component {
           </Switch>
           <div id='wrapper'>
             <LeftContainer 
+            handleChangePostCategory={this.handleChangePostCategory}
+            handleChangePostLocation={this.handleChangePostLocation}
+            handleChangePostRating={this.handleChangePostRating}
+            handleChangeRecommendation={this.handleChangeRecommendation}
+            handleChangeReview={this.handleChangeReview}
             handlePostForm={this.handlePostForm}
             categories={this.state.categories}
             locations={this.state.locations} />

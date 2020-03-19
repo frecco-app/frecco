@@ -6,40 +6,35 @@ import InputLabel from '@material-ui/core/InputLabel';
 
 function PostForm(props) {
     let i = 0
-    let categoryOptions = []
-    let locationOptions = []
+    let ratings = [1, 2, 3, 4, 5]
     //popuating location and categroy dropdown menu with state
-    props.categories.map(el => categoryOptions.push(<option key={`cat-${i++}`} value=''>{el}</option>))
-    props.locations.map(el => locationOptions.push(<option key={`loc-${i++}`} value=''>{el}</option>))
+    let categoryOptions = props.categories.map(el => <option key={`cat-${i++}`} value={el}>{el}</option>)
+    let locationOptions = props.locations.map(el => <option key={`loc-${i++}`} value={el}>{el}</option>)
+    let ratingOptions = ratings.map(el => <option key={`rat-${i++}`} value={el}>{el}</option>)
 
     return (
         <form id='post-form'>
             <label for="category">Select a Category:</label>
-                <select id='category-dd' name='category'>
+                <select onChange={props.handleChangePostCategory} id='category-dd' name='category'>
                     {categoryOptions}
                 </select>
             <br/>
             <label for="locations">Select a Location:</label>
-                <select id='locations-dd' name='locations'>
+                <select onChange={props.handleChangePostLocation} id='locations-dd' name='locations'>
                     {locationOptions}
                 </select>
             <br/>
             <label for="rating">Rating:</label>
-                <select id='rating-dd' name='locations'>
-                    <option value='1'>1</option>
-                    <option value='2'>2</option>
-                    <option value='3'>3</option>
-                    <option value='4'>4</option>
-                    <option value='5'>5</option>
+                <select onChange={props.handleChangePostRating} id='rating-dd' name='locations'>
+                    {ratingOptions}
                 </select>
             <br/>
             <InputLabel>Recommendation</InputLabel>
-            <Input id='recommendation' name='recommendation'></Input>
-            <br/>
+            <Input onChange={props.handleChangeRecommendation} id='recommendation' name='recommendation'></Input>
             <br/>
             <InputLabel>Review</InputLabel>
             <br/>
-            <TextField multiline rows='4' id='review' style={{width: '100%'}} />
+            <TextField onChange={props.handleChangeReview} multiline rows='4' id='review' style={{width: '100%'}} />
             <br/>
             <Button onClick={props.handlePostForm}>Post</Button>
         </form>
