@@ -5,7 +5,6 @@ import Header2 from "./Header2";
 import Header3 from "./Header3";
 import LeftContainer from "./LeftContainer";
 import RightContainer from "./RightContainer";
-import FilterForm from "./FilterForm";
 
 class App extends Component {
   constructor(props) {
@@ -19,20 +18,26 @@ class App extends Component {
       signupMessage: null,
       posts: [],
       filteredPosts: [],
-      friends: [],
+      friends: [
+        {user_id: 1, username: 'Tom'},
+        {user_id: 2, username: 'Jerry'},
+        {user_id: 3, username: 'Marcus'},
+        {user_id: 4, username: 'Aurelius'},
+      ],
       postFilter: {
-        'location': null, 
-        'category': null, 
-        'minrating': 1
+        location: null, 
+        category: null, 
+        minrating: 1,
+        friends: [],
       },
       categories: ['Attraction', 'Food', 'Accomodation'],
       locations: ['Paris', 'Texas', 'Taylors Condo'],
       postData: {
-        location: 'Florida',
-        category: 'Adventure',
-        rating: 3,
-        recommendation: 'Canal',
-        review_text: 'Got eaten by gator :('
+        location: null,
+        category: null,
+        rating: null,
+        recommendation: null,
+        review_text: null
       }
     };
     // methods to handle signup/login
@@ -46,11 +51,17 @@ class App extends Component {
     this.handleChangeLocation = this.handleChangeLocation.bind(this);
     this.handleChangeCategory = this.handleChangeCategory.bind(this);
     this.handleChangeRating = this.handleChangeRating.bind(this);
+    this.handleChangeFriendsFilter = this.handleChangeFriendsFilter.bind(this);
     // methods for fetching posts
     this.fetch = this.fetchPosts.bind(this);
     this.filterPosts = this.filterPosts.bind(this);
     // methods for posting
     this.handlePostForm = this.handlePostForm.bind(this);
+    this.handleChangeRecommendation = this.handleChangeRecommendation.bind(this);
+    this.handleChangeReview = this.handleChangeReview.bind(this);
+    this.handleChangePostRating = this.handleChangePostRating.bind(this);
+    this.handleChangePostLocation = this.handleChangePostLocation.bind(this);
+    this.handleChangePostCategory = this.handleChangePostCategory.bind(this);
   }
 
   handleChangeFirstname() {
@@ -79,9 +90,30 @@ class App extends Component {
   handleChangeRating(e) {
     this.setState({ postFilter: {...this.state.postFilter, 'minrating': e.target.value}})
   }
+  handleChangeFriendsFilter(e, value) {
+    this.setState({ postFilter: {...this.state.postFilter, 'friends': value.map(a => a.user_id)}});
+    console.log('hand', this.state.postFilter.friends);
+    //value.map(a => String(a.user_id))
+  }
 
+  //Post form Handles
+  handleChangeRecommendation(e) {
+    this.setState({ postData: {...this.state.postData, recommendation: e.target.value}})
+  }
+  handleChangeReview(e) {
+    this.setState({ postData: {...this.state.postData, review_text: e.target.value}})
+  }
+  handleChangePostLocation(e) {
+    this.setState({ postData: {...this.state.postData, location: e.target.value}})
+  }
+  handleChangePostCategory(e) {
+    this.setState({ postData: {...this.state.postData, category: e.target.value}})
+  }
+  handleChangePostRating(e) {
+    this.setState({ postData: {...this.state.postData, rating: e.target.value}})
+  }
+  //post form data to server
   handlePostForm() {
-    //post form data to server
     const data = {
       username: this.state.username,
       location: this.state.postData.location,
@@ -105,8 +137,8 @@ class App extends Component {
         console.error('Error:', err);
       });
   }
-  signup() {
 
+  signup() {
     //post data. if successfull go to header3
     const data = { 
       firstname: this.state.firstname,
@@ -170,10 +202,8 @@ class App extends Component {
 
   componentDidMount(){
     // fetch posts only once, then fetch again every 20 seconds
-    console.log('Fetching posts ?')
     this.fetchPosts();
-    console.log(this.state.posts)
-
+    this.fetchFriends();
     //this.timer = setInterval(() => this.fetchPosts(),5000)
   }
 
@@ -200,6 +230,8 @@ class App extends Component {
   filterPosts(){
     // filter posts to show, based on user selection
     let newfilteredPosts = this.state.posts;
+    console.log('postFilter:',this.state.postFilter.friends.length>0);
+    console.log('postFilter:',this.state.postFilter.friends.includes(1));
     newfilteredPosts = newfilteredPosts.filter((post) => {
       let result = true;
       if (this.state.postFilter.location && (this.state.postFilter.location !== post.location)) {
@@ -209,6 +241,12 @@ class App extends Component {
         result = false;
       }
       if (this.state.postFilter.minrating && (this.state.minrating > post.rating)) {
+        result = false;
+      }
+      if (this.state.postFilter.friends.length > 0 
+        && !(this.state.postFilter.friends.includes(Number(post.created_by)))
+        ){
+          console.log(Number(post.created_by))
         result = false;
       }
       return result;
@@ -245,6 +283,12 @@ class App extends Component {
           </Switch>
           <div id='wrapper'>
             <LeftContainer 
+            postData={this.state.postData}
+            handleChangePostCategory={this.handleChangePostCategory}
+            handleChangePostLocation={this.handleChangePostLocation}
+            handleChangePostRating={this.handleChangePostRating}
+            handleChangeRecommendation={this.handleChangeRecommendation}
+            handleChangeReview={this.handleChangeReview}
             handlePostForm={this.handlePostForm}
             categories={this.state.categories}
             locations={this.state.locations} />
@@ -257,6 +301,8 @@ class App extends Component {
              location={this.state.postFilter.location}
              category={this.state.postFilter.category}
              minrating={this.state.postFilter.minrating}
+             friends={this.state.friends}
+             handleChangeFriendsFilter={this.handleChangeFriendsFilter}
              />
           </div>
       </div>

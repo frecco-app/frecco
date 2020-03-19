@@ -74,7 +74,6 @@ userController.verify = (req, res, next) => {
 
 // Compares plain text password on res.locals.password to hashed password
 userController.authenticate = (req, res, next) => {
-  try {
     bcrypt.compare(res.locals.password, res.locals.user.password)
       .then((result) => {
         // If password correct, move to next middleware
@@ -93,15 +92,6 @@ userController.authenticate = (req, res, next) => {
         status: 400,
         message: { err: 'Incorrect input format' }
       }));
-
-  // Formatting error
-  } catch {
-    return next({
-      log: 'Incorrect input format',
-      status: 400,
-      message: { err: 'Incorrect input format' }
-    });
-  }
 };
 
 // Removes user from users table
