@@ -19,42 +19,49 @@ function PostForm(props) {
 
     return (
         <form id='post-form'>
-            <FormControl style={{minWidth: 120}}>
-                <InputLabel>Location</InputLabel>
-                <Select value={props.postData.location ? props.postData.location : ""} onChange={props.handleChangePostLocation} id='locations-dd'>
-                    {locationOptions}
-                </Select>
-            </FormControl>
-            &nbsp;&nbsp;
-            <FormControl style={{minWidth: 120}}>
-                <InputLabel>Category</InputLabel>
-                <Select value={props.postData.category ? props.postData.category  : ""} onChange={props.handleChangePostCategory} id='locations-dd'>
-                    {categoryOptions}
-                </Select>
-            </FormControl>
-            &nbsp;&nbsp;
-            <FormControl style={{minWidth: 120}}>
-                <InputLabel>Rating</InputLabel>
-                <Select value={props.postData.rating ? props.postData.rating : ""} onChange={props.handleChangePostRating} id='locations-dd'>
-                    {ratingOptions}
-                </Select>
-            </FormControl>
-            &nbsp;&nbsp;
-            <InputLabel>Recommendation</InputLabel>
-            <TextField 
-            onChange={props.handleChangeRecommendation} 
-            id='recommendation' 
-            variant="outlined"
-            fullWidth></TextField>
-            <InputLabel>Review</InputLabel>
-            <TextField 
-            onChange={props.handleChangeReview} 
-            multiline 
-            rows='4' 
-            id='review' 
-            style={{width: '100%'}}
-            variant="outlined" />
-            <Button onClick={props.handlePostForm}>Post</Button>
+            <h3>Create a post</h3>
+            <div id='ff-dd'>
+                <FormControl style={{minWidth: 120}}>
+                    <InputLabel>Location</InputLabel>
+                    <Select value={props.postData.location ? props.postData.location : ""} onChange={props.handleChangePostLocation} id='locations-dd'>
+                        {locationOptions}
+                    </Select>
+                </FormControl>
+                &nbsp;&nbsp;
+                <FormControl style={{minWidth: 120}}>
+                    <InputLabel>Category</InputLabel>
+                    <Select value={props.postData.category ? props.postData.category  : ""} onChange={props.handleChangePostCategory} id='locations-dd'>
+                        {categoryOptions}
+                    </Select>
+                </FormControl>
+                &nbsp;&nbsp;
+                <FormControl style={{minWidth: 120}}>
+                    <InputLabel>Rating</InputLabel>
+                    <Select value={props.postData.rating ? props.postData.rating : ""} onChange={props.handleChangePostRating} id='locations-dd'>
+                        {ratingOptions}
+                    </Select>
+                </FormControl>
+                &nbsp;&nbsp;
+            </div>
+            <div id='ff-rec'>
+                <InputLabel>Recommendation</InputLabel>
+                <TextField 
+                onChange={props.handleChangeRecommendation} 
+                id='recommendation' 
+                variant="outlined"
+                fullWidth></TextField>
+            </div>
+            <div id='ff-rec'>
+                <InputLabel>Review</InputLabel>
+                <TextField 
+                onChange={props.handleChangeReview} 
+                multiline 
+                rows='4' 
+                id='review' 
+                style={{width: '100%'}}
+                variant="outlined" />
+                <Button onClick={props.handlePostForm}>Post</Button>
+            </div>
         </form>
     )
 }
