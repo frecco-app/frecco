@@ -18,7 +18,14 @@ class App extends Component {
       loginMessage: null,
       signupMessage: null,
       categories: ['Attraction', 'Food', 'Accomodation'],
-      locations: ['Paris', 'Texas', 'Taylors Condo']
+      locations: ['Paris', 'Texas', 'Taylors Condo'],
+      postData: {
+        location: 'Florida',
+        category: 'Adventure',
+        rating: 3,
+        recommendation: 'Canal',
+        review_text: 'Got eaten by gator :('
+      }
     };
     this.signup = this.signup.bind(this);
     this.login = this.login.bind(this);
@@ -43,15 +50,28 @@ class App extends Component {
   }
   handlePostForm() {
     console.log('form posted!!')
-    const formData = {
-      username: 'taylor',
-      location: 'Florida',
-      category: 'Adventure',
-      rating: 3,
-      recommenation: 'Canal',
-      review_text: 'Got eaten by gator :(',
+    //post form data to server
+    const data = {
+      username: this.state.username,
+      location: this.state.postData.location,
+      category: this.state.postData.category,
+      rating: this.state.postData.rating,
+      recommendation: this.state.postData.recommenation,
+      review_text: this.state.postData.review_text
     }
-    //post form data here
+    fetch('/users/submitreview', {
+      method: 'POST', 
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+      .then((data) => {
+        console.log('Success:', data);
+      })
+      .catch((err) => {
+        console.error('Error:', err);
+      });
   }
   signup() {
     //post data. if successfull go to header3
