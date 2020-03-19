@@ -5,7 +5,6 @@ import Header2 from "./Header2";
 import Header3 from "./Header3";
 import LeftContainer from "./LeftContainer";
 import RightContainer from "./RightContainer";
-import FilterForm from "./FilterForm";
 
 class App extends Component {
   constructor(props) {
@@ -77,7 +76,6 @@ class App extends Component {
   handleChangeRating(e) {
     this.setState({ postFilter: {...this.state.postFilter, 'minrating': e.target.value}})
   }
-
   //Post form Handles
   handleChangeRecommendation(e) {
     this.setState({ postData: {...this.state.postData, recommendation: e.target.value}})
@@ -94,9 +92,8 @@ class App extends Component {
   handleChangePostRating(e) {
     this.setState({ postData: {...this.state.postData, rating: e.target.value}})
   }
-
+  //post form data to server
   handlePostForm() {
-    //post form data to server
     const data = {
       username: this.state.username,
       location: this.state.postData.location,
@@ -232,6 +229,7 @@ class App extends Component {
           </Switch>
           <div id='wrapper'>
             <LeftContainer 
+            postData={this.state.postData}
             handleChangePostCategory={this.handleChangePostCategory}
             handleChangePostLocation={this.handleChangePostLocation}
             handleChangePostRating={this.handleChangePostRating}

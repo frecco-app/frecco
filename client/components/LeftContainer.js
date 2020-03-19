@@ -11,6 +11,7 @@ class LeftContainer extends React.Component {
                 <UserDashboard />
                 <FriendsContainer />
                 <PostForm 
+                postData={this.props.postData}
                 handleChangePostCategory={this.props.handleChangePostCategory}
                 handleChangePostLocation={this.props.handleChangePostLocation}
                 handleChangeRecommendation={this.props.handleChangeRecommendation}

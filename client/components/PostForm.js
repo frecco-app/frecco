@@ -3,6 +3,11 @@ import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import Slider from '@material-ui/core/Slider';
 
 function PostForm(props) {
     let i = 0
@@ -14,28 +19,41 @@ function PostForm(props) {
 
     return (
         <form id='post-form'>
-            <label for="category">Select a Category:</label>
-                <select onChange={props.handleChangePostCategory} id='category-dd' name='category'>
-                    {categoryOptions}
-                </select>
-            <br/>
-            <label for="locations">Select a Location:</label>
-                <select onChange={props.handleChangePostLocation} id='locations-dd' name='locations'>
+            <FormControl style={{minWidth: 120}}>
+                <InputLabel>Location</InputLabel>
+                <Select value={props.postData.location ? props.postData.location : ""} onChange={props.handleChangePostLocation} id='locations-dd'>
                     {locationOptions}
-                </select>
-            <br/>
-            <label for="rating">Rating:</label>
-                <select onChange={props.handleChangePostRating} id='rating-dd' name='locations'>
+                </Select>
+            </FormControl>
+            &nbsp;&nbsp;
+            <FormControl style={{minWidth: 120}}>
+                <InputLabel>Category</InputLabel>
+                <Select value={props.postData.category ? props.postData.category  : ""} onChange={props.handleChangePostCategory} id='locations-dd'>
+                    {categoryOptions}
+                </Select>
+            </FormControl>
+            &nbsp;&nbsp;
+            <FormControl style={{minWidth: 120}}>
+                <InputLabel>Rating</InputLabel>
+                <Select value={props.postData.rating ? props.postData.rating : ""} onChange={props.handleChangePostRating} id='locations-dd'>
                     {ratingOptions}
-                </select>
-            <br/>
+                </Select>
+            </FormControl>
+            &nbsp;&nbsp;
             <InputLabel>Recommendation</InputLabel>
-            <Input onChange={props.handleChangeRecommendation} id='recommendation' name='recommendation'></Input>
-            <br/>
+            <TextField 
+            onChange={props.handleChangeRecommendation} 
+            id='recommendation' 
+            variant="outlined"
+            fullWidth></TextField>
             <InputLabel>Review</InputLabel>
-            <br/>
-            <TextField onChange={props.handleChangeReview} multiline rows='4' id='review' style={{width: '100%'}} />
-            <br/>
+            <TextField 
+            onChange={props.handleChangeReview} 
+            multiline 
+            rows='4' 
+            id='review' 
+            style={{width: '100%'}}
+            variant="outlined" />
             <Button onClick={props.handlePostForm}>Post</Button>
         </form>
     )
