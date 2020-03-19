@@ -1,11 +1,19 @@
 import React, {Component} from "react";
+import PostForm from "./PostForm";
+import FriendsContainer from "./FriendsContainer";
+import UserDashboard from "./UserDashboard";
 
 class LeftContainer extends React.Component {
    
     render() {
         return (
             <div id='left-container'>
-                <h1>Left Container</h1>
+                <UserDashboard />
+                <FriendsContainer />
+                <PostForm 
+                handlePostForm={this.props.handlePostForm}
+                categories={this.props.categories}
+                locations={this.props.locations} />
             </div>
         )
     }

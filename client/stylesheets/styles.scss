@@ -21,6 +21,7 @@
 #right-container {
     flex: 1;
     padding: 20px;
+    background-color: rgb(218, 218, 218);
 }
 
 #left-container {
@@ -33,10 +34,25 @@
     background-color: rgb(236, 236, 236);
     padding: 10px;
     border: .5px solid grey;
-    height: 30%;
 }
 
 #feed-container {
     padding: 5px;
     border: .5px solid grey;
+}
+
+#user-dashboard {
+    background-color: rgb(236, 236, 236);
+    border: .5px solid grey;
+    margin: 10px 0px;
+    padding: 5px;
+    height: 100px;
+}
+
+#friends-container {
+    background-color: rgb(236, 236, 236);
+    border: .5px solid grey;
+    padding: 5px;
+    margin: 10px 0px;
+    height: 100px;
 }
