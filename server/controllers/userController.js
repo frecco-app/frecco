@@ -214,7 +214,7 @@ userController.follow = (req, res, next) => {
 */
 
 userController.getReviews = (req, res, next) => {
-  const { location, category, rating } = req.body;
+  //const { location, category, rating } = req.body;
   let str = `SELECT review.*, u.username from review 
             LEFT JOIN users as u ON review.created_by = u.id`; // initial query string given no constraints
   // const filterObj = { 'location': location, 'category': category, 'rating >': rating };

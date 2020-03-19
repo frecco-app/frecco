@@ -62,7 +62,7 @@ router.post('/follow',
   userController.follow,
   (req, res) => res.status(200).json('Followed'));
 
-router.get('/getreviews', userController.getReviews, (req, res) => {
+router.get('/getreview', userController.getReviews, (req, res) => {
     res.status(200).json(res.locals.reviews);
 });
 

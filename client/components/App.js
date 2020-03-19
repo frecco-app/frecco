@@ -172,6 +172,7 @@ class App extends Component {
     // fetch posts only once, then fetch again every 20 seconds
     console.log('Fetching posts ?')
     this.fetchPosts();
+    console.log(this.state.posts)
 
     //this.timer = setInterval(() => this.fetchPosts(),5000)
   }
@@ -180,12 +181,12 @@ class App extends Component {
     clearInterval(this.timer)
   }
 
-  fetchPosts(){
-    fetch('users/getreview', {
+  fetchPosts() {
+    fetch('/users/getreview', {
       headers : { 
         'Content-Type': 'application/json',
         'Accept': 'application/json'
-       },
+       }
     })
       .then((res) => res.json())
       .then((json)=> {
