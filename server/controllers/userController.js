@@ -132,14 +132,18 @@ userController.destroy = (req, res, next) => {
  */
 userController.submitReview = (req, res, next) => {
   const {
-    username, location, category, rating, recommendation, review_text
+    location, category, rating, recommendation, review_text
   } = req.body;
   const str = `INSERT INTO "review" (created_by, location, category, rating, recommendation, review_text)
                VALUES ($1, $2, $3, $4, $5, $6);`;
-  const params = [username, location, category, rating, recommendation, review_text];
+  const params = [res.locals.user_id, location, category, rating, recommendation, review_text];
   db.query(str, params)
     .then(() => next())
-    .catch((err) => next(err));
+    .catch(() => next({
+      log: 'problem with db query',
+      status: 500,
+      message: {err: 'problem with db query'}
+    }));
 };
 
 /* 
@@ -211,26 +215,19 @@ userController.follow = (req, res, next) => {
 
 userController.filterReview = (req, res, next) => {
   const { location, category, rating } = req.body;
-  let str = `SELECT review.*, u.username from review 
-    LEFT JOIN "user" as u ON review.created_by = u.id `; // initial query string given no constraints
-  // INNER JOIN follows if user only wants to see posts by people s/he follows
-  if (req.body.toggleFollowing) {
-    str += `INNER JOIN follows ON review.created_by = follows.followed_user AND follows.user_id = ${req.body.userid} `
-  }
-
-  const filterObj = { 'location': location, 'category': category, 'rating >': rating };
-  const filterArr = [location, category, rating];
-  // check if any of the elements are populated (if all the elements are NOT empty)
-  if (!filterArr.every((element) => element === '')) {
-    str += 'WHERE'; // add a WHERE to query string if detects there is a constraint passed
-    // filters through object and concatenates e.g. "location = 'London' AND" if value is not empty
-    for (let key in filterObj) {
-      if (filterObj[key] !== '') str+= ` ${key}= '${filterObj[key]}' AND`
-    };
-    str = str.slice(0, -4); // removes trailing 'AND'
-  }
-  str += 'ORDER BY likes DESC;'; // appends ranking filter by highest likes and final semicolon necessary for query command
-
+  let str = 'SELECT * from review '; // initial query string given no constraints
+  // const filterObj = { 'location': location, 'category': category, 'rating >': rating };
+  // const filterArr = [location, category, rating];
+  // // check if any of the elements are populated (if all the elements are NOT empty)
+  // if (!filterArr.every((element) => element === '')) {
+  //   str += 'WHERE'; // add a WHERE to query string if detects there is a constraint passed
+  //   // filters through object and concatenates e.g. "location = 'London' AND" if value is not empty
+  //   for (let key in filterObj) {
+  //     if (filterObj[key] !== '') str+= ` ${key}= '${filterObj[key]}' AND`
+  //   };
+  //   str = str.slice(0, -4); // removes trailing 'AND'
+  // }
+  // str += 'ORDER BY likes DESC;'; // appends ranking filter by highest likes and final semicolon necessary for query command
   db.query(str)
     .then((data) => {
       res.locals.reviews = data.rows;

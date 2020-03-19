@@ -11,25 +11,29 @@
 }
 
 #filter-form {
-    height: 10%;
-    background-color: cornflowerblue;
+    height: auto;
+    padding: 10px;
+    background-color: #ecf0f1;
+    display: flex;
+    align-content: center;
+    justify-content: center;
 }
 #right-container {
     flex: 1;
-    background-color: lightblue;
     padding: 20px;
 }
 
 #left-container {
     flex: 1;
-    background-color: rgb(101, 134, 145);
+    background-color: rgb(150, 150, 150);
     padding: 20px;
 }
    
 #post-form {
-    padding: 5px;
+    background-color: rgb(236, 236, 236);
+    padding: 10px;
     border: .5px solid grey;
-    height: 20%;
+    height: 30%;
 }
 
 #feed-container {

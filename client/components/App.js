@@ -17,7 +17,24 @@ class App extends Component {
       lastname: null,
       loginMessage: null,
       signupMessage: null,
+      posts: [],
+      filteredPosts: [],
+      postFilter: {
+        'location': null, 
+        'category': null, 
+        'minrating': 1
+      },
+      categories: ['Attraction', 'Food', 'Accomodation'],
+      locations: ['Paris', 'Texas', 'Taylors Condo'],
+      postData: {
+        location: 'Florida',
+        category: 'Adventure',
+        rating: 3,
+        recommendation: 'Canal',
+        review_text: 'Got eaten by gator :('
+      }
     };
+    // methods to handle signup/login
     this.signup = this.signup.bind(this);
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
@@ -25,6 +42,14 @@ class App extends Component {
     this.handleChangeLastname = this.handleChangeLastname.bind(this);
     this.handleChangeUsername = this.handleChangeUsername.bind(this);
     this.handleChangePassword = this.handleChangePassword.bind(this);
+    this.handleChangeLocation = this.handleChangeLocation.bind(this);
+    this.handleChangeCategory = this.handleChangeCategory.bind(this);
+    this.handleChangeRating = this.handleChangeRating.bind(this);
+    // methods for fetching posts
+    this.fetch = this.fetchPosts.bind(this);
+    this.filterPosts = this.filterPosts.bind(this);
+    // methods for posting
+    this.handlePostForm = this.handlePostForm.bind(this);
   }
   handleChangeFirstname() {
     this.setState({ firstname: event.target.value });
@@ -38,6 +63,39 @@ class App extends Component {
   handleChangePassword() {
     this.setState({ password: event.target.value });
   }
+  handleChangeLocation(e) {
+    this.setState({ postFilter: {...this.state.postFilter, 'location': e.target.value}})
+  }
+  handleChangeCategory(e) {
+    this.setState({ postFilter: {...this.state.postFilter, 'category': e.target.value}})
+  }
+  handleChangeRating(e) {
+    this.setState({ postFilter: {...this.state.postFilter, 'minrating': e.target.value}})
+  }
+  handlePostForm() {
+    //post form data to server
+    const data = {
+      username: this.state.username,
+      location: this.state.postData.location,
+      category: this.state.postData.category,
+      rating: this.state.postData.rating,
+      recommendation: this.state.postData.recommendation,
+      review_text: this.state.postData.review_text
+    }
+    fetch('/users/submitreview', {
+      method: 'POST', 
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+      .then((data) => {
+        console.log('Success:', data);
+      })
+      .catch((err) => {
+        console.error('Error:', err);
+      });
+  }
   signup() {
     //post data. if successfull go to header3
     const data = { 
@@ -46,7 +104,6 @@ class App extends Component {
       username: this.state.username,
       password: this.state.password,
     };
-    console.log('signup data object',data);
     fetch('/users/signup', { 
       method:'POST',
       headers: {
@@ -65,13 +122,11 @@ class App extends Component {
         }
       });
   }
-
   login() {
     const data = { 
       username: this.state.username,
       password: this.state.password
     };
-    console.log('login fired')
     fetch('/users/login', { 
       method:'POST',
       headers: {
@@ -90,7 +145,6 @@ class App extends Component {
         }
       });
   }
-
   logout(){
     this.setState({
       username: null,
@@ -100,7 +154,48 @@ class App extends Component {
     })
     this.props.history.push('/')
   }
-
+  componentDidMount(){
+    // fetch posts only once, then fetch again every 20 seconds
+    this.fetchPosts();
+    //this.timer = setInterval(() => this.fetchPosts(),5000)
+  }
+  componentWillUnmount(){
+    clearInterval(this.timer)
+  }
+  fetchPosts(){
+    fetch('users/filterreview', {
+      method: 'POST',
+      headers : { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+       }
+    })
+      .then((res) => res.json())
+      .then((json)=> {
+        this.setState({
+          posts: json, 
+          filteredPosts: json
+        });
+      })
+  }
+  filterPosts(){
+    // filter posts to show, based on user selection
+    let newfilteredPosts = this.state.posts;
+    newfilteredPosts = newfilteredPosts.filter((post) => {
+      let result = true;
+      if (this.state.postFilter.location && (this.state.postFilter.location !== post.location)) {
+        result = false;
+      }
+      if (this.state.postFilter.category && (this.state.postFilter.category !== post.category)) {
+        result = false;
+      }
+      if (this.state.postFilter.minrating && (this.state.minrating > post.rating)) {
+        result = false;
+      }
+      return result;
+    });
+    this.setState( { filteredPosts: newfilteredPosts });
+  }
   render() {
     return (
       <div>
@@ -112,10 +207,21 @@ class App extends Component {
               <Route exact path='/header3' render={()=> 
                 <Header3 message={this.state.signupMessage} signup={this.signup} handleChangeUsername={this.handleChangeUsername} handleChangePassword={this.handleChangePassword} handleChangeFirstname={this.handleChangeFirstname} handleChangeLastname={this.handleChangeLastname}/>}/>
           </Switch>
-          <FilterForm />
+          <FilterForm 
+            filterPosts={this.filterPosts}
+            handleChangeCategory={this.handleChangeCategory}
+            handleChangeLocation={this.handleChangeLocation}
+            handleChangeRating={this.handleChangeRating}
+            location={this.state.postFilter.location}
+            category={this.state.postFilter.category}
+            minrating={this.state.postFilter.minrating}
+          />
           <div id='wrapper'>
             <LeftContainer />
-            <RightContainer />
+            <RightContainer  
+            handlePostForm={this.handlePostForm}
+            categories={this.state.categories}
+            locations={this.state.locations} />
           </div>
       </div>
     );
