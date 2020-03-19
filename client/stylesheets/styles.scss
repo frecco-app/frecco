@@ -15,13 +15,20 @@
     padding: 10px;
     background-color: #ecf0f1;
     display: flex;
-    align-content: center;
+    align-self: bottom;
     justify-content: center;
 }
+#filter-form > * {
+    align-self: flex-end
+} 
 #right-container {
     flex: 1;
     padding: 20px;
     background-color: rgb(218, 218, 218);
+}
+
+#header1, #header2, #header3 {
+    margin: 5px;
 }
 
 #left-container {
@@ -40,6 +47,33 @@
     padding: 5px;
     border: .5px solid grey;
 }
+
+.feed-item {
+    padding: 5px;
+    border: .5px solid grey;
+}
+
+.feed-item-top-container {
+    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.feed-item-prop {
+    padding: 5px;
+}
+
+.center {
+    display: table;
+    margin: auto;
+}
+
+.review-text-box {
+    padding: 20px;
+    border: 1px solid grey;
+}
+
+
 
 #user-dashboard {
     background-color: rgb(236, 236, 236);
