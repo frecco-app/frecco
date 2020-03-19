@@ -19,11 +19,17 @@ class App extends Component {
       signupMessage: null,
       posts: [],
       filteredPosts: [],
-      friends: [],
+      friends: [
+        {user_id: 1, username: 'Tom'},
+        {user_id: 2, username: 'Jerry'},
+        {user_id: 3, username: 'Marcus'},
+        {user_id: 4, username: 'Aurelius'},
+      ],
       postFilter: {
-        'location': null, 
-        'category': null, 
-        'minrating': 1
+        location: null, 
+        category: null, 
+        minrating: 1,
+        friends: [],
       },
       categories: ['Attraction', 'Food', 'Accomodation'],
       locations: ['Paris', 'Texas', 'Taylors Condo'],
@@ -46,6 +52,7 @@ class App extends Component {
     this.handleChangeLocation = this.handleChangeLocation.bind(this);
     this.handleChangeCategory = this.handleChangeCategory.bind(this);
     this.handleChangeRating = this.handleChangeRating.bind(this);
+    this.handleChangeFriendsFilter = this.handleChangeFriendsFilter.bind(this);
     // methods for fetching posts
     this.fetch = this.fetchPosts.bind(this);
     this.filterPosts = this.filterPosts.bind(this);
@@ -79,6 +86,11 @@ class App extends Component {
   handleChangeRating(e) {
     this.setState({ postFilter: {...this.state.postFilter, 'minrating': e.target.value}})
   }
+  handleChangeFriendsFilter(e, value) {
+    this.setState({ postFilter: {...this.state.postFilter, 'friends': value.map(a => a.user_id)}});
+    console.log('hand', this.state.postFilter.friends);
+    //value.map(a => String(a.user_id))
+  }
 
   handlePostForm() {
     //post form data to server
@@ -105,8 +117,8 @@ class App extends Component {
         console.error('Error:', err);
       });
   }
-  signup() {
 
+  signup() {
     //post data. if successfull go to header3
     const data = { 
       firstname: this.state.firstname,
@@ -170,9 +182,8 @@ class App extends Component {
 
   componentDidMount(){
     // fetch posts only once, then fetch again every 20 seconds
-    console.log('Fetching posts ?')
     this.fetchPosts();
-
+    //this.fetchFriends();
     //this.timer = setInterval(() => this.fetchPosts(),5000)
   }
 
@@ -181,7 +192,7 @@ class App extends Component {
   }
 
   fetchPosts(){
-    fetch('users/getreview', {
+    fetch('users/getreviews', {
       headers : { 
         'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -199,6 +210,8 @@ class App extends Component {
   filterPosts(){
     // filter posts to show, based on user selection
     let newfilteredPosts = this.state.posts;
+    console.log('postFilter:',this.state.postFilter.friends.length>0);
+    console.log('postFilter:',this.state.postFilter.friends.includes(1));
     newfilteredPosts = newfilteredPosts.filter((post) => {
       let result = true;
       if (this.state.postFilter.location && (this.state.postFilter.location !== post.location)) {
@@ -208,6 +221,12 @@ class App extends Component {
         result = false;
       }
       if (this.state.postFilter.minrating && (this.state.minrating > post.rating)) {
+        result = false;
+      }
+      if (this.state.postFilter.friends.length > 0 
+        && !(this.state.postFilter.friends.includes(Number(post.created_by)))
+        ){
+          console.log(Number(post.created_by))
         result = false;
       }
       return result;
@@ -256,6 +275,8 @@ class App extends Component {
              location={this.state.postFilter.location}
              category={this.state.postFilter.category}
              minrating={this.state.postFilter.minrating}
+             friends={this.state.friends}
+             handleChangeFriendsFilter={this.handleChangeFriendsFilter}
              />
           </div>
       </div>

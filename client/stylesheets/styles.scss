@@ -15,9 +15,12 @@
     padding: 10px;
     background-color: #ecf0f1;
     display: flex;
-    align-content: center;
+    align-self: bottom;
     justify-content: center;
 }
+#filter-form > * {
+    align-self: flex-end
+} 
 #right-container {
     flex: 1;
     padding: 20px;

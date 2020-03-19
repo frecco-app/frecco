@@ -14,17 +14,17 @@ function PostForm(props) {
 
     return (
         <form id='post-form'>
-            <label for="category">Select a Category:</label>
+            <label htmlFor="category">Select a Category:</label>
                 <select id='category-dd' name='category'>
                     {categoryOptions}
                 </select>
             <br/>
-            <label for="locations">Select a Location:</label>
+            <label htmlFor="locations">Select a Location:</label>
                 <select id='locations-dd' name='locations'>
                     {locationOptions}
                 </select>
             <br/>
-            <label for="rating">Rating:</label>
+            <label htmlFor="rating">Rating:</label>
                 <select id='rating-dd' name='locations'>
                     <option value='1'>1</option>
                     <option value='2'>2</option>
