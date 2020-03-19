@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 const Header3 = (props) => {
   return (
     <div id="header3">
+        <h2>ExploreGenie</h2>
         <input id="firstname" placeholder="First Name" onChange={props.handleChangeFirstname}/>
         <input id="lastname" placeholder="Last Name" onChange={props.handleChangeLastname}/>
         <input id="username" placeholder="Username" onChange={props.handleChangeUsername}/>

@@ -7,8 +7,10 @@ class RightContainer extends React.Component {
     render() {
         return (
             <div id='right-container'>
-                <h1>RightContainer</h1>
-                <PostForm />
+                <PostForm 
+                handlePostForm={this.props.handlePostForm}
+                categories={this.props.categories}
+                locations={this.props.locations} />
                 <FeedContainer />
             </div>
             

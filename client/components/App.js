@@ -17,6 +17,8 @@ class App extends Component {
       lastname: null,
       loginMessage: null,
       signupMessage: null,
+      categories: ['Attraction', 'Food', 'Accomodation'],
+      locations: ['Paris', 'Texas', 'Taylors Condo']
     };
     this.signup = this.signup.bind(this);
     this.login = this.login.bind(this);
@@ -25,6 +27,7 @@ class App extends Component {
     this.handleChangeLastname = this.handleChangeLastname.bind(this);
     this.handleChangeUsername = this.handleChangeUsername.bind(this);
     this.handleChangePassword = this.handleChangePassword.bind(this);
+    this.handlePostForm = this.handlePostForm.bind(this);
   }
   handleChangeFirstname() {
     this.setState({ firstname: event.target.value });
@@ -37,6 +40,18 @@ class App extends Component {
   }
   handleChangePassword() {
     this.setState({ password: event.target.value });
+  }
+  handlePostForm() {
+    console.log('form posted!!')
+    const formData = {
+      username: 'taylor',
+      location: 'Florida',
+      category: 'Adventure',
+      rating: 3,
+      recommenation: 'Canal',
+      review_text: 'Got eaten by gator :(',
+    }
+    //post form data here
   }
   signup() {
     //post data. if successfull go to header3
@@ -115,7 +130,10 @@ class App extends Component {
           <FilterForm />
           <div id='wrapper'>
             <LeftContainer />
-            <RightContainer />
+            <RightContainer  
+            handlePostForm={this.handlePostForm}
+            categories={this.state.categories}
+            locations={this.state.locations} />
           </div>
       </div>
     );

@@ -5,6 +5,7 @@ import { Link, withRouter } from 'react-router-dom';
 const Header1 = (props) => {
   return (
     <div id="header1">
+        <h2>ExploreGenie</h2>
         <input id="username" placeholder="username" onChange={props.handleChangeUsername}/>
         <input id="password" login="login" onChange={props.handleChangePassword}/>
         <button id="btn-login" onClick={props.login}>Login</button>
