@@ -13,7 +13,9 @@ function FeedItem(props) {
                 <span className='feed-item-prop'> Reviewed by: {props.username} </span>
                 <span className='feed-item-prop'> Rating: {props.rating} </span>
             </div>
-            {props.review_text}           
+            <div className = 'review-text-box'>
+            {props.review_text}
+            </div>
         </div>
     )
 
