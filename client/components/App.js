@@ -217,11 +217,11 @@ class App extends Component {
             minrating={this.state.postFilter.minrating}
           />
           <div id='wrapper'>
-            <LeftContainer />
-            <RightContainer  
+            <LeftContainer 
             handlePostForm={this.handlePostForm}
             categories={this.state.categories}
             locations={this.state.locations} />
+            <RightContainer />
           </div>
       </div>
     );
