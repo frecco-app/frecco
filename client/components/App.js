@@ -23,6 +23,15 @@ class App extends Component {
         'location': null, 
         'category': null, 
         'minrating': 1
+      },
+      categories: ['Attraction', 'Food', 'Accomodation'],
+      locations: ['Paris', 'Texas', 'Taylors Condo'],
+      postData: {
+        location: 'Florida',
+        category: 'Adventure',
+        rating: 3,
+        recommendation: 'Canal',
+        review_text: 'Got eaten by gator :('
       }
     };
     // methods to handle signup/login
@@ -39,6 +48,8 @@ class App extends Component {
     // methods for fetching posts
     this.fetch = this.fetchPosts.bind(this);
     this.filterPosts = this.filterPosts.bind(this);
+    // methods for posting
+    this.handlePostForm = this.handlePostForm.bind(this);
   }
   handleChangeFirstname() {
     this.setState({ firstname: event.target.value });
@@ -60,6 +71,31 @@ class App extends Component {
   }
   handleChangeRating(e) {
     this.setState({ postFilter: {...this.state.postFilter, 'minrating': e.target.value}})
+  }
+  handlePostForm() {
+    console.log('form posted!!')
+    //post form data to server
+    const data = {
+      username: this.state.username,
+      location: this.state.postData.location,
+      category: this.state.postData.category,
+      rating: this.state.postData.rating,
+      recommendation: this.state.postData.recommenation,
+      review_text: this.state.postData.review_text
+    }
+    fetch('/users/submitreview', {
+      method: 'POST', 
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+      .then((data) => {
+        console.log('Success:', data);
+      })
+      .catch((err) => {
+        console.error('Error:', err);
+      });
   }
   signup() {
     //post data. if successfull go to header3
@@ -87,7 +123,6 @@ class App extends Component {
         }
       });
   }
-
   login() {
     const data = { 
       username: this.state.username,
@@ -160,7 +195,6 @@ class App extends Component {
     });
     this.setState( {filteredPosts: newfilteredPosts});
     console.log(this.state.filteredPosts)
-
   }
   render() {
     return (
@@ -184,7 +218,10 @@ class App extends Component {
           />
           <div id='wrapper'>
             <LeftContainer />
-            <RightContainer />
+            <RightContainer  
+            handlePostForm={this.handlePostForm}
+            categories={this.state.categories}
+            locations={this.state.locations} />
           </div>
       </div>
     );
