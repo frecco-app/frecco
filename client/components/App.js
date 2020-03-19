@@ -207,21 +207,20 @@ class App extends Component {
               <Route exact path='/header3' render={()=> 
                 <Header3 message={this.state.signupMessage} signup={this.signup} handleChangeUsername={this.handleChangeUsername} handleChangePassword={this.handleChangePassword} handleChangeFirstname={this.handleChangeFirstname} handleChangeLastname={this.handleChangeLastname}/>}/>
           </Switch>
-          <FilterForm 
-            filterPosts={this.filterPosts}
-            handleChangeCategory={this.handleChangeCategory}
-            handleChangeLocation={this.handleChangeLocation}
-            handleChangeRating={this.handleChangeRating}
-            location={this.state.postFilter.location}
-            category={this.state.postFilter.category}
-            minrating={this.state.postFilter.minrating}
-          />
           <div id='wrapper'>
             <LeftContainer 
             handlePostForm={this.handlePostForm}
             categories={this.state.categories}
             locations={this.state.locations} />
-            <RightContainer />
+            <RightContainer 
+             filterPosts={this.filterPosts}
+             handleChangeCategory={this.handleChangeCategory}
+             handleChangeLocation={this.handleChangeLocation}
+             handleChangeRating={this.handleChangeRating}
+             location={this.state.postFilter.location}
+             category={this.state.postFilter.category}
+             minrating={this.state.postFilter.minrating}
+             />
           </div>
       </div>
     );
