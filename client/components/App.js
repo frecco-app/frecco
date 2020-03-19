@@ -5,7 +5,6 @@ import Header2 from "./Header2";
 import Header3 from "./Header3";
 import LeftContainer from "./LeftContainer";
 import RightContainer from "./RightContainer";
-import FilterForm from "./FilterForm";
 
 class App extends Component {
   constructor(props) {
@@ -34,11 +33,11 @@ class App extends Component {
       categories: ['Attraction', 'Food', 'Accomodation'],
       locations: ['Paris', 'Texas', 'Taylors Condo'],
       postData: {
-        location: 'Florida',
-        category: 'Adventure',
-        rating: 3,
-        recommendation: 'Canal',
-        review_text: 'Got eaten by gator :('
+        location: null,
+        category: null,
+        rating: null,
+        recommendation: null,
+        review_text: null
       }
     };
     // methods to handle signup/login
@@ -58,6 +57,11 @@ class App extends Component {
     this.filterPosts = this.filterPosts.bind(this);
     // methods for posting
     this.handlePostForm = this.handlePostForm.bind(this);
+    this.handleChangeRecommendation = this.handleChangeRecommendation.bind(this);
+    this.handleChangeReview = this.handleChangeReview.bind(this);
+    this.handleChangePostRating = this.handleChangePostRating.bind(this);
+    this.handleChangePostLocation = this.handleChangePostLocation.bind(this);
+    this.handleChangePostCategory = this.handleChangePostCategory.bind(this);
   }
 
   handleChangeFirstname() {
@@ -92,8 +96,24 @@ class App extends Component {
     //value.map(a => String(a.user_id))
   }
 
+  //Post form Handles
+  handleChangeRecommendation(e) {
+    this.setState({ postData: {...this.state.postData, recommendation: e.target.value}})
+  }
+  handleChangeReview(e) {
+    this.setState({ postData: {...this.state.postData, review_text: e.target.value}})
+  }
+  handleChangePostLocation(e) {
+    this.setState({ postData: {...this.state.postData, location: e.target.value}})
+  }
+  handleChangePostCategory(e) {
+    this.setState({ postData: {...this.state.postData, category: e.target.value}})
+  }
+  handleChangePostRating(e) {
+    this.setState({ postData: {...this.state.postData, rating: e.target.value}})
+  }
+  //post form data to server
   handlePostForm() {
-    //post form data to server
     const data = {
       username: this.state.username,
       location: this.state.postData.location,
@@ -263,6 +283,12 @@ class App extends Component {
           </Switch>
           <div id='wrapper'>
             <LeftContainer 
+            postData={this.state.postData}
+            handleChangePostCategory={this.handleChangePostCategory}
+            handleChangePostLocation={this.handleChangePostLocation}
+            handleChangePostRating={this.handleChangePostRating}
+            handleChangeRecommendation={this.handleChangeRecommendation}
+            handleChangeReview={this.handleChangeReview}
             handlePostForm={this.handlePostForm}
             categories={this.state.categories}
             locations={this.state.locations} />
