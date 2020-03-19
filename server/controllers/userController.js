@@ -3,17 +3,8 @@ const db = require('../models/models.js');
 
 const userController = {};
 
-/*
- * Expects format of req.body to be be:
- *   {
- *     "firstname":
- *     "lastname":
- *     "username":
- *     "password": <plain text>
- *   }
- */
+// Encrypts user password
 userController.encrypt = (req, res, next) => {
-  console.log("encrypt: req.body",req.body);
   const { password } = req.body;
 
   bcrypt.hash(password, 10)
@@ -21,68 +12,111 @@ userController.encrypt = (req, res, next) => {
       res.locals.user = { ...req.body, password: hash };
       return next();
     })
-    .catch((err) => next(err)); // For bcrypt internal errors
+
+    // Internal bcrypt error
+    .catch(() => next({
+      log: 'Incorrect input format',
+      status: 400,
+      message: { err: 'Incorrect input format' }
+    }));
 };
 
-/*
- * Expects format of req.body and res.locals.user to both be:
- *   {
- *     "firstname":
- *     "lastname":
- *     "username":
- *     "password":
- *   }
- *   Where "password" is plain text in req.body and hashed in res.locals.user
- */
-userController.authenticate = (req, res, next) => {
-  bcrypt.compare(req.body.password, res.locals.user.password)
-    .then((result) => {
-      console.log('hello');
-      // If password correct, move to next middleware
-      if (result) return next();
+// Adds user to user table
+userController.create = (req, res, next) => {
+  const {
+    firstname, lastname, username, password
+  } = res.locals.user;
 
-      // If password incorrect, call global error handler
+  const queryStr = `INSERT INTO users (firstname, lastname, username, password)
+                    VALUES ($1, $2, $3, $4)`;
+  const params = [firstname, lastname, username, password];
+
+  db.query(queryStr, params)
+    .then(() => next())
+    .catch(() => next({
+      log: 'Username already exists',
+      status: 400,
+      message: { err: 'Username already exists' }
+    }));
+};
+
+// Verifies that user exists and returns row from users table
+userController.verify = (req, res, next) => {
+  const { username, password } = req.body;
+
+  const str = 'SELECT * from users WHERE username = $1;';
+  const params = [username];
+
+  db.query(str, params)
+    .then((data) => {
+      // If user exists, send data to next middleware
+      if (data.rows !== []) {
+        [res.locals.user] = data.rows;
+        res.locals.password = password;
+        return next();
+      }
+
+      // If user does not exist, call global error handler
       return next({
         log: 'Username or password incorrect',
         status: 400,
         message: { err: 'Username or password incorrect' }
       });
     })
-    .catch((err) => next(err)); // For bcrypt internal errors
+
+    // Internal server error
+    .catch(() => next({
+      log: 'A problem occured verifying user',
+      status: 500,
+      message: { err: 'A problem occured verifying user' }
+    }));
 };
 
-/*
-* Creates the user and saves in database
-*/
+// Compares plain text password on res.locals.password to hashed password
+userController.authenticate = (req, res, next) => {
+  try {
+    bcrypt.compare(res.locals.password, res.locals.user.password)
+      .then((result) => {
+        // If password correct, move to next middleware
+        if (result) return next();
+        // If password incorrect, call global error handler
+        return next({
+          log: 'Username or password incorrect',
+          status: 400,
+          message: { err: 'Username or password incorrect' }
+        });
+      })
 
-userController.createUser = (req, res, next) => {
-  const { lastname, firstname, username } = req.body;
-  const { password } = res.locals.user;
-  const str = 'INSERT into "user" (lastname, firstname, username, password) VALUES ($1, $2, $3, $4);';
-  const params = [lastname, firstname, username, password];
-  db.query(str, params)
-    .then((data) => {
-      return next();
-    })
-    .catch((err) => next(err));
+      // Formatting error
+      .catch(() => next({
+        log: 'Incorrect input format',
+        status: 400,
+        message: { err: 'Incorrect input format' }
+      }));
+
+  // Formatting error
+  } catch {
+    return next({
+      log: 'Incorrect input format',
+      status: 400,
+      message: { err: 'Incorrect input format' }
+    });
+  }
 };
 
-/*
-* Verifies the user
-*/
+// Removes user from users table
+userController.destroy = (req, res, next) => {
+  const queryStr = `DELETE FROM users
+                    WHERE id = $1`;
+  const params = [res.locals.user_id];
 
-userController.getUser = (req, res, next) => {
-  console.log('userController.getuser:', req.body);
-  const { username } = req.body;
-  const str = 'SELECT * from "user" WHERE username = $1;';
-  const params = [username];
-  db.query(str, params)
-    .then((data) => {
-      res.locals.user = { 'password': data.rows[0].password };
-      // console.log(res.locals.user);
-      return next();
-    })
-    .catch((err) => next(err));
+  db.query(queryStr, params)
+    .then(() => next())
+    .catch(() => next({
+      log: 'A problem occured removing account',
+      status: 500,
+      message: { err: 'A problem occured removing account' }
+    }));
 };
 
 /* Expects format of req.body and to  be:
@@ -97,13 +131,14 @@ userController.getUser = (req, res, next) => {
  *   }
  */
 userController.submitReview = (req, res, next) => {
-  const { username, location, category, rating, recommendation, review_text } = req.body;
-  const str = 'INSERT INTO "review" (created_by, location, category, rating, recommendation, review_text) VALUES ($1, $2, $3, $4, $5, $6);';
+  const {
+    username, location, category, rating, recommendation, review_text
+  } = req.body;
+  const str = `INSERT INTO "review" (created_by, location, category, rating, recommendation, review_text)
+               VALUES ($1, $2, $3, $4, $5, $6);`;
   const params = [username, location, category, rating, recommendation, review_text];
   db.query(str, params)
-    .then((data) => {
-      return next();
-    })
+    .then(() => next())
     .catch((err) => next(err));
 };
 
@@ -126,9 +161,7 @@ userController.deleteReview = (req, res, next) => {
   const { id } = req.body;
   const str = `DELETE from "review" WHERE id = ${id};`;
   db.query(str)
-    .then((data) => {
-      return next();
-    })
+    .then(() => next())
     .catch((err) => next(err));
 };
 
@@ -139,10 +172,9 @@ userController.deleteReview = (req, res, next) => {
  *  }
  *
  * However you want to get to to us - could be req.params in case 1, req.body in case 2 below
- *    1. user1 can visit user2's profile. on user2's profile, there's a "follow" button (if user1 visits profile/user2, serve SELECT * from review WHERE created_by = user2)
+ *    1. user1 can visit user2's profile. on user2's profile, there's a "follow" button (if user1
+ *       visits profile/user2, serve SELECT * from review WHERE created_by = user2)
  *    2. or is there just a search bar on user1's homepage to follow  user2?
- *
- *
  */
 
 userController.follow = (req, res, next) => {
@@ -150,9 +182,7 @@ userController.follow = (req, res, next) => {
   const str = 'INSERT INTO "follows" (user_id, followed_user) VALUES ($1, $2);';
   const params = [user_id, followedUser];
   db.query(str, params)
-    .then((data) => {
-      return next();
-    })
+    .then(() => next())
     .catch((err) => next(err));
 };
 
@@ -163,7 +193,8 @@ userController.follow = (req, res, next) => {
  *     "location": , eg paris 
  *     "category": , eg attraction
  *     "rating": integer from 1 to 5,
- *
+ *      "userid": <- this might be in cookies or something,
+ *     "toggleFollowing": has a value if user only wants to see posts by those s/he is following, otherwise empty
  *   }
  * Returns an array of review posts with multiple objects in format of:
  *   {

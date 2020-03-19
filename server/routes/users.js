@@ -1,57 +1,71 @@
-const express = require ('express');
+const express = require('express');
+
 const router = express.Router();
 const userController = require('../controllers/userController.js');
+const cookieController = require('../controllers/cookieController.js');
+const sessionController = require('../controllers/sessionController.js');
 
-
+router.get('/', (req, res) => {
+  res.sendStatus(204);
+});
 
 /*
-* Sign up for new user; expects res.locals.newUser to be 
+ * Sign up for new user
+ * Expects req.body to be:
  *   {
  *     "firstname":
  *     "lastname":
  *     "username":
  *     "password": <plain text>
- *   }  
- * 
-*/
+ *   }
+ */
+router.post('/signup',
+  userController.encrypt,
+  userController.create,
+  (req, res) => res.redirect(307, './login'));
 
-router.post('/signup', userController.encrypt, userController.createUser, (req,res) => {
-  res.sendStatus(200);
-  // Render some sort of success message?
-});
+/*
+ * Login user
+ * Expects req.body to be:
+ *   {
+ *     "username":
+ *     "password": <plain text>
+ *   }
+ */
+router.post('/login',
+  userController.verify,
+  userController.authenticate,
+  cookieController.encrypt,
+  cookieController.setSSID,
+  sessionController.start,
+  (req, res) => res.sendStatus(204));
 
-router.post('/login', userController.getUser, userController.authenticate, (req,res) => {
-  res.status(200).json(res.locals.user.password);
-//   res.redirect('/loginpage') //
-  // Render some sort of success message?
-});
+// Endpoint for user logout
+router.post('/logout',
+  sessionController.verify,
+  sessionController.end,
+  cookieController.removeSSID,
+  (req, res) => res.sendStatus(204));
 
-router.post('/submitreview', userController.submitReview, (req, res) => {
-  res.status(200).json('Submitted.');
-});
+// Endpoint for user delete
+router.post('/delete',
+  sessionController.verify,
+  userController.destroy,
+  (req, res) => res.redirect(307, './logout'));
 
-router.post('/deletereview', userController.deleteReview, (req, res) => {
-  res.status(200).json('Deleted.');
-});
+router.post('/submitreview',
+  userController.submitReview,
+  (req, res) => res.status(200).json('Submitted.'));
 
-
-router.post('/follow', userController.follow, (req, res) => {
-  res.status(200).json('Followed');
-});
-
-router.post('/filterreview', userController.filterReview, (req, res) => {
-  res.status(200).json(res.locals.reviews);
-});
-
-router.get('/', (req, res) => {
-  res.sendStatus(200);
-});
+router.post('/follow',
+  userController.follow,
+  (req, res) => res.status(200).json('Followed'));
 
 router.use((err, req, res, next) => {
   const defaultErr = {
     log: 'Express error handler caught unknown middleware error',
-    status: 400,
-    message: { err: 'An error occurred' }, 
+    status: 500,
+    message: { err: 'An error occurred' }
   };
   const errorObj = Object.assign(defaultErr, err);
   return res.status(errorObj.status).send(errorObj.message);
