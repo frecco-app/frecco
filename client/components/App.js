@@ -284,7 +284,7 @@ class App extends Component {
     })
       .then((res) => {
         res.json()
-        // /login route sends back a response body that is the user's firstname
+        // /login route sends back a response body that is an array with user id, username, and firstname
           .then((json) => {
             if (!res.ok) {
               console.log('login error');
@@ -295,7 +295,7 @@ class App extends Component {
               this.setState({
                 username: data.username,
                 password: data.password,
-                firstname: json,
+                firstname: json[2],
               });
               this.props.history.push('/header2');
             }
@@ -368,7 +368,7 @@ class App extends Component {
   }
 
   fetchFriends() {
-    fetch('users/getFriends', {
+    fetch('users/getfriends', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

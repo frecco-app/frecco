@@ -34,13 +34,15 @@ router.post('/signup',
  *     "password": <plain text>
  *   }
  */
-router.posct('/login',
+router.post('/login',
   userController.verify,
   userController.authenticate,
   cookieController.encrypt,
   cookieController.setSSID,
   sessionController.start,
-  (req, res) => res.status(200).json(res.locals.user.firstname)
+  (req, res) => res.status(200).json([
+    res.locals.user.id, res.locals.user.username, res.locals.user.firstname
+  ])
 );
 
 // Endpoint for user logout
