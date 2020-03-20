@@ -41,8 +41,8 @@ class App extends Component {
         minrating: 1,
         friends: []
       },
-      categories: ['Attraction', 'Food', 'Accomodation'],
-      locations: ['Paris', 'Texas', 'Taylors Condo'],
+      categories: ['Attraction', 'Food', 'Accomodation', 'Activity'],
+      locations: [],
       postData: {
         location: null,
         category: null,
@@ -410,6 +410,9 @@ class App extends Component {
              minrating={this.state.postFilter.minrating}
              friends={this.state.friends}
              handleChangeFriendsFilter={this.handleChangeFriendsFilter}
+             categories={this.state.categories} 
+             locations={this.state.locations}
+             postFilter={this.state.postFilter}
              />
           </div>
       </Fragment>
