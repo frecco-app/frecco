@@ -239,6 +239,7 @@ userController.deleteReview = (req, res, next) => {
 userController.follow = (req, res, next) => {
   const { userId } = res.locals;
   const { followedUser } = req.body;
+  console.log(req.body);
   const str = `INSERT INTO follows (user_id, followed_user)
                VALUES ($1, $2)`;
   const params = [userId, followedUser];

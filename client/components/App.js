@@ -70,20 +70,13 @@ class App extends Component {
   }
 
   handleChangeFollow(e, value) {
-    this.setState({ follow_user: value.user_id});
+    this.setState({ follow_user: value });
     console.log([...this.state.friends, value]);
-    // add to this.state.friends
-    this.setState({ friends: [...this.state.friends, value]});
-    // delete from this.state.potentialFollows
-    this.setState({ potentialFollows: [...this.state.potentialFollows].filter((user) => {
-      return user.user_id !== value.user_id
-    })
-    });
   }
 
   addFollow() {
     console.log(this.state.follow_user);
-    const data = { followedUser: this.state.follow_user };
+    const data = { followedUser: this.state.follow_user.user_id };
     fetch('/users/follow', {
       method: 'POST',
       headers: {
@@ -368,7 +361,8 @@ class App extends Component {
             user_id: user.user_id, username: user.username 
           }) } 
           else { 
-            potentialFollows.push({ user_id: user.user_id, username: user.username }) 
+            console.log(user);
+            potentialFollows.push({ user_id: user.id, username: user.username }) 
           }
         });
         this.setState({
@@ -416,12 +410,7 @@ class App extends Component {
             handleChangeFollow={this.handleChangeFollow} 
             addFollow={this.addFollow}
             username = {this.state.username}
-<<<<<<< HEAD
             firstname = {this.state.firstname}
-=======
-            name = {this.state.firstname}
-            // posts = {this.state.posts}
->>>>>>> userdashboard/meisze
             />
             <RightContainer 
              filterPosts={this.filterPosts}
