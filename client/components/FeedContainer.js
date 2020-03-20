@@ -18,7 +18,6 @@ function FeedContainer(props) {
     }
     return (
         <div id='feed-container'>
-            <h3>Feed Container</h3>
             {feed}
         </div>
     )
