@@ -1,15 +1,19 @@
-import React, { Component } from "react";
-import { Link, Route, Switch, withRouter } from 'react-router-dom';
-import Header1 from "./Header1";
-import Header2 from "./Header2";
-import Header3 from "./Header3";
-import LeftContainer from "./LeftContainer";
-import RightContainer from "./RightContainer";
+import React, { Component, Fragment } from 'react';
+import {
+  Link, Route, Switch, withRouter
+} from 'react-router-dom';
+import io from 'socket.io-client';
+import Header1 from './Header1';
+import Header2 from './Header2';
+import Header3 from './Header3';
+import LeftContainer from './LeftContainer';
+import RightContainer from './RightContainer';
 
 class App extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
+      socket: io('http://localhost:3000/'),
       username: null,
       password: null,
       firstname: null,
@@ -22,19 +26,19 @@ class App extends Component {
         { user_id: 1, username: 'Tom' },
         { user_id: 2, username: 'Jerry' },
         { user_id: 3, username: 'Marcus' },
-        { user_id: 4, username: 'Aurelius' },
+        { user_id: 4, username: 'Aurelius' }
       ],
       potentialFollows: [
         { user_id: 5, username: 'Dunkin' },
         { user_id: 6, username: 'Donuts' },
-        { user_id: 7, username: 'Pizza' },
-        { user_id: 8, username: 'Hut' },
+        { user_id: 21, username: 'draco' },
+        { user_id: 8, username: 'Hut' }
       ],
       postFilter: {
-        location: null, 
-        category: null, 
+        location: null,
+        category: null,
         minrating: 1,
-        friends: [],
+        friends: []
       },
       categories: ['Attraction', 'Food', 'Accomodation'],
       locations: ['Paris', 'Texas', 'Taylors Condo'],
@@ -90,75 +94,128 @@ class App extends Component {
     console.log(this.state.follow_user);
     const data = { followedUser: this.state.follow_user };
     fetch('/users/follow', {
-      method: 'POST', 
+      method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(data)
     })
-      .then((data) => {
-        console.log('Success:', data);
+      .then((res) => res.json())
+      .then((json) => {
+        this.setState({ friends: [...this.state.friends, { ...this.state.follow_user }] });
+        this.setState({ potentialFollows: [...this.state.potentialFollows].filter((user) => user.user_id !== json) });
+        console.log('Success:', json);
       })
       .catch((err) => {
         console.error('Error:', err);
       });
   }
 
-  handleChangeFirstname() {
+  componentDidMount() {
+    // Attempt to connect to room (catches refreshes during session)
+    this.fetchUser()
+      .then(({ username }) => {
+        if (username) this.state.socket.emit('room', username);
+      });
+
+    // fetch posts only once
+    this.fetchPosts();
+    this.fetchFriends();
+
+    // Handle recieved posts
+    this.state.socket.on('post', (post) => {
+      this.setState({
+        posts: [...this.state.posts, post]
+      });
+      this.filterPosts();
+    });
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timer);
+  }
+
+  fetchUser() {
+    return fetch('/users/', {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      }
+    })
+      .then((res) => res.json());
+  }
+
+  fetchPosts() {
+    fetch('/users/getreview', {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      }
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        this.setState({
+          posts: json,
+          filteredPosts: json
+        });
+      });
+  }
+
+  handleChangeFirstname(event) {
     this.setState({ firstname: event.target.value });
   }
 
-  handleChangeLastname() {
+  handleChangeLastname(event) {
     this.setState({ lastname: event.target.value });
   }
 
-  handleChangeUsername() {
+  handleChangeUsername(event) {
     this.setState({ username: event.target.value });
   }
 
-  handleChangePassword() {
+  handleChangePassword(event) {
     this.setState({ password: event.target.value });
   }
 
-  handleChangeLocation(e) {
-    this.setState({ postFilter: {...this.state.postFilter, 'location': e.target.value}})
+  handleChangeLocation(event) {
+    this.setState({ postFilter: { ...this.state.postFilter, location: event.target.value } });
   }
 
-  handleChangeCategory(e) {
-    this.setState({ postFilter: {...this.state.postFilter, 'category': e.target.value}})
+  handleChangeCategory(event) {
+    this.setState({ postFilter: { ...this.state.postFilter, category: event.target.value } });
   }
 
-  handleChangeRating(e) {
-    this.setState({ postFilter: {...this.state.postFilter, 'minrating': e.target.value}})
+  handleChangeRating(event) {
+    this.setState({ postFilter: { ...this.state.postFilter, minrating: event.target.value } });
   }
 
-  handleChangeFriendsFilter(e, value) {
-    this.setState({ postFilter: { ...this.state.postFilter, 'friends': value.map(a => a.user_id) } });
-    //value.map(a => String(a.user_id))
+  handleChangeFriendsFilter(event, value) {
+    this.setState({ postFilter: { ...this.state.postFilter, friends: value.map((a) => a.user_id) } });
+    // value.map(a => String(a.user_id))
   }
 
-  //Post form Handles
-  handleChangeRecommendation(e) {
-    this.setState({ postData: {...this.state.postData, recommendation: e.target.value}})
+  // Post form Handles
+  handleChangeRecommendation(event) {
+    this.setState({ postData: { ...this.state.postData, recommendation: event.target.value } });
   }
 
-  handleChangeReview(e) {
-    this.setState({ postData: {...this.state.postData, review_text: e.target.value}})
+  handleChangeReview(event) {
+    this.setState({ postData: { ...this.state.postData, reviewText: event.target.value } });
   }
 
-  handleChangePostLocation(e) {
-    this.setState({ postData: {...this.state.postData, location: e.target.value}})
+  handleChangePostLocation(event) {
+    this.setState({ postData: { ...this.state.postData, location: event.target.value } });
   }
 
-  handleChangePostCategory(e) {
-    this.setState({ postData: {...this.state.postData, category: e.target.value}})
+  handleChangePostCategory(event) {
+    this.setState({ postData: { ...this.state.postData, category: event.target.value } });
   }
 
-  handleChangePostRating(e) {
-    this.setState({ postData: {...this.state.postData, rating: e.target.value}})
+  handleChangePostRating(event) {
+    this.setState({ postData: { ...this.state.postData, rating: event.target.value } });
   }
 
-  //post form data to server
+  // post form data to server
   handlePostForm() {
     const data = {
       username: this.state.username,
@@ -166,48 +223,47 @@ class App extends Component {
       category: this.state.postData.category,
       rating: this.state.postData.rating,
       recommendation: this.state.postData.recommendation,
-      review_text: this.state.postData.review_text
+      reviewText: this.state.postData.reviewText
     };
 
     fetch('/users/submitreview', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(data)
     })
-      .then((data) => {
-        console.log('Success:', data);
+      .then(() => {
+        console.log('Success');
       })
-      .catch((err) => {
-        console.error('Error:', err);
+      .catch(() => {
+        console.error('Error');
       });
   }
 
   signup() {
-    //post data. if successfull go to header3
+    // post data. if successfull go to header3
     const data = {
       firstname: this.state.firstname,
       lastname: this.state.lastname,
       username: this.state.username,
-      password: this.state.password,
+      password: this.state.password
     };
 
-    fetch('/users/signup', { 
-      method:'POST',
+    fetch('/users/signup', {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(data)
     })
       .then((res) => {
-        if (!res.ok) { 
-          console.log('signup error') 
-          this.setState( {signupMessage:'Invalid signup information.' })
-        } 
-        else {
+        if (!res.ok) {
+          console.log('signup error');
+          this.setState({ signupMessage: 'Invalid signup information.' });
+        } else {
           // redirect to new page
-          this.props.history.push('/header2')
+          this.props.history.push('/header2');
         }
       });
   }
@@ -217,6 +273,7 @@ class App extends Component {
       username: document.getElementById('username').value,
       password: document.getElementById('password').value
     };
+    this.state.socket.emit('room', data.username);
     fetch('/users/login', {
       method: 'POST',
       headers: {
@@ -285,8 +342,8 @@ class App extends Component {
   filterPosts() {
     // filter posts to show, based on user selection
     let newfilteredPosts = this.state.posts;
-    console.log('postFilter:',this.state.postFilter.friends.length>0);
-    console.log('postFilter:',this.state.postFilter.friends.includes(1));
+    console.log('postFilter:', this.state.postFilter.friends.length > 0);
+    console.log('postFilter:', this.state.postFilter.friends.includes(1));
     newfilteredPosts = newfilteredPosts.filter((post) => {
       let result = true;
       if (this.state.postFilter.location && (this.state.postFilter.location !== post.location)) {
@@ -298,9 +355,10 @@ class App extends Component {
       if (this.state.postFilter.minrating && (this.state.minrating > post.rating)) {
         result = false;
       }
-      if (this.state.postFilter.friends.length > 0 
+      if (this.state.postFilter.friends.length > 0
         && !(this.state.postFilter.friends.includes(Number(post.created_by)))
       ) {
+        console.log(Number(post.created_by));
         result = false;
       }
       return result;
@@ -313,30 +371,42 @@ class App extends Component {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        Accept: 'application/json'
       }
     })
       .then((res) => res.json())
-      .then((json)=> {
+      .then((json) => {
         this.setState({
-          friends: json,
+          friends: json
         });
       });
   }
 
   render() {
     return (
-      <div>
+      <Fragment>
           <Switch>
-              <Route exact path='/' render={() => 
-                <Header1 message={this.state.loginMessage} login={this.login} handleChangeUsername={this.handleChangeUsername} handleChangePassword={this.handleChangePassword} />}/>
-              <Route exact path='/header2' render={()=> 
-                <Header2 username={this.state.username} logout={this.logout}/>}/>
-              <Route exact path='/header3' render={()=> 
-                <Header3 message={this.state.signupMessage} signup={this.signup} handleChangeUsername={this.handleChangeUsername} handleChangePassword={this.handleChangePassword} handleChangeFirstname={this.handleChangeFirstname} handleChangeLastname={this.handleChangeLastname}/>}/>
+              <Route exact path='/' render={() => <Header1
+                message={this.state.loginMessage}
+                login={this.login}
+                handleChangeUsername={this.handleChangeUsername}
+                handleChangePassword={this.handleChangePassword} />}
+              />
+              <Route exact path='/header2' render={() => <Header2
+                username={this.state.username}
+                logout={this.logout}/>}
+              />
+              <Route exact path='/header3' render={() => <Header3
+                message={this.state.signupMessage}
+                signup={this.signup}
+                handleChangeUsername={this.handleChangeUsername}
+                handleChangePassword={this.handleChangePassword}
+                handleChangeFirstname={this.handleChangeFirstname}
+                handleChangeLastname={this.handleChangeLastname} />}
+              />
           </Switch>
           <div id='wrapper'>
-            <LeftContainer 
+            <LeftContainer
             postData={this.state.postData}
             handleChangePostCategory={this.handleChangePostCategory}
             handleChangePostLocation={this.handleChangePostLocation}
@@ -365,7 +435,7 @@ class App extends Component {
              handleChangeFriendsFilter={this.handleChangeFriendsFilter}
              />
           </div>
-      </div>
+      </Fragment>
     );
   }
 }

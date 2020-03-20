@@ -4,7 +4,8 @@ import Button from '@material-ui/core/Button';
 const Header2 = (props) => {
   return (
         <div id="header2">
-            <div>Welcome to Explore Genie, {props.username}!</div>
+             <h1>frecco</h1>
+            <div>Welcome to Frecco, {props.username}!</div>
             <Button id="btn-logout" onClick={props.logout}>Logout</Button>
         </div>
   )
