@@ -141,13 +141,6 @@ userController.destroy = (req, res, next) => {
  */
 userController.submitReview = (req, res, next) => {
   const {
-<<<<<<< HEAD
-    location, category, rating, recommendation, review_text
-  } = req.body;
-  const str = `INSERT INTO "reviews" (created_by, location, category, rating, recommendation, review_text)
-               VALUES ($1, $2, $3, $4, $5, $6);`;
-  const params = [res.locals.user_id, location, category, rating, recommendation, review_text];
-=======
     location, category, rating, recommendation, reviewText, userId
   } = { ...req.body, userId: res.locals.userId };
 
@@ -157,7 +150,6 @@ userController.submitReview = (req, res, next) => {
 
   const params = [location, category, rating, recommendation, reviewText, userId];
 
->>>>>>> dev
   db.query(str, params)
     .then((data) => {
       [res.locals.review] = data.rows;
@@ -224,16 +216,10 @@ userController.emitReview = (req, res, next) => {
  */
 
 userController.deleteReview = (req, res, next) => {
-<<<<<<< HEAD
-  const { id } = req.body;
-  const str = `DELETE from "reviews" WHERE id = ${id};`;
-  db.query(str)
-=======
   const str = `DELETE from reviews
                WHERE id = $1`;
   const params = [req.body.id];
   db.query(str, params)
->>>>>>> dev
     .then(() => next())
     .catch((err) => next(err));
 };
@@ -289,16 +275,10 @@ userController.follow = (req, res, next) => {
 */
 
 userController.getReviews = (req, res, next) => {
-<<<<<<< HEAD
-  //const { location, category, rating } = req.body;
-  let str = `SELECT reviews.*, u.username from reviews 
-            LEFT JOIN users as u ON reviews.created_by = u.id`; // initial query string given no constraints
-=======
   // const { location, category, rating } = req.body;
   const str = `SELECT r.*, u.username
                FROM reviews r LEFT JOIN users u
                ON r.created_by = u.id`; // initial query string given no constraints
->>>>>>> dev
   // const filterObj = { 'location': location, 'category': category, 'rating >': rating };
   // const filterArr = [location, category, rating];
   // // check if any of the elements are populated (if all the elements are NOT empty)

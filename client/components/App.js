@@ -274,6 +274,7 @@ class App extends Component {
       password: document.getElementById('password').value
     };
     this.state.socket.emit('room', data.username);
+    
     fetch('/users/login', {
       method: 'POST',
       headers: {

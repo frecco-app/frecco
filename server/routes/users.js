@@ -34,7 +34,7 @@ router.post('/signup',
  *     "password": <plain text>
  *   }
  */
-router.post('/login',
+router.posct('/login',
   userController.verify,
   userController.authenticate,
   cookieController.encrypt,
@@ -71,5 +71,7 @@ router.post('/follow',
 router.get('/getreview', userController.getReviews, (req, res) => {
   res.status(200).json(res.locals.reviews);
 });
+
+
 
 module.exports = router;
