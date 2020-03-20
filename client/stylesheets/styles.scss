@@ -7,7 +7,7 @@
 
 #wrapper {
     display: flex;
-    height: 100vh;
+    height: 91.55vh;
 }
 
 #filter-form {
@@ -25,16 +25,19 @@
     flex: 1;
     padding: 20px;
     background-color: rgb(218, 218, 218);
+    overflow: auto;
 }
 
 #header1, #header2, #header3 {
     margin: 5px;
+    height: 7vh;
 }
 
 #left-container {
     flex: 1;
     background-color: rgb(150, 150, 150);
     padding: 20px;
+    overflow:auto;
 }
    
 #post-form {

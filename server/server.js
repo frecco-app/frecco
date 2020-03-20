@@ -4,8 +4,10 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const userRouter = require('./routes/users');
 
-const app = express();
 const PORT = 3000;
+const app = express();
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -17,7 +19,13 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/index.html'));
 });
 
-app.use('/users', userRouter);
+// Websockets
+io.on('connection', (socket) => {
+  // This is how clients join rooms
+  socket.on('room', (user) => socket.join(user));
+  // Routes only work after handshake
+  app.use('/users', userRouter);
+});
 
 app.use((err, req, res, next) => {
   const defaultErr = {
@@ -30,4 +38,4 @@ app.use((err, req, res, next) => {
   return res.status(errorObj.status).json(errorObj.message);
 });
 
-app.listen(PORT, () => console.log(`Listening on Port ${PORT}`));
+http.listen(PORT, () => console.log(`Listening on Port ${PORT}`));

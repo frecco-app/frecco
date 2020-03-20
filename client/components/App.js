@@ -1,15 +1,19 @@
-import React, { Component } from "react";
-import { Link, Route, Switch, withRouter } from 'react-router-dom';
-import Header1 from "./Header1";
-import Header2 from "./Header2";
-import Header3 from "./Header3";
-import LeftContainer from "./LeftContainer";
-import RightContainer from "./RightContainer";
+import React, { Component, Fragment } from 'react';
+import {
+  Link, Route, Switch, withRouter
+} from 'react-router-dom';
+import io from 'socket.io-client';
+import Header1 from './Header1';
+import Header2 from './Header2';
+import Header3 from './Header3';
+import LeftContainer from './LeftContainer';
+import RightContainer from './RightContainer';
 
 class App extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
+      socket: io('http://localhost:3000/'),
       username: null,
       password: null,
       firstname: null,
@@ -19,16 +23,16 @@ class App extends Component {
       posts: [],
       filteredPosts: [],
       friends: [
-        {user_id: 1, username: 'Tom'},
-        {user_id: 2, username: 'Jerry'},
-        {user_id: 3, username: 'Marcus'},
-        {user_id: 4, username: 'Aurelius'},
+        { user_id: 1, username: 'Tom' },
+        { user_id: 2, username: 'Jerry' },
+        { user_id: 3, username: 'Marcus' },
+        { user_id: 4, username: 'Aurelius' }
       ],
       postFilter: {
-        location: null, 
-        category: null, 
+        location: null,
+        category: null,
         minrating: 1,
-        friends: [],
+        friends: []
       },
       categories: ['Attraction', 'Food', 'Accomodation'],
       locations: ['Paris', 'Texas', 'Taylors Condo'],
@@ -64,55 +68,62 @@ class App extends Component {
     this.handleChangePostCategory = this.handleChangePostCategory.bind(this);
   }
 
-  handleChangeFirstname() {
+  handleChangeFirstname(event) {
     this.setState({ firstname: event.target.value });
   }
 
-  handleChangeLastname() {
+  handleChangeLastname(event) {
     this.setState({ lastname: event.target.value });
   }
 
-  handleChangeUsername() {
+  handleChangeUsername(event) {
     this.setState({ username: event.target.value });
   }
 
-  handleChangePassword() {
+  handleChangePassword(event) {
     this.setState({ password: event.target.value });
   }
-  handleChangeLocation(e) {
-    this.setState({ postFilter: {...this.state.postFilter, 'location': e.target.value}})
+
+  handleChangeLocation(event) {
+    this.setState({ postFilter: { ...this.state.postFilter, location: event.target.value } });
   }
 
-  handleChangeCategory(e) {
-    this.setState({ postFilter: {...this.state.postFilter, 'category': e.target.value}})
+  handleChangeCategory(event) {
+    this.setState({ postFilter: { ...this.state.postFilter, category: event.target.value } });
   }
 
-  handleChangeRating(e) {
-    this.setState({ postFilter: {...this.state.postFilter, 'minrating': e.target.value}})
+  handleChangeRating(event) {
+    this.setState({ postFilter: { ...this.state.postFilter, minrating: event.target.value } });
   }
-  handleChangeFriendsFilter(e, value) {
-    this.setState({ postFilter: {...this.state.postFilter, 'friends': value.map(a => a.user_id)}});
+
+  handleChangeFriendsFilter(event, value) {
+    this.setState({ postFilter: { ...this.state.postFilter, friends: value.map((a) => a.user_id) } });
     console.log('hand', this.state.postFilter.friends);
-    //value.map(a => String(a.user_id))
+    // value.map(a => String(a.user_id))
   }
 
-  //Post form Handles
-  handleChangeRecommendation(e) {
-    this.setState({ postData: {...this.state.postData, recommendation: e.target.value}})
+  // Post form Handles
+  handleChangeRecommendation(event) {
+    this.setState({ postData: { ...this.state.postData, recommendation: event.target.value } });
   }
-  handleChangeReview(e) {
-    this.setState({ postData: {...this.state.postData, review_text: e.target.value}})
+
+  handleChangeReview(event) {
+    this.setState({ postData: { ...this.state.postData, review_text: event.target.value } });
   }
-  handleChangePostLocation(e) {
-    this.setState({ postData: {...this.state.postData, location: e.target.value}})
+
+  handleChangePostLocation(event) {
+    this.setState({ postData: { ...this.state.postData, location: event.target.value } });
   }
-  handleChangePostCategory(e) {
-    this.setState({ postData: {...this.state.postData, category: e.target.value}})
+
+  handleChangePostCategory(event) {
+    this.setState({ postData: { ...this.state.postData, category: event.target.value } });
   }
-  handleChangePostRating(e) {
-    this.setState({ postData: {...this.state.postData, rating: e.target.value}})
+
+  handleChangePostRating(event) {
+    this.setState({ postData: { ...this.state.postData, rating: event.target.value } });
   }
-  //post form data to server
+
+  // post form data to server
   handlePostForm() {
     const data = {
       username: this.state.username,
@@ -124,14 +135,14 @@ class App extends Component {
     };
 
     fetch('/users/submitreview', {
-      method: 'POST', 
+      method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(data)
     })
-      .then((data) => {
-        console.log('Success:', data);
+      .then((res) => {
+        console.log('Success:', res);
       })
       .catch((err) => {
         console.error('Error:', err);
@@ -139,99 +150,100 @@ class App extends Component {
   }
 
   signup() {
-    //post data. if successfull go to header3
-    const data = { 
+    // post data. if successfull go to header3
+    const data = {
       firstname: this.state.firstname,
       lastname: this.state.lastname,
       username: this.state.username,
-      password: this.state.password,
+      password: this.state.password
     };
 
-    fetch('/users/signup', { 
-      method:'POST',
+    fetch('/users/signup', {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(data)
     })
       .then((res) => {
-        if (!res.ok) { 
-          console.log('signup error') 
-          this.setState({signupMessage:'Invalid signup information.'})
-        } 
-        else {
+        if (!res.ok) {
+          console.log('signup error');
+          this.setState({ signupMessage: 'Invalid signup information.' });
+        } else {
           // redirect to new page
-          this.props.history.push('/header2')
+          this.props.history.push('/header2');
         }
       });
   }
 
   login() {
-    const data = { 
+    const data = {
       username: this.state.username,
       password: this.state.password
     };
-    fetch('/users/login', { 
-      method:'POST',
+
+    this.state.socket.emit('room', data.username);
+
+    fetch('/users/login', {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(data) 
+      body: JSON.stringify(data)
     })
       .then((res) => {
-        if (!res.ok) { 
-          console.log('login error') 
-          this.setState({loginMessage: 'Invalid login information'})
-        } 
-        else {
+        if (!res.ok) {
+          console.log('login error');
+          this.setState({ loginMessage: 'Invalid login information' });
+        } else {
           // redirect to new page
-          this.props.history.push('/header2')
+          this.props.history.push('/header2');
         }
       });
   }
 
-  logout(){
+  logout() {
     this.setState({
       username: null,
       password: null,
       firstname: null,
-      lastname: null,
-    })
-    this.props.history.push('/')
+      lastname: null
+    });
+    this.props.history.push('/');
   }
 
-  componentDidMount(){
+  componentDidMount() {
     // fetch posts only once, then fetch again every 20 seconds
     this.fetchPosts();
     this.fetchFriends();
-    //this.timer = setInterval(() => this.fetchPosts(),5000)
+    // this.timer = setInterval(() => this.fetchPosts(),5000)
   }
 
-  componentWillUnmount(){
-    clearInterval(this.timer)
+  componentWillUnmount() {
+    clearInterval(this.timer);
   }
 
   fetchPosts() {
     fetch('/users/getreview', {
-      headers : { 
+      headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
-       }
+        Accept: 'application/json'
+      }
     })
       .then((res) => res.json())
-      .then((json)=> {
+      .then((json) => {
         this.setState({
-          posts: json, 
+          posts: json,
           filteredPosts: json
         });
-      })
+      });
   }
 
-  filterPosts(){
+  filterPosts() {
     // filter posts to show, based on user selection
     let newfilteredPosts = this.state.posts;
-    console.log('postFilter:',this.state.postFilter.friends.length>0);
-    console.log('postFilter:',this.state.postFilter.friends.includes(1));
+    console.log('postFilter:', this.state.postFilter.friends.length > 0);
+    console.log('postFilter:', this.state.postFilter.friends.includes(1));
     newfilteredPosts = newfilteredPosts.filter((post) => {
       let result = true;
       if (this.state.postFilter.location && (this.state.postFilter.location !== post.location)) {
@@ -243,69 +255,82 @@ class App extends Component {
       if (this.state.postFilter.minrating && (this.state.minrating > post.rating)) {
         result = false;
       }
-      if (this.state.postFilter.friends.length > 0 
+      if (this.state.postFilter.friends.length > 0
         && !(this.state.postFilter.friends.includes(Number(post.created_by)))
-        ){
-          console.log(Number(post.created_by))
+      ) {
+        console.log(Number(post.created_by));
         result = false;
       }
       return result;
     });
-    this.setState( { filteredPosts: newfilteredPosts });
+    this.setState({ filteredPosts: newfilteredPosts });
   }
 
   fetchFriends() {
     fetch('users/getFriends', {
       method: 'GET',
-      headers : { 
+      headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
-       }
+        Accept: 'application/json'
+      }
     })
       .then((res) => res.json())
-      .then((json)=> {
+      .then((json) => {
         this.setState({
-          friends: json, 
+          friends: json
         });
-      })
+      });
   }
 
   render() {
     return (
-      <div>
+      <Fragment>
           <Switch>
-              <Route exact path='/' render={() => 
-                <Header1 message={this.state.loginMessage} login={this.login} handleChangeUsername={this.handleChangeUsername} handleChangePassword={this.handleChangePassword} />}/>
-              <Route exact path='/header2' render={()=> 
-                <Header2 username={this.state.username} logout={this.logout}/>}/>
-              <Route exact path='/header3' render={()=> 
-                <Header3 message={this.state.signupMessage} signup={this.signup} handleChangeUsername={this.handleChangeUsername} handleChangePassword={this.handleChangePassword} handleChangeFirstname={this.handleChangeFirstname} handleChangeLastname={this.handleChangeLastname}/>}/>
+              <Route exact path='/' render={() => <Header1
+                message={this.state.loginMessage}
+                login={this.login}
+                handleChangeUsername={(event) => this.handleChangeUsername(event)}
+                handleChangePassword={(event) => this.handleChangePassword(event)} />}
+              />
+              <Route exact path='/header2' render={() => <Header2
+                username={this.state.username}
+                logout={this.logout}/>}
+              />
+              <Route exact path='/header3' render={() => <Header3
+                message={this.state.signupMessage}
+                signup={this.signup}
+                handleChangeUsername={(event) => this.handleChangeUsername(event)}
+                handleChangePassword={(event) => this.handleChangePassword(event)}
+                handleChangeFirstname={(event) => this.handleChangeFirstname(event)}
+                handleChangeLastname={(event) => this.handleChangeLastname(event)}/>}
+              />
           </Switch>
           <div id='wrapper'>
-            <LeftContainer 
-            postData={this.state.postData}
-            handleChangePostCategory={this.handleChangePostCategory}
-            handleChangePostLocation={this.handleChangePostLocation}
-            handleChangePostRating={this.handleChangePostRating}
-            handleChangeRecommendation={this.handleChangeRecommendation}
-            handleChangeReview={this.handleChangeReview}
-            handlePostForm={this.handlePostForm}
-            categories={this.state.categories}
-            locations={this.state.locations} />
-            <RightContainer 
-             filterPosts={this.filterPosts}
-             filteredPosts={this.state.filteredPosts}
-             handleChangeCategory={this.handleChangeCategory}
-             handleChangeLocation={this.handleChangeLocation}
-             handleChangeRating={this.handleChangeRating}
-             location={this.state.postFilter.location}
-             category={this.state.postFilter.category}
-             minrating={this.state.postFilter.minrating}
-             friends={this.state.friends}
-             handleChangeFriendsFilter={this.handleChangeFriendsFilter}
+            <LeftContainer
+              postData={this.state.postData}
+              handleChangePostCategory={(event) => this.handleChangePostCategory(event)}
+              handleChangePostLocation={(event) => this.handleChangePostLocation(event)}
+              handleChangePostRating={(event) => this.handleChangePostRating(event)}
+              handleChangeRecommendation={(event) => this.handleChangeRecommendation(event)}
+              handleChangeReview={(event) => this.handleChangeReview(event)}
+              handlePostForm={(event) => this.handlePostForm(event)}
+              categories={this.state.categories}
+              locations={this.state.locations}
+            />
+            <RightContainer
+              filterPosts={this.filterPosts}
+              filteredPosts={this.state.filteredPosts}
+              handleChangeCategory={(event) => this.handleChangeCategory(event)}
+              handleChangeLocation={(event) => this.handleChangeLocation(event)}
+              handleChangeRating={(event) => this.handleChangeRating(event)}
+              location={this.state.postFilter.location}
+              category={this.state.postFilter.category}
+              minrating={this.state.postFilter.minrating}
+              friends={this.state.friends}
+              handleChangeFriendsFilter={(event) => this.handleChangeFriendsFilter(event)}
              />
           </div>
-      </div>
+      </Fragment>
     );
   }
 }
