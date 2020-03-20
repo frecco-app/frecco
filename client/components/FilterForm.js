@@ -26,21 +26,21 @@ categoryOptions.forEach((cat, i) => (
 export default function FilterForm(props) {
     return (
     <div id='filter-form' >
-        <FormControl style={{minWidth: 120}}>
+        <FormControl style={{minWidth: 100}}>
             <InputLabel>Location</InputLabel>
             <Select value={props.location ? props.location : ""} onChange={props.handleChangeLocation}>
                 {locationItems}
             </Select>
         </FormControl>
         &nbsp;&nbsp;
-        <FormControl style={{minWidth: 120}}>
+        <FormControl style={{minWidth: 100}}>
             <InputLabel>Category</InputLabel>
             <Select value={props.category ? props.category : ""} onChange={props.handleChangeCategory}>
                 {categoryItems}
             </Select>
         </FormControl>
         &nbsp;&nbsp;
-        <FormControl style={{minWidth: 120}}>
+        <FormControl style={{minWidth: 100}}>
             <InputLabel>Min. Rating</InputLabel>
             <Select value={props.minrating ? props.minrating :1} onChange={props.handleChangeRating}>
                 <MenuItem value={1}>1</MenuItem>
@@ -51,7 +51,7 @@ export default function FilterForm(props) {
             </Select>
         </FormControl>
         &nbsp;&nbsp;
-        <div style={{ width : 150}}>
+        <div style={{ width : 160}}>
             <Autocomplete
                 multiple
                 id='filterFriends'
@@ -63,9 +63,8 @@ export default function FilterForm(props) {
                 onChange={(e,value) => props.handleChangeFriendsFilter(e,value)}
             />    
         </div>
-        
         &nbsp;&nbsp;
-        <Button style={{ height : 30 }} onClick={props.filterPosts} variant='contained'>Filter</Button>
+        <Button style={{ height : 50 }} onClick={props.filterPosts} variant='contained'>Filter</Button>
     </div>
     )
 }

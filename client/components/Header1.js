@@ -8,7 +8,7 @@ const Header1 = (props) => {
         <h1>Frecco</h1>
         <Input id="username" variant="outlined" placeholder="username" onChange={props.handleChangeUsername}/>
         &nbsp;&nbsp;
-        <Input id="password" type="password" variant="outlined" placeholder="login" onChange={props.handleChangePassword}/>
+        <Input id="password" type="password" variant="outlined" placeholder="password" onChange={props.handleChangePassword}/>
         <Button id="btn-login" onClick={props.login}>Login</Button>
         <Link to="/header3">
           <Button id="btn-signup">Signup</Button>

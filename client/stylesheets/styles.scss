@@ -45,7 +45,8 @@ $box-shadow: 0px 3px 5px 1px rgba(0,0,0,0.09);
     box-shadow: $box-shadow;
 }
 #filter-form > * {
-    align-self: flex-end
+    align-self: center;
+    width: auto;
 } 
 #right-container {
     flex: 3;
@@ -139,7 +140,7 @@ $box-shadow: 0px 3px 5px 1px rgba(0,0,0,0.09);
     background-color: white;
     padding: 15px;
     margin: 10px 0px;
-    height: 100px;
+    height: auto;
     border: .5px solid $border;
     border-radius: $border-radius;
     box-shadow: $box-shadow;

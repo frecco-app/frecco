@@ -14,6 +14,7 @@ class App extends Component {
     super(props);
     this.state = {
       socket: io('http://localhost:3000/'),
+      user_id: null,
       username: null,
       password: null,
       firstname: null,
@@ -111,8 +112,7 @@ class App extends Component {
 
     // fetch posts only once
     this.fetchPosts();
-    this.fetchFriends();
-
+   // this.fetchFriends();
     // Handle recieved posts
     this.state.socket.on('post', (post) => {
       this.setState({
@@ -120,10 +120,6 @@ class App extends Component {
       });
       this.filterPosts();
     });
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.timer);
   }
 
   fetchUser() {
@@ -149,9 +145,20 @@ class App extends Component {
           posts: json,
           filteredPosts: json
         });
+        return json;
+      })
+      .then((json) => {
+        const locations = json.reduce((acc, post) => {
+          if (!acc.hasOwnProperty(post.location)) { 
+            acc[post.location] = true; 
+          };
+          return acc;
+        }, {});
+        this.setState({
+          locations: [...Object.keys(locations)]
+        });
       });
   }
-
   handleChangeFirstname(event) {
     this.setState({ firstname: event.target.value });
   }
@@ -278,10 +285,18 @@ class App extends Component {
           console.log('login error');
           this.setState({ loginMessage: 'Invalid login information' });
         } else {
+          res.json()}
+      })
+      .then((data) => {
+          // const user_id = data[0];
+          // const username = data[1];
+          // this.setState({ 
+          //   user_id: user_id, 
+          //   username: username 
+          // });
           // redirect to new page
           this.props.history.push('/header2');
-        }
-      });
+      })
   }
 
   logout() {
@@ -297,8 +312,6 @@ class App extends Component {
   filterPosts() {
     // filter posts to show, based on user selection
     let newfilteredPosts = this.state.posts;
-    console.log('postFilter:', this.state.postFilter.friends.length > 0);
-    console.log('postFilter:', this.state.postFilter.friends.includes(1));
     newfilteredPosts = newfilteredPosts.filter((post) => {
       let result = true;
       if (this.state.postFilter.location && (this.state.postFilter.location !== post.location)) {
@@ -327,12 +340,24 @@ class App extends Component {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json'
-      }
+      },
+      body: JSON.stringify(this.state.user_id)
     })
       .then((res) => res.json())
       .then((json) => {
+        const friends = [];
+        const potentialFollows = [];
+        json.forEach((user) => {
+          if (user.friend) { friends.push({ 
+            user_id: user.user_id, username: user.username 
+          }) } 
+          else { 
+            potentialFollows.push({ user_id: user.user_id, username: user.username }) 
+          }
+        });
         this.setState({
-          friends: json
+          friends : friends,
+          potentialFollows : potentialFollows
         });
       });
   }
