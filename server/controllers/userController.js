@@ -170,13 +170,11 @@ userController.getFollowers = (req, res, next) => {
 
 // Emit review through socket channel
 userController.emitReview = (req, res, next) => {
-  // const { followers } = res.locals;
-  // for (let i = 0; i < followers.length; i++) {
-  //   const { username } = followers[i];
-  //   console.log(username);
-  //   req.socket.in(username).broadcast.emit('post', res.locals.review);
-  // }
-  req.socket.broadcast.emit('post', res.locals.review);
+  const { followers } = res.locals;
+  for (let i = 0; i < followers.length; i++) {
+    const { username } = followers[i];
+    req.socket.to(username).emit('post', res.locals.review);
+  }
   return next();
 };
 
