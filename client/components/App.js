@@ -426,6 +426,7 @@ class App extends Component {
             addFollow={this.addFollow}
             username = {this.state.username}
             name = {this.state.firstname}
+            // posts = {this.state.posts}
             />
             <RightContainer 
              filterPosts={this.filterPosts}
