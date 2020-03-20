@@ -23,18 +23,8 @@ class App extends Component {
       signupMessage: null,
       posts: [],
       filteredPosts: [],
-      friends: [
-        { user_id: 1, username: 'Tom' },
-        { user_id: 2, username: 'Jerry' },
-        { user_id: 3, username: 'Marcus' },
-        { user_id: 4, username: 'Aurelius' }
-      ],
-      potentialFollows: [
-        { user_id: 5, username: 'Dunkin' },
-        { user_id: 6, username: 'Donuts' },
-        { user_id: 21, username: 'draco' },
-        { user_id: 8, username: 'Hut' }
-      ],
+      friends: [],
+      potentialFollows: [],
       postFilter: {
         location: null,
         category: null,
@@ -80,11 +70,20 @@ class App extends Component {
   }
 
   handleChangeFollow(e, value) {
-    this.setState({ follow_user: value });
+    this.setState({ follow_user: value.user_id});
+    console.log([...this.state.friends, value]);
+    // add to this.state.friends
+    this.setState({ friends: [...this.state.friends, value]});
+    // delete from this.state.potentialFollows
+    this.setState({ potentialFollows: [...this.state.potentialFollows].filter((user) => {
+      return user.user_id !== value.user_id
+    })
+    });
   }
 
   addFollow() {
-    const data = { followedUser: this.state.follow_user.user_id };
+    console.log(this.state.follow_user);
+    const data = { followedUser: this.state.follow_user };
     fetch('/users/follow', {
       method: 'POST',
       headers: {
@@ -112,7 +111,6 @@ class App extends Component {
 
     // fetch posts only once
     this.fetchPosts();
-   // this.fetchFriends();
     // Handle recieved posts
     this.state.socket.on('post', (post) => {
       this.setState({
@@ -268,11 +266,11 @@ class App extends Component {
 
   login() {
     const data = {
-      username: this.state.username,
-      password: this.state.password
+      username: document.getElementById('username').value,
+      password: document.getElementById('password').value
     };
     this.state.socket.emit('room', data.username);
-
+    
     fetch('/users/login', {
       method: 'POST',
       headers: {
@@ -281,21 +279,25 @@ class App extends Component {
       body: JSON.stringify(data)
     })
       .then((res) => {
-        if (!res.ok) {
-          console.log('login error');
-          this.setState({ loginMessage: 'Invalid login information' });
-        } else {
-          res.json()}
-      })
-      .then((data) => {
-          // const user_id = data[0];
-          // const username = data[1];
-          // this.setState({ 
-          //   user_id: user_id, 
-          //   username: username 
-          // });
-          // redirect to new page
-          this.props.history.push('/header2');
+        res.json()
+        // /login route sends back a response body that is an array with user id, username, and firstname
+          .then((json) => {
+            if (!res.ok) {
+              console.log('login error');
+              this.setState({ loginMessage: 'Invalid login information' }); 
+            }
+            else {
+              // redirect to new page
+              this.setState({
+                username: data.username,
+                password: data.password,
+                user_id: json[0],
+                firstname: json[2]
+              });
+              this.props.history.push('/header2');
+              this.fetchUsers(json[0])
+            }
+          });
       })
   }
 
@@ -304,9 +306,25 @@ class App extends Component {
       username: null,
       password: null,
       firstname: null,
-      lastname: null
-    });
-    this.props.history.push('/');
+      lastname: null,
+    })
+    this.props.history.push('/')
+  }
+
+  fetchPosts() {
+    fetch('/users/getreview', {
+      headers : { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+       }
+    })
+      .then((res) => res.json())
+      .then((json)=> {
+        this.setState({
+          posts: json,
+          filteredPosts: json
+        });
+      })
   }
 
   filterPosts() {
@@ -334,14 +352,12 @@ class App extends Component {
     this.setState({ filteredPosts: newfilteredPosts });
   }
 
-  fetchFriends() {
-    fetch('users/getFriends', {
+  fetchUsers(user_id) {
+    fetch(`users/getusers?userId=${user_id}`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-      },
-      body: JSON.stringify(this.state.user_id)
+        Accept : 'application/json'
+      }
     })
       .then((res) => res.json())
       .then((json) => {
@@ -395,11 +411,14 @@ class App extends Component {
             handleChangeReview={this.handleChangeReview}
             handlePostForm={this.handlePostForm}
             categories={this.state.categories}
-            locations={this.state.locations}
-            potentialFollows={this.state.potentialFollows}
-            handleChangeFollow={this.handleChangeFollow}
-            addFollow={this.addFollow}/>
-            <RightContainer
+            locations={this.state.locations} 
+            potentialFollows={this.state.potentialFollows} 
+            handleChangeFollow={this.handleChangeFollow} 
+            addFollow={this.addFollow}
+            username = {this.state.username}
+            firstname = {this.state.firstname}
+            />
+            <RightContainer 
              filterPosts={this.filterPosts}
              filteredPosts={this.state.filteredPosts}
              handleChangeCategory={this.handleChangeCategory}

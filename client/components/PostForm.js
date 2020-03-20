@@ -10,7 +10,7 @@ import Select from '@material-ui/core/Select';
 function PostForm(props) {
     let i = 0
     let ratings = [1, 2, 3, 4, 5]
-    const locations = [,'Paris','Beijing','New York City','Miami','Las Vegas','Orlando','Seoul','Shanghai','Tokyo','Istanbul','Abu Dhabi','Dubai','Berlin']
+    const locations = ['Texas','Paris','Beijing','New York City','Miami','Las Vegas','Orlando','Seoul','Shanghai','Tokyo','Istanbul','Abu Dhabi','Dubai','Berlin']
     //popuating location and categroy dropdown menu with state
     let categoryOptions = props.categories.map(el => <MenuItem key={`cat-${i++}`} value={el}>{el}</MenuItem>)
     let locationOptions = locations.map(el => <MenuItem key={`loc-${i++}`} value={el}>{el}</MenuItem>)
