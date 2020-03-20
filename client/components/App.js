@@ -213,6 +213,7 @@ class App extends Component {
   }
 
   componentDidMount() {
+    this.state.socket.on('post', (post) => console.log(post));
     // fetch posts only once, then fetch again every 20 seconds
     this.fetchPosts();
     this.fetchFriends();
