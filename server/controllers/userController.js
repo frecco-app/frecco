@@ -124,7 +124,7 @@ userController.submitReview = (req, res, next) => {
   const {
     location, category, rating, recommendation, review_text
   } = req.body;
-  const str = `INSERT INTO "review" (created_by, location, category, rating, recommendation, review_text)
+  const str = `INSERT INTO "reviews" (created_by, location, category, rating, recommendation, review_text)
                VALUES ($1, $2, $3, $4, $5, $6);`;
   const params = [res.locals.user_id, location, category, rating, recommendation, review_text];
   db.query(str, params)
@@ -153,7 +153,7 @@ userController.submitReview = (req, res, next) => {
 
 userController.deleteReview = (req, res, next) => {
   const { id } = req.body;
-  const str = `DELETE from "review" WHERE id = ${id};`;
+  const str = `DELETE from "reviews" WHERE id = ${id};`;
   db.query(str)
     .then(() => next())
     .catch((err) => next(err));
@@ -206,8 +206,8 @@ userController.follow = (req, res, next) => {
 
 userController.getReviews = (req, res, next) => {
   //const { location, category, rating } = req.body;
-  let str = `SELECT review.*, u.username from review 
-            LEFT JOIN users as u ON review.created_by = u.id`; // initial query string given no constraints
+  let str = `SELECT reviews.*, u.username from reviews 
+            LEFT JOIN users as u ON reviews.created_by = u.id`; // initial query string given no constraints
   // const filterObj = { 'location': location, 'category': category, 'rating >': rating };
   // const filterArr = [location, category, rating];
   // // check if any of the elements are populated (if all the elements are NOT empty)
