@@ -5,9 +5,8 @@ import Input from '@material-ui/core/Input';
 const Header1 = (props) => {
   return (
     <div id="header1">
-        <Input id="username" variant="outlined" placeholder="username" onChange={props.handleChangeUsername}/>
-        &nbsp;&nbsp;
-        <Input id="password" type="password" variant="outlined" placeholder="login" onChange={props.handleChangePassword}/>
+        <Input id="username" variant="outlined" placeholder="username"/>
+        <Input id="password" type="password" variant="outlined" placeholder="login"/>
         <Button id="btn-login" onClick={props.login}>Login</Button>
         <Link to="/header3">
           <Button id="btn-signup">Signup</Button>

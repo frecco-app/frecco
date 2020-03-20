@@ -202,8 +202,8 @@ class App extends Component {
 
   login() {
     const data = { 
-      username: this.state.username,
-      password: this.state.password
+      username: document.getElementById('username').value,
+      password: document.getElementById('password').value
     };
     fetch('/users/login', { 
       method:'POST',
@@ -219,6 +219,10 @@ class App extends Component {
         } 
         else {
           // redirect to new page
+          this.setState({
+            username: data.username,
+            password: data.password
+          })
           this.props.history.push('/header2')
         }
       });
@@ -327,7 +331,10 @@ class App extends Component {
             locations={this.state.locations} 
             potentialFollows={this.state.potentialFollows} 
             handleChangeFollow={this.handleChangeFollow} 
-            addFollow={this.addFollow}/>
+            addFollow={this.addFollow}
+            username = {this.state.username}
+            name = {this.state.firstname}
+            />
             <RightContainer 
              filterPosts={this.filterPosts}
              filteredPosts={this.state.filteredPosts}
