@@ -1,8 +1,29 @@
+$snow: #fafbfb;
+$orange: #fe5722;
+$grey-font:#5a5a5a;
+$border: #dedede;
+$border-radius: 5px;
+$box-shadow: 0px 3px 5px 1px rgba(0,0,0,0.09);
+
 * {
-    // border: 1px solid red;
     margin: 0px;
     box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family: 'Open Sans';
+    font-weight: 500;
+}
+
+#header1, #header2, #header3 {
+    padding-right: 5%;
+    display: flex;
+    justify-content: flex-end;
+    margin: 10px;
+    h1 {
+        color: $orange;
+        font-weight: 800;
+        padding-left: 5%;
+        flex: 1;
+        margin-left: auto;
+    }
 }
 
 #wrapper {
@@ -17,40 +38,68 @@
     display: flex;
     align-self: bottom;
     justify-content: center;
+    border-top: .5px solid $border;
+    border-left: .5px solid $border;
+    border-right: .5px solid $border;
+    border-radius: 5px 5px 0px 0px;
+    box-shadow: $box-shadow;
 }
 #filter-form > * {
     align-self: flex-end
 } 
 #right-container {
-    flex: 1;
+    flex: 3;
     padding: 20px;
-    background-color: rgb(218, 218, 218);
-}
-
-#header1, #header2, #header3 {
-    margin: 5px;
+    background-color: $snow;
 }
 
 #left-container {
-    flex: 1;
-    background-color: rgb(150, 150, 150);
+    flex: 2;
+    background-color: $snow;
     padding: 20px;
 }
-   
-#post-form {
-    background-color: rgb(236, 236, 236);
-    padding: 10px;
-    border: .5px solid grey;
+
+#post-form-header {
+    background-color: #ecf0f1;
+    padding: 15px;
+    border: .5px solid $border;
+    border-radius: 5px 5px 0px 0px;
+    box-shadow: $box-shadow;
+    h3 {
+        font-size: 15px; 
+    }
 }
+
+#post-form {
+    background-color: white;
+    padding: 20px;
+    border: .5px solid $border;
+    border-radius: 0px 0px 5px 5px;
+    box-shadow: $box-shadow;
+    #ff-rev, #ff-rec, #ff-dd {
+        margin-bottom: 15px;
+    }
+}
+
 
 #feed-container {
     padding: 5px;
-    border: .5px solid grey;
+    background-color: white;
+    padding: 20px;
+    border: .5px solid $border;
+    border-radius: 0px 0x 5px 5px;
+    box-shadow: $box-shadow;
 }
 
 .feed-item {
-    padding: 5px;
-    border: .5px solid grey;
+    color: $grey-font;
+    margin-bottom: 10px;
+    padding: 15px;
+    border: .5px solid $border;
+    border-radius: $border-radius;
+    &:hover {
+        background-color: $snow;
+   }
 }
 
 .feed-item-top-container {
@@ -76,17 +125,20 @@
 
 
 #user-dashboard {
-    background-color: rgb(236, 236, 236);
-    border: .5px solid grey;
-    margin: 10px 0px;
-    padding: 5px;
+    background-color: white;
+    padding: 15px;
     height: 100px;
+    border: .5px solid $border;
+    border-radius: $border-radius;
+    box-shadow: $box-shadow;
 }
 
 #friends-container {
-    background-color: rgb(236, 236, 236);
-    border: .5px solid grey;
-    padding: 5px;
+    background-color: white;
+    padding: 15px;
     margin: 10px 0px;
     height: 100px;
+    border: .5px solid $border;
+    border-radius: $border-radius;
+    box-shadow: $box-shadow;
 }
