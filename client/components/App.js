@@ -68,6 +68,57 @@ class App extends Component {
     this.handleChangePostCategory = this.handleChangePostCategory.bind(this);
   }
 
+  componentDidMount() {
+    // Attempt to connect to room (catches refreshes during session)
+    this.fetchUser()
+      .then(({ username }) => {
+        if (username) this.state.socket.emit('room', username);
+      });
+
+    // fetch posts only once
+    this.fetchPosts();
+    this.fetchFriends();
+
+    // Handle recieved posts
+    this.state.socket.on('post', (post) => {
+      console.log(post);
+      this.setState({
+        posts: [...this.state.posts, post]
+      });
+      this.filterPosts();
+    });
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timer);
+  }
+
+  fetchUser() {
+    return fetch('/users/', {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      }
+    })
+      .then((res) => res.json());
+  }
+
+  fetchPosts() {
+    fetch('/users/getreview', {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      }
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        this.setState({
+          posts: json,
+          filteredPosts: json
+        });
+      });
+  }
+
   handleChangeFirstname(event) {
     this.setState({ firstname: event.target.value });
   }
@@ -209,34 +260,6 @@ class App extends Component {
       lastname: null
     });
     this.props.history.push('/');
-  }
-
-  componentDidMount() {
-    this.state.socket.on('post', (post) => console.log(post));
-    // fetch posts only once, then fetch again every 20 seconds
-    this.fetchPosts();
-    this.fetchFriends();
-    // this.timer = setInterval(() => this.fetchPosts(),5000)
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.timer);
-  }
-
-  fetchPosts() {
-    fetch('/users/getreview', {
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-      }
-    })
-      .then((res) => res.json())
-      .then((json) => {
-        this.setState({
-          posts: json,
-          filteredPosts: json
-        });
-      });
   }
 
   filterPosts() {

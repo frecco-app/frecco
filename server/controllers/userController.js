@@ -3,6 +3,25 @@ const db = require('../models/models.js');
 
 const userController = {};
 
+// Queries user information from user_id
+userController.query = (req, res, next) => {
+  const queryStr = `SELECT * FROM users
+                    WHERE id = $1`;
+  const params = [res.locals.userId];
+
+  db.query(queryStr, params)
+    .then((data) => {
+      [res.locals.user] = data.rows;
+      return next();
+    })
+
+    .catch(() => next({
+      log: 'There was a problem querying user information',
+      status: 500,
+      message: { err: 'There was a problem querying user information' }
+    }));
+};
+
 // Encrypts user password
 userController.encrypt = (req, res, next) => {
   const { password } = req.body;

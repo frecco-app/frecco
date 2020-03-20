@@ -5,9 +5,11 @@ const userController = require('../controllers/userController.js');
 const cookieController = require('../controllers/cookieController.js');
 const sessionController = require('../controllers/sessionController.js');
 
-router.get('/', (req, res) => {
-  res.sendStatus(204);
-});
+// Gets user info from cookie
+router.get('/',
+  sessionController.verify,
+  userController.query,
+  (req, res) => res.status(200).json(res.locals.user));
 
 /*
  * Sign up for new user
