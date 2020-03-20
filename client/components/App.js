@@ -19,16 +19,16 @@ class App extends Component {
       posts: [],
       filteredPosts: [],
       friends: [
-        {user_id: 1, username: 'Tom'},
-        {user_id: 2, username: 'Jerry'},
-        {user_id: 3, username: 'Marcus'},
-        {user_id: 4, username: 'Aurelius'},
+        { user_id: 1, username: 'Tom' },
+        { user_id: 2, username: 'Jerry' },
+        { user_id: 3, username: 'Marcus' },
+        { user_id: 4, username: 'Aurelius' },
       ],
       potentialFollows: [
-        {user_id: 5, username: 'Dunkin'},
-        {user_id: 6, username: 'Donuts'},
-        {user_id: 7, username: 'Pizza'},
-        {user_id: 8, username: 'Hut'},
+        { user_id: 5, username: 'Dunkin' },
+        { user_id: 6, username: 'Donuts' },
+        { user_id: 7, username: 'Pizza' },
+        { user_id: 8, username: 'Hut' },
       ],
       postFilter: {
         location: null, 
@@ -73,6 +73,7 @@ class App extends Component {
     this.handleChangeFollow = this.handleChangeFollow.bind(this);
     this.addFollow = this.addFollow.bind(this);
   }
+
   handleChangeFollow(e, value) {
     this.setState({ follow_user: value.user_id});
     console.log([...this.state.friends, value]);
@@ -81,9 +82,11 @@ class App extends Component {
     // delete from this.state.potentialFollows
     this.setState({ potentialFollows: [...this.state.potentialFollows].filter((user) => {
       return user.user_id !== value.user_id
-    })})
+    })
+    });
   }
-  addFollow(){
+
+  addFollow() {
     console.log(this.state.follow_user);
     const data = { followedUser: this.state.follow_user };
     fetch('/users/follow', {
@@ -100,6 +103,7 @@ class App extends Component {
         console.error('Error:', err);
       });
   }
+
   handleChangeFirstname() {
     this.setState({ firstname: event.target.value });
   }
@@ -115,6 +119,7 @@ class App extends Component {
   handleChangePassword() {
     this.setState({ password: event.target.value });
   }
+
   handleChangeLocation(e) {
     this.setState({ postFilter: {...this.state.postFilter, 'location': e.target.value}})
   }
@@ -126,26 +131,33 @@ class App extends Component {
   handleChangeRating(e) {
     this.setState({ postFilter: {...this.state.postFilter, 'minrating': e.target.value}})
   }
+
   handleChangeFriendsFilter(e, value) {
-    this.setState({ postFilter: {...this.state.postFilter, 'friends': value.map(a => a.user_id)}});
+    this.setState({ postFilter: { ...this.state.postFilter, 'friends': value.map(a => a.user_id) } });
     //value.map(a => String(a.user_id))
   }
+
   //Post form Handles
   handleChangeRecommendation(e) {
     this.setState({ postData: {...this.state.postData, recommendation: e.target.value}})
   }
+
   handleChangeReview(e) {
     this.setState({ postData: {...this.state.postData, review_text: e.target.value}})
   }
+
   handleChangePostLocation(e) {
     this.setState({ postData: {...this.state.postData, location: e.target.value}})
   }
+
   handleChangePostCategory(e) {
     this.setState({ postData: {...this.state.postData, category: e.target.value}})
   }
+
   handleChangePostRating(e) {
     this.setState({ postData: {...this.state.postData, rating: e.target.value}})
   }
+
   //post form data to server
   handlePostForm() {
     const data = {
@@ -158,7 +170,7 @@ class App extends Component {
     };
 
     fetch('/users/submitreview', {
-      method: 'POST', 
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -174,7 +186,7 @@ class App extends Component {
 
   signup() {
     //post data. if successfull go to header3
-    const data = { 
+    const data = {
       firstname: this.state.firstname,
       lastname: this.state.lastname,
       username: this.state.username,
@@ -191,7 +203,7 @@ class App extends Component {
       .then((res) => {
         if (!res.ok) { 
           console.log('signup error') 
-          this.setState({signupMessage:'Invalid signup information.'})
+          this.setState( {signupMessage:'Invalid signup information.' })
         } 
         else {
           // redirect to new page
@@ -201,34 +213,39 @@ class App extends Component {
   }
 
   login() {
-    const data = { 
+    const data = {
       username: document.getElementById('username').value,
       password: document.getElementById('password').value
     };
-    fetch('/users/login', { 
-      method:'POST',
+    fetch('/users/login', {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(data) 
+      body: JSON.stringify(data)
     })
       .then((res) => {
-        if (!res.ok) { 
-          console.log('login error') 
-          this.setState({loginMessage: 'Invalid login information'})
-        } 
-        else {
-          // redirect to new page
-          this.setState({
-            username: data.username,
-            password: data.password
-          })
-          this.props.history.push('/header2')
-        }
+        res.json()
+        // /login route sends back a response body that is the user's firstname
+          .then((json) => {
+            if (!res.ok) {
+              console.log('login error');
+              this.setState({ loginMessage: 'Invalid login information' }); 
+            }
+            else {
+              // redirect to new page
+              this.setState({
+                username: data.username,
+                password: data.password,
+                firstname: json,
+              });
+              this.props.history.push('/header2');
+            }
+          });
       });
   }
 
-  logout(){
+  logout() {
     this.setState({
       username: null,
       password: null,
@@ -238,14 +255,14 @@ class App extends Component {
     this.props.history.push('/')
   }
 
-  componentDidMount(){
+  componentDidMount() {
     // fetch posts only once, then fetch again every 20 seconds
     this.fetchPosts();
     this.fetchFriends();
     //this.timer = setInterval(() => this.fetchPosts(),5000)
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     clearInterval(this.timer)
   }
 
@@ -259,13 +276,13 @@ class App extends Component {
       .then((res) => res.json())
       .then((json)=> {
         this.setState({
-          posts: json, 
+          posts: json,
           filteredPosts: json
         });
       })
   }
 
-  filterPosts(){
+  filterPosts() {
     // filter posts to show, based on user selection
     let newfilteredPosts = this.state.posts;
     console.log('postFilter:',this.state.postFilter.friends.length>0);
@@ -283,28 +300,28 @@ class App extends Component {
       }
       if (this.state.postFilter.friends.length > 0 
         && !(this.state.postFilter.friends.includes(Number(post.created_by)))
-        ){
+      ) {
         result = false;
       }
       return result;
     });
-    this.setState( { filteredPosts: newfilteredPosts });
+    this.setState({ filteredPosts: newfilteredPosts });
   }
 
   fetchFriends() {
     fetch('users/getFriends', {
       method: 'GET',
-      headers : { 
+      headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
-       }
+      }
     })
       .then((res) => res.json())
       .then((json)=> {
         this.setState({
-          friends: json, 
+          friends: json,
         });
-      })
+      });
   }
 
   render() {

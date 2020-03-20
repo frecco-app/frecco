@@ -5,8 +5,8 @@ function UserDashboard(props) {
     return (
         <div id='user-dashboard'>
             <h3>User Dashboard</h3>
-            <h4>Username: {props.username}</h4>
-            <h4>Name: {props.name}</h4>
+            <p>Name: {props.name}</p>
+            <p>Username: {props.username}</p>
         </div>
     )
 }
