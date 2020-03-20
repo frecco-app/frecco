@@ -357,7 +357,7 @@ class App extends Component {
         const friends = [];
         const potentialFollows = [];
         json.forEach((user) => {
-          if (user.friend) { friends.push({ 
+          if (user.followed_user !== null) { friends.push({ 
             user_id: user.user_id, username: user.username 
           }) } 
           else { 
