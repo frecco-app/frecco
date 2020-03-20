@@ -181,7 +181,6 @@ class App extends Component {
       username: this.state.username,
       password: this.state.password
     };
-
     this.state.socket.emit('room', data.username);
 
     fetch('/users/login', {

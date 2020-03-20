@@ -44,7 +44,7 @@ userController.create = (req, res, next) => {
 userController.verify = (req, res, next) => {
   const { username, password } = req.body;
 
-  const str = `SELECT * from users
+  const str = `SELECT * FROM users
                WHERE username = $1`;
   const params = [username];
 
@@ -123,10 +123,11 @@ userController.destroy = (req, res, next) => {
 userController.submitReview = (req, res, next) => {
   const {
     location, category, rating, recommendation, reviewText, userId
-  } = { ...req.body, user_id: res.locals.userId };
+  } = { ...req.body, userId: res.locals.userId };
 
   const str = `INSERT INTO reviews (location, category, rating, recommendation, review_text, created_by)
-               VALUES ($1, $2, $3, $4, $5, $6)`;
+               VALUES ($1, $2, $3, $4, $5, $6)
+               RETURNING *`;
 
   const params = [location, category, rating, recommendation, reviewText, userId];
 
@@ -141,6 +142,42 @@ userController.submitReview = (req, res, next) => {
       status: 500,
       message: { err: 'There was a problem with submitting a review' }
     }));
+};
+
+// Get friends of user as arr
+userController.getFollowers = (req, res, next) => {
+  const queryStr = `SELECT fr.username
+                    FROM (
+                      SELECT user_id FROM follows
+                      WHERE followed_user = $1
+                    ) fl
+                    INNER JOIN users fr
+                    ON fl.user_id = fr.id`;
+  const params = [res.locals.review.created_by];
+
+  db.query(queryStr, params)
+    .then((data) => {
+      res.locals.followers = data.rows;
+      return next();
+    })
+
+    .catch(() => next({
+      log: 'There was a problem finding followers',
+      status: 500,
+      message: { err: 'There was a problem finding followers' }
+    }));
+};
+
+// Emit review through socket channel
+userController.emitReview = (req, res, next) => {
+  // const { followers } = res.locals;
+  // for (let i = 0; i < followers.length; i++) {
+  //   const { username } = followers[i];
+  //   console.log(username);
+  //   req.socket.in(username).broadcast.emit('post', res.locals.review);
+  // }
+  req.socket.broadcast.emit('post', res.locals.review);
+  return next();
 };
 
 /*
@@ -183,10 +220,10 @@ userController.deleteReview = (req, res, next) => {
  */
 
 userController.follow = (req, res, next) => {
-  const { user_id, followedUser } = req.body;
+  const { userId, followedUser } = req.body;
   const str = `INSERT INTO follows (user_id, followed_user)
                VALUES ($1, $2)`;
-  const params = [user_id, followedUser];
+  const params = [userId, followedUser];
   db.query(str, params)
     .then(() => next())
     .catch((err) => next(err));
