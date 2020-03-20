@@ -28,6 +28,12 @@ class App extends Component {
         { user_id: 3, username: 'Marcus' },
         { user_id: 4, username: 'Aurelius' }
       ],
+      potentialFollows: [
+        { user_id: 5, username: 'Dunkin' },
+        { user_id: 6, username: 'Donuts' },
+        { user_id: 21, username: 'draco' },
+        { user_id: 8, username: 'Hut' }
+      ],
       postFilter: {
         location: null,
         category: null,
@@ -41,8 +47,9 @@ class App extends Component {
         category: null,
         rating: null,
         recommendation: null,
-        reviewText: null
-      }
+        review_text: null
+      },
+      follow_user: null // {user_id: #, username: # }
     };
     // methods to handle signup/login
     this.signup = this.signup.bind(this);
@@ -57,7 +64,7 @@ class App extends Component {
     this.handleChangeRating = this.handleChangeRating.bind(this);
     this.handleChangeFriendsFilter = this.handleChangeFriendsFilter.bind(this);
     // methods for fetching posts
-    this.fetch = this.fetchPosts.bind(this);
+    this.fetchPosts = this.fetchPosts.bind(this);
     this.filterPosts = this.filterPosts.bind(this);
     // methods for posting
     this.handlePostForm = this.handlePostForm.bind(this);
@@ -66,6 +73,33 @@ class App extends Component {
     this.handleChangePostRating = this.handleChangePostRating.bind(this);
     this.handleChangePostLocation = this.handleChangePostLocation.bind(this);
     this.handleChangePostCategory = this.handleChangePostCategory.bind(this);
+    // methods for following
+    this.handleChangeFollow = this.handleChangeFollow.bind(this);
+    this.addFollow = this.addFollow.bind(this);
+  }
+
+  handleChangeFollow(e, value) {
+    this.setState({ follow_user: value });
+  }
+
+  addFollow() {
+    const data = { followedUser: this.state.follow_user.user_id };
+    fetch('/users/follow', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        this.setState({ friends: [...this.state.friends, { ...this.state.follow_user }] });
+        this.setState({ potentialFollows: [...this.state.potentialFollows].filter((user) => user.user_id !== json) });
+        console.log('Success:', json);
+      })
+      .catch((err) => {
+        console.error('Error:', err);
+      });
   }
 
   componentDidMount() {
@@ -81,7 +115,6 @@ class App extends Component {
 
     // Handle recieved posts
     this.state.socket.on('post', (post) => {
-      console.log(post);
       this.setState({
         posts: [...this.state.posts, post]
       });
@@ -149,7 +182,6 @@ class App extends Component {
 
   handleChangeFriendsFilter(event, value) {
     this.setState({ postFilter: { ...this.state.postFilter, friends: value.map((a) => a.user_id) } });
-    console.log('hand', this.state.postFilter.friends);
     // value.map(a => String(a.user_id))
   }
 
@@ -192,10 +224,10 @@ class App extends Component {
       },
       body: JSON.stringify(data)
     })
-      .then((res) => {
+      .then(() => {
         console.log('Success');
       })
-      .catch((err) => {
+      .catch(() => {
         console.error('Error');
       });
   }
@@ -312,8 +344,8 @@ class App extends Component {
               <Route exact path='/' render={() => <Header1
                 message={this.state.loginMessage}
                 login={this.login}
-                handleChangeUsername={(event) => this.handleChangeUsername(event)}
-                handleChangePassword={(event) => this.handleChangePassword(event)} />}
+                handleChangeUsername={this.handleChangeUsername}
+                handleChangePassword={this.handleChangePassword} />}
               />
               <Route exact path='/header2' render={() => <Header2
                 username={this.state.username}
@@ -322,35 +354,37 @@ class App extends Component {
               <Route exact path='/header3' render={() => <Header3
                 message={this.state.signupMessage}
                 signup={this.signup}
-                handleChangeUsername={(event) => this.handleChangeUsername(event)}
-                handleChangePassword={(event) => this.handleChangePassword(event)}
-                handleChangeFirstname={(event) => this.handleChangeFirstname(event)}
-                handleChangeLastname={(event) => this.handleChangeLastname(event)}/>}
+                handleChangeUsername={this.handleChangeUsername}
+                handleChangePassword={this.handleChangePassword}
+                handleChangeFirstname={this.handleChangeFirstname}
+                handleChangeLastname={this.handleChangeLastname} />}
               />
           </Switch>
           <div id='wrapper'>
             <LeftContainer
-              postData={this.state.postData}
-              handleChangePostCategory={(event) => this.handleChangePostCategory(event)}
-              handleChangePostLocation={(event) => this.handleChangePostLocation(event)}
-              handleChangePostRating={(event) => this.handleChangePostRating(event)}
-              handleChangeRecommendation={(event) => this.handleChangeRecommendation(event)}
-              handleChangeReview={(event) => this.handleChangeReview(event)}
-              handlePostForm={(event) => this.handlePostForm(event)}
-              categories={this.state.categories}
-              locations={this.state.locations}
-            />
+            postData={this.state.postData}
+            handleChangePostCategory={this.handleChangePostCategory}
+            handleChangePostLocation={this.handleChangePostLocation}
+            handleChangePostRating={this.handleChangePostRating}
+            handleChangeRecommendation={this.handleChangeRecommendation}
+            handleChangeReview={this.handleChangeReview}
+            handlePostForm={this.handlePostForm}
+            categories={this.state.categories}
+            locations={this.state.locations}
+            potentialFollows={this.state.potentialFollows}
+            handleChangeFollow={this.handleChangeFollow}
+            addFollow={this.addFollow}/>
             <RightContainer
-              filterPosts={this.filterPosts}
-              filteredPosts={this.state.filteredPosts}
-              handleChangeCategory={(event) => this.handleChangeCategory(event)}
-              handleChangeLocation={(event) => this.handleChangeLocation(event)}
-              handleChangeRating={(event) => this.handleChangeRating(event)}
-              location={this.state.postFilter.location}
-              category={this.state.postFilter.category}
-              minrating={this.state.postFilter.minrating}
-              friends={this.state.friends}
-              handleChangeFriendsFilter={(event) => this.handleChangeFriendsFilter(event)}
+             filterPosts={this.filterPosts}
+             filteredPosts={this.state.filteredPosts}
+             handleChangeCategory={this.handleChangeCategory}
+             handleChangeLocation={this.handleChangeLocation}
+             handleChangeRating={this.handleChangeRating}
+             location={this.state.postFilter.location}
+             category={this.state.postFilter.category}
+             minrating={this.state.postFilter.minrating}
+             friends={this.state.friends}
+             handleChangeFriendsFilter={this.handleChangeFriendsFilter}
              />
           </div>
       </Fragment>

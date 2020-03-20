@@ -9,7 +9,10 @@ class LeftContainer extends React.Component {
         return (
             <div id='left-container'>
                 <UserDashboard />
-                <FriendsContainer />
+                <FriendsContainer 
+                potentialFollows={this.props.potentialFollows} 
+                handleChangeFollow={this.props.handleChangeFollow}
+                addFollow={this.props.addFollow}/>
                 <PostForm 
                 postData={this.props.postData}
                 handleChangePostCategory={this.props.handleChangePostCategory}

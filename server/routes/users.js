@@ -63,8 +63,9 @@ router.post('/submitreview',
   (req, res) => res.sendStatus(204));
 
 router.post('/follow',
+  sessionController.verify,
   userController.follow,
-  (req, res) => res.status(200).json('Followed'));
+  (req, res) => res.status(200).json(res.locals.followed));
 
 router.get('/getreview', userController.getReviews, (req, res) => {
   res.status(200).json(res.locals.reviews);

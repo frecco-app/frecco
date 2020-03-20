@@ -237,12 +237,16 @@ userController.deleteReview = (req, res, next) => {
  */
 
 userController.follow = (req, res, next) => {
-  const { userId, followedUser } = req.body;
+  const { userId } = res.locals;
+  const { followedUser } = req.body;
   const str = `INSERT INTO follows (user_id, followed_user)
                VALUES ($1, $2)`;
   const params = [userId, followedUser];
   db.query(str, params)
-    .then(() => next())
+    .then(() => {
+      res.locals.followed = followedUser;
+      return next();
+    })
     .catch((err) => next(err));
 };
 
@@ -286,8 +290,7 @@ userController.getReviews = (req, res, next) => {
   //   };
   //   str = str.slice(0, -4); // removes trailing 'AND'
   // }
-  // appends ranking filter by highest likes and final semicolon necessary for query command
-  // str += 'ORDER BY likes DESC';
+  // str += 'ORDER BY likes DESC;'; // appends ranking filter by highest likes and final semicolon necessary for query command
   db.query(str)
     .then((data) => {
       res.locals.reviews = data.rows;
