@@ -24,6 +24,12 @@ class App extends Component {
         {user_id: 3, username: 'Marcus'},
         {user_id: 4, username: 'Aurelius'},
       ],
+      potentialFollows: [
+        {user_id: 5, username: 'Dunkin'},
+        {user_id: 6, username: 'Donuts'},
+        {user_id: 7, username: 'Pizza'},
+        {user_id: 8, username: 'Hut'},
+      ],
       postFilter: {
         location: null, 
         category: null, 
@@ -38,7 +44,8 @@ class App extends Component {
         rating: null,
         recommendation: null,
         review_text: null
-      }
+      },
+      follow_user: null // {user_id: #, username: # }
     };
     // methods to handle signup/login
     this.signup = this.signup.bind(this);
@@ -53,7 +60,7 @@ class App extends Component {
     this.handleChangeRating = this.handleChangeRating.bind(this);
     this.handleChangeFriendsFilter = this.handleChangeFriendsFilter.bind(this);
     // methods for fetching posts
-    this.fetch = this.fetchPosts.bind(this);
+    this.fetchPosts = this.fetchPosts.bind(this);
     this.filterPosts = this.filterPosts.bind(this);
     // methods for posting
     this.handlePostForm = this.handlePostForm.bind(this);
@@ -62,8 +69,37 @@ class App extends Component {
     this.handleChangePostRating = this.handleChangePostRating.bind(this);
     this.handleChangePostLocation = this.handleChangePostLocation.bind(this);
     this.handleChangePostCategory = this.handleChangePostCategory.bind(this);
+    // methods for following
+    this.handleChangeFollow = this.handleChangeFollow.bind(this);
+    this.addFollow = this.addFollow.bind(this);
   }
-
+  handleChangeFollow(e, value) {
+    this.setState({ follow_user: value.user_id});
+    console.log([...this.state.friends, value]);
+    // add to this.state.friends
+    this.setState({ friends: [...this.state.friends, value]});
+    // delete from this.state.potentialFollows
+    this.setState({ potentialFollows: [...this.state.potentialFollows].filter((user) => {
+      return user.user_id !== value.user_id
+    })})
+  }
+  addFollow(){
+    console.log(this.state.follow_user);
+    const data = { followedUser: this.state.follow_user };
+    fetch('/users/follow', {
+      method: 'POST', 
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+      .then((data) => {
+        console.log('Success:', data);
+      })
+      .catch((err) => {
+        console.error('Error:', err);
+      });
+  }
   handleChangeFirstname() {
     this.setState({ firstname: event.target.value });
   }
@@ -92,10 +128,8 @@ class App extends Component {
   }
   handleChangeFriendsFilter(e, value) {
     this.setState({ postFilter: {...this.state.postFilter, 'friends': value.map(a => a.user_id)}});
-    console.log('hand', this.state.postFilter.friends);
     //value.map(a => String(a.user_id))
   }
-
   //Post form Handles
   handleChangeRecommendation(e) {
     this.setState({ postData: {...this.state.postData, recommendation: e.target.value}})
@@ -246,7 +280,6 @@ class App extends Component {
       if (this.state.postFilter.friends.length > 0 
         && !(this.state.postFilter.friends.includes(Number(post.created_by)))
         ){
-          console.log(Number(post.created_by))
         result = false;
       }
       return result;
@@ -291,7 +324,10 @@ class App extends Component {
             handleChangeReview={this.handleChangeReview}
             handlePostForm={this.handlePostForm}
             categories={this.state.categories}
-            locations={this.state.locations} />
+            locations={this.state.locations} 
+            potentialFollows={this.state.potentialFollows} 
+            handleChangeFollow={this.handleChangeFollow} 
+            addFollow={this.addFollow}/>
             <RightContainer 
              filterPosts={this.filterPosts}
              filteredPosts={this.state.filteredPosts}

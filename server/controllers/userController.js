@@ -172,9 +172,10 @@ userController.deleteReview = (req, res, next) => {
  */
 
 userController.follow = (req, res, next) => {
-  const { user_id, followedUser } = req.body;
+  const { followedUser } = req.body;
+  console.log('userController.follow', followedUser);
   const str = 'INSERT INTO "follows" (user_id, followed_user) VALUES ($1, $2);';
-  const params = [user_id, followedUser];
+  const params = [res.locals.user_id, followedUser];
   db.query(str, params)
     .then(() => next())
     .catch((err) => next(err));

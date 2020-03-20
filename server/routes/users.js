@@ -59,6 +59,7 @@ router.post('/submitreview',
   (req, res) => res.status(200).json('Submitted.'));
 
 router.post('/follow',
+  sessionController.verify,
   userController.follow,
   (req, res) => res.status(200).json('Followed'));
 
