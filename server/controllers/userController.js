@@ -152,14 +152,23 @@ userController.submitReview = (req, res, next) => {
 
   db.query(str, params)
     .then((data) => {
-      [res.locals.review] = data.rows;
-      return next();
+      if (data.rows !== []) {
+        [res.locals.review] = data.rows;
+        res.locals.review.username = res.locals.username;
+        return next();
+      }
+
+      return next({
+        log: 'There was a problem submitting a review',
+        status: 400,
+        message: { err: 'There was a problem with submitting a review' }
+      });
     })
 
     .catch(() => next({
-      log: 'There was a problem with submitting a review',
+      log: 'There was a problem submitting a review',
       status: 500,
-      message: { err: 'There was a problem with submitting a review' }
+      message: { err: 'There was a problem submitting a review' }
     }));
 };
 
@@ -189,7 +198,7 @@ userController.getFollowers = (req, res, next) => {
 
 // Emit review through socket channel
 userController.emitReview = (req, res, next) => {
-  const { followers } = res.locals;
+  const followers = [...res.locals.followers, { username: res.locals.username }];
   for (let i = 0; i < followers.length; i++) {
     const { username } = followers[i];
     req.socket.to(username).emit('post', res.locals.review);
