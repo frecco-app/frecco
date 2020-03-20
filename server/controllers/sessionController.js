@@ -29,7 +29,7 @@ sessionController.verify = (req, res, next) => {
   db.query(queryStr, params)
     .then((data) => {
       // Responds with user_id
-      res.locals.user_id = data.rows[0].user_id;
+      res.locals.userId = data.rows[0].user_id;
       return next();
     })
     .catch(() => next({

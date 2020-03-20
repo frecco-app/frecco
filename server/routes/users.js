@@ -5,9 +5,11 @@ const userController = require('../controllers/userController.js');
 const cookieController = require('../controllers/cookieController.js');
 const sessionController = require('../controllers/sessionController.js');
 
-router.get('/', (req, res) => {
-  res.sendStatus(204);
-});
+// Gets user info from cookie
+router.get('/',
+  sessionController.verify,
+  userController.query,
+  (req, res) => res.status(200).json(res.locals.user));
 
 /*
  * Sign up for new user
@@ -56,15 +58,17 @@ router.post('/delete',
 router.post('/submitreview',
   sessionController.verify,
   userController.submitReview,
-  (req, res) => res.status(200).json('Submitted.'));
+  userController.getFollowers,
+  userController.emitReview,
+  (req, res) => res.sendStatus(204));
 
 router.post('/follow',
   sessionController.verify,
   userController.follow,
-  (req, res) => res.status(200).json('Followed'));
+  (req, res) => res.status(200).json(res.locals.followed));
 
 router.get('/getreview', userController.getReviews, (req, res) => {
-    res.status(200).json(res.locals.reviews);
+  res.status(200).json(res.locals.reviews);
 });
 
 module.exports = router;

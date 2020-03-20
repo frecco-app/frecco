@@ -3,6 +3,25 @@ const db = require('../models/models.js');
 
 const userController = {};
 
+// Queries user information from user_id
+userController.query = (req, res, next) => {
+  const queryStr = `SELECT * FROM users
+                    WHERE id = $1`;
+  const params = [res.locals.userId];
+
+  db.query(queryStr, params)
+    .then((data) => {
+      [res.locals.user] = data.rows;
+      return next();
+    })
+
+    .catch(() => next({
+      log: 'There was a problem querying user information',
+      status: 500,
+      message: { err: 'There was a problem querying user information' }
+    }));
+};
+
 // Encrypts user password
 userController.encrypt = (req, res, next) => {
   const { password } = req.body;
@@ -44,7 +63,8 @@ userController.create = (req, res, next) => {
 userController.verify = (req, res, next) => {
   const { username, password } = req.body;
 
-  const str = 'SELECT * from users WHERE username = $1;';
+  const str = `SELECT * FROM users
+               WHERE username = $1`;
   const params = [username];
 
   db.query(str, params)
@@ -74,31 +94,31 @@ userController.verify = (req, res, next) => {
 
 // Compares plain text password on res.locals.password to hashed password
 userController.authenticate = (req, res, next) => {
-    bcrypt.compare(res.locals.password, res.locals.user.password)
-      .then((result) => {
-        // If password correct, move to next middleware
-        if (result) return next();
-        // If password incorrect, call global error handler
-        return next({
-          log: 'Username or password incorrect',
-          status: 400,
-          message: { err: 'Username or password incorrect' }
-        });
-      })
-
-      // Formatting error
-      .catch(() => next({
-        log: 'Incorrect input format',
+  bcrypt.compare(res.locals.password, res.locals.user.password)
+    .then((result) => {
+      // If password correct, move to next middleware
+      if (result) return next();
+      // If password incorrect, call global error handler
+      return next({
+        log: 'Username or password incorrect',
         status: 400,
-        message: { err: 'Incorrect input format' }
-      }));
+        message: { err: 'Username or password incorrect' }
+      });
+    })
+
+  // Formatting error
+    .catch(() => next({
+      log: 'Incorrect input format',
+      status: 400,
+      message: { err: 'Incorrect input format' }
+    }));
 };
 
 // Removes user from users table
 userController.destroy = (req, res, next) => {
   const queryStr = `DELETE FROM users
                     WHERE id = $1`;
-  const params = [res.locals.user_id];
+  const params = [res.locals.userId];
 
   db.query(queryStr, params)
     .then(() => next())
@@ -111,33 +131,77 @@ userController.destroy = (req, res, next) => {
 
 /* Expects format of req.body and to  be:
  *   {
- *     "username":  <- this should probably be in req.cookies or something
+ *     "username":
  *     "location": , eg paris
  *     "category": , eg attraction
  *     "rating": integer from 1 to 5,
  *     "recommendation": , eg eiffel tower <- can think of a better name if confusing
  *     "review_text": eg it was pointy
- *
  *   }
  */
 userController.submitReview = (req, res, next) => {
   const {
-    location, category, rating, recommendation, review_text
-  } = req.body;
-  const str = `INSERT INTO "review" (created_by, location, category, rating, recommendation, review_text)
-               VALUES ($1, $2, $3, $4, $5, $6);`;
-  const params = [res.locals.user_id, location, category, rating, recommendation, review_text];
+    location, category, rating, recommendation, reviewText, userId
+  } = { ...req.body, userId: res.locals.userId };
+
+  const str = `INSERT INTO reviews (location, category, rating, recommendation, review_text, created_by)
+               VALUES ($1, $2, $3, $4, $5, $6)
+               RETURNING *`;
+
+  const params = [location, category, rating, recommendation, reviewText, userId];
+
   db.query(str, params)
-    .then(() => next())
+    .then((data) => {
+      [res.locals.review] = data.rows;
+      return next();
+    })
+
     .catch(() => next({
-      log: 'problem with db query',
+      log: 'There was a problem with submitting a review',
       status: 500,
-      message: {err: 'problem with db query'}
+      message: { err: 'There was a problem with submitting a review' }
     }));
 };
 
-/* 
- * When user sees a rendered list of reviews, maybe can hit an X button next to the one they want to delete, which sends to server a get request which expects format of req.body to be in format of one of the reviews that server sends back to front-end in array (from filterReview) 
+// Get friends of user as arr
+userController.getFollowers = (req, res, next) => {
+  const queryStr = `SELECT fr.username
+                    FROM (
+                      SELECT user_id FROM follows
+                      WHERE followed_user = $1
+                    ) fl
+                    INNER JOIN users fr
+                    ON fl.user_id = fr.id`;
+  const params = [res.locals.review.created_by];
+
+  db.query(queryStr, params)
+    .then((data) => {
+      res.locals.followers = data.rows;
+      return next();
+    })
+
+    .catch(() => next({
+      log: 'There was a problem finding followers',
+      status: 500,
+      message: { err: 'There was a problem finding followers' }
+    }));
+};
+
+// Emit review through socket channel
+userController.emitReview = (req, res, next) => {
+  const { followers } = res.locals;
+  for (let i = 0; i < followers.length; i++) {
+    const { username } = followers[i];
+    req.socket.to(username).emit('post', res.locals.review);
+  }
+  return next();
+};
+
+/*
+ * When user sees a rendered list of reviews, maybe can hit an X button next to the
+ * one they want to delete, which sends to server a get request which expects format
+ * of req.body to be in format of one of the reviews that server sends back to
+ * front-end in array (from filterReview)
  *   {
  *       "id": 3,
  *       "created_by": "100",
@@ -152,9 +216,10 @@ userController.submitReview = (req, res, next) => {
  */
 
 userController.deleteReview = (req, res, next) => {
-  const { id } = req.body;
-  const str = `DELETE from "review" WHERE id = ${id};`;
-  db.query(str)
+  const str = `DELETE from reviews
+               WHERE id = $1`;
+  const params = [req.body.id];
+  db.query(str, params)
     .then(() => next())
     .catch((err) => next(err));
 };
@@ -172,24 +237,29 @@ userController.deleteReview = (req, res, next) => {
  */
 
 userController.follow = (req, res, next) => {
+  const { userId } = res.locals;
   const { followedUser } = req.body;
-  console.log('userController.follow', followedUser);
-  const str = 'INSERT INTO "follows" (user_id, followed_user) VALUES ($1, $2);';
-  const params = [res.locals.user_id, followedUser];
+  const str = `INSERT INTO follows (user_id, followed_user)
+               VALUES ($1, $2)`;
+  const params = [userId, followedUser];
   db.query(str, params)
-    .then(() => next())
+    .then(() => {
+      res.locals.followed = followedUser;
+      return next();
+    })
     .catch((err) => next(err));
 };
 
 
-/* Category should be a dropdown, city/location from user text input, Rating minimum filter (1-5 stars)
- * Expects req.body to be in same format as submitReview with values either null if left blank (which would show all the posts) or send through req body:
+/* Category should be a dropdown, city/location from user text input, Rating minimum filter
+ * (1-5 stars) Expects req.body to be in same format as submitReview with values either null
+ * if left blank (which would show all the posts) or send through req body:
  *   {
- *     "location": , eg paris 
+ *     "location": , eg paris
  *     "category": , eg attraction
  *     "rating": integer from 1 to 5,
  *      "userid": <- this might be in cookies or something,
- *     "toggleFollowing": has a value if user only wants to see posts by those s/he is following, otherwise empty
+ *     "toggleFollowing": empty if user only wants to see posts by those they are following
  *   }
  * Returns an array of review posts with multiple objects in format of:
  *   {
@@ -205,9 +275,10 @@ userController.follow = (req, res, next) => {
 */
 
 userController.getReviews = (req, res, next) => {
-  //const { location, category, rating } = req.body;
-  let str = `SELECT review.*, u.username from review 
-            LEFT JOIN users as u ON review.created_by = u.id`; // initial query string given no constraints
+  // const { location, category, rating } = req.body;
+  const str = `SELECT r.*, u.username
+               FROM reviews r LEFT JOIN users u
+               ON r.created_by = u.id`; // initial query string given no constraints
   // const filterObj = { 'location': location, 'category': category, 'rating >': rating };
   // const filterArr = [location, category, rating];
   // // check if any of the elements are populated (if all the elements are NOT empty)
