@@ -32,7 +32,11 @@ class App extends Component {
         { user_id: 5, username: 'Dunkin' },
         { user_id: 6, username: 'Donuts' },
         { user_id: 21, username: 'draco' },
-        { user_id: 8, username: 'Hut' }
+        { user_id: 8, username: 'Hut' },
+        { user_id: 23, username: 'Lloyd' },
+        { user_id: 24, username: 'pine' },
+        { user_id: 18, username: 'michael' },
+
       ],
       postFilter: {
         location: null,

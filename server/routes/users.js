@@ -74,6 +74,8 @@ router.get('/getreview', userController.getReviews, (req, res) => {
   res.status(200).json(res.locals.reviews);
 });
 
-
+router.get('/getusers', userController.getUsers, (req, res) => {
+  res.status(200).json(res.locals.followedUsers);
+});
 
 module.exports = router;

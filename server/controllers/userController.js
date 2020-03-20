@@ -300,4 +300,19 @@ userController.getReviews = (req, res, next) => {
 };
 
 
+// Returns a table with list of user IDs and usernames (not including own user) and whether they are friends
+// with current user or not 
+// Expects to receive current user's id in the request body
+userController.getUsers = (req, res, next) => {
+  const { userId } = req.body;
+  const str = 'SELECT u.id, u.username, f.followed_user FROM users u LEFT JOIN follows f ON u.id = f.followed_user AND $1 = f.user_id WHERE $1 != u.id';
+  const params = [userId];
+  db.query(str, params)
+    .then((data) => {
+      res.locals.followedUsers = data.rows;
+      return next();
+    })
+    .catch((err) => next(err));
+};
+
 module.exports = userController;
