@@ -1,16 +1,29 @@
 $snow: #fafbfb;
 $orange: #fe5722;
-$grey-font:#7e7e7e;
+$grey-font:#5a5a5a;
 $border: #dedede;
 $border-radius: 5px;
 $box-shadow: 0px 3px 5px 1px rgba(0,0,0,0.09);
 
 * {
-    // border: 1px solid red;
     margin: 0px;
     box-sizing: border-box;
     font-family: 'Open Sans';
     font-weight: 500;
+}
+
+#header1, #header2, #header3 {
+    padding-right: 5%;
+    display: flex;
+    justify-content: flex-end;
+    margin: 10px;
+    h1 {
+        color: $orange;
+        font-weight: 800;
+        padding-left: 5%;
+        flex: 1;
+        margin-left: auto;
+    }
 }
 
 #wrapper {
@@ -35,35 +48,39 @@ $box-shadow: 0px 3px 5px 1px rgba(0,0,0,0.09);
     align-self: flex-end
 } 
 #right-container {
-    flex: 1;
+    flex: 3;
     padding: 20px;
     background-color: $snow;
-}
-
-#header1, #header2, #header3 {
-    margin: 5px;
 }
 
 #left-container {
-    flex: 1;
+    flex: 2;
     background-color: $snow;
     padding: 20px;
 }
-   
+
+#post-form-header {
+    background-color: #ecf0f1;
+    padding: 15px;
+    border: .5px solid $border;
+    border-radius: 5px 5px 0px 0px;
+    box-shadow: $box-shadow;
+    h3 {
+        font-size: 15px; 
+    }
+}
+
 #post-form {
     background-color: white;
     padding: 20px;
     border: .5px solid $border;
-    border-radius: $border-radius;
+    border-radius: 0px 0px 5px 5px;
     box-shadow: $box-shadow;
     #ff-rev, #ff-rec, #ff-dd {
         margin-bottom: 15px;
     }
-    h3 {
-      font-size: 18px; 
-      margin-bottom: 5px;
-    }
 }
+
 
 #feed-container {
     padding: 5px;
@@ -75,8 +92,14 @@ $box-shadow: 0px 3px 5px 1px rgba(0,0,0,0.09);
 }
 
 .feed-item {
-    padding: 5px;
-    border: .5px solid grey;
+    color: $grey-font;
+    margin-bottom: 10px;
+    padding: 15px;
+    border: .5px solid $border;
+    border-radius: $border-radius;
+    &:hover {
+        background-color: $snow;
+   }
 }
 
 .feed-item-top-container {
@@ -103,7 +126,6 @@ $box-shadow: 0px 3px 5px 1px rgba(0,0,0,0.09);
 
 #user-dashboard {
     background-color: white;
-    margin: 10px 0px;
     padding: 15px;
     height: 100px;
     border: .5px solid $border;

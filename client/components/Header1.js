@@ -5,6 +5,7 @@ import Input from '@material-ui/core/Input';
 const Header1 = (props) => {
   return (
     <div id="header1">
+        <h1>Frecco</h1>
         <Input id="username" variant="outlined" placeholder="username" onChange={props.handleChangeUsername}/>
         &nbsp;&nbsp;
         <Input id="password" type="password" variant="outlined" placeholder="login" onChange={props.handleChangePassword}/>
