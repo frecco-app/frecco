@@ -56,7 +56,7 @@ router.post('/delete',
 router.post('/submitreview',
   sessionController.verify,
   userController.submitReview,
-  (req, res) => res.status(200).json('Submitted.'));
+  (req, res) => res.status(200).json(res.locals.review));
 
 router.post('/follow',
   userController.follow,

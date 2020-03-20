@@ -99,7 +99,7 @@ userController.authenticate = (req, res, next) => {
 userController.destroy = (req, res, next) => {
   const queryStr = `DELETE FROM users
                     WHERE id = $1`;
-  const params = [res.locals.user_id];
+  const params = [res.locals.userId];
 
   db.query(queryStr, params)
     .then(() => next())
@@ -122,12 +122,13 @@ userController.destroy = (req, res, next) => {
  */
 userController.submitReview = (req, res, next) => {
   const {
-    location, category, rating, recommendation, reviewText
-  } = req.body;
+    location, category, rating, recommendation, reviewText, userId
+  } = { ...req.body, user_id: res.locals.userId };
 
-  const str = `INSERT INTO reviews (created_by, location, category, rating, recommendation, review_text)
-               VALUES ($1, $2, $3, $4, $5, $6);`;
-  const params = [res.locals.user_id, location, category, rating, recommendation, reviewText];
+  const str = `INSERT INTO reviews (location, category, rating, recommendation, review_text, created_by)
+               VALUES ($1, $2, $3, $4, $5, $6)`;
+
+  const params = [location, category, rating, recommendation, reviewText, userId];
 
   db.query(str, params)
     .then((data) => {
@@ -217,9 +218,9 @@ userController.follow = (req, res, next) => {
 
 userController.getReviews = (req, res, next) => {
   // const { location, category, rating } = req.body;
-  const str = `SELECT review.*, u.username
-               FROM reviews LEFT JOIN users u
-               ON review.created_by = u.id`; // initial query string given no constraints
+  const str = `SELECT r.*, u.username
+               FROM reviews r LEFT JOIN users u
+               ON r.created_by = u.id`; // initial query string given no constraints
   // const filterObj = { 'location': location, 'category': category, 'rating >': rating };
   // const filterArr = [location, category, rating];
   // // check if any of the elements are populated (if all the elements are NOT empty)

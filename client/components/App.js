@@ -41,7 +41,7 @@ class App extends Component {
         category: null,
         rating: null,
         recommendation: null,
-        review_text: null
+        reviewText: null
       }
     };
     // methods to handle signup/login
@@ -108,7 +108,7 @@ class App extends Component {
   }
 
   handleChangeReview(event) {
-    this.setState({ postData: { ...this.state.postData, review_text: event.target.value } });
+    this.setState({ postData: { ...this.state.postData, reviewText: event.target.value } });
   }
 
   handleChangePostLocation(event) {
@@ -131,7 +131,7 @@ class App extends Component {
       category: this.state.postData.category,
       rating: this.state.postData.rating,
       recommendation: this.state.postData.recommendation,
-      review_text: this.state.postData.review_text
+      reviewText: this.state.postData.reviewText
     };
 
     fetch('/users/submitreview', {
@@ -142,10 +142,10 @@ class App extends Component {
       body: JSON.stringify(data)
     })
       .then((res) => {
-        console.log('Success:', res);
+        console.log('Success');
       })
       .catch((err) => {
-        console.error('Error:', err);
+        console.error('Error');
       });
   }
 
