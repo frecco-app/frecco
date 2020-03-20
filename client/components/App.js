@@ -416,7 +416,12 @@ class App extends Component {
             handleChangeFollow={this.handleChangeFollow} 
             addFollow={this.addFollow}
             username = {this.state.username}
+<<<<<<< HEAD
             firstname = {this.state.firstname}
+=======
+            name = {this.state.firstname}
+            // posts = {this.state.posts}
+>>>>>>> userdashboard/meisze
             />
             <RightContainer 
              filterPosts={this.filterPosts}

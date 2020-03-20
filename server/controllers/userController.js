@@ -278,7 +278,7 @@ userController.getReviews = (req, res, next) => {
   // const { location, category, rating } = req.body;
   const str = `SELECT r.*, u.username
                FROM reviews r LEFT JOIN users u
-               ON r.created_by = u.id`; // initial query string given no constraints
+               ON r.created_by = u.id ORDER BY id DESC`; // initial query string given no constraints
   // const filterObj = { 'location': location, 'category': category, 'rating >': rating };
   // const filterArr = [location, category, rating];
   // // check if any of the elements are populated (if all the elements are NOT empty)
@@ -300,7 +300,7 @@ userController.getReviews = (req, res, next) => {
 };
 
 
-// Returns a table with list of user IDs and usernames (not including own user) and whether they are friends
+// Returns a table with list of user IDs and usernames (not including own user) and will populate the followed_user column if they are friends, otherwise null
 // with current user or not 
 // Expects to receive current user's id in the request body
 userController.getUsers = (req, res, next) => {

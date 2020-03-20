@@ -10,7 +10,12 @@ class LeftContainer extends React.Component {
             <div id='left-container'>
                 <UserDashboard
                 username = {this.props.username}
+<<<<<<< HEAD
                 firstname = {this.props.firstname}
+=======
+                name = {this.props.name}
+                // posts = {this.props.posts}
+>>>>>>> userdashboard/meisze
                 />
                 <FriendsContainer 
                 potentialFollows={this.props.potentialFollows} 
