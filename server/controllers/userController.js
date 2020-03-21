@@ -309,4 +309,20 @@ userController.getReviews = (req, res, next) => {
 };
 
 
+userController.likeReview = (req, res, next) => {
+  // when user likes a review, increment # of likes on the review and add new row to the likes table
+  if (req.body.isLiked = false) {
+    const str = 'INSERT INTO likes (user_id, review_id) VALUES ($1, $2);';
+    const params = [res.locals.userID, req.body.review_id];
+    db.query(str, params)
+      .then(() => next())
+      .catch((err) => next(err));
+  }
+  // do the opposite to unlike: decrement and delete
+  else {
+    console.log('bye');
+  }
+};
+
+
 module.exports = userController;
