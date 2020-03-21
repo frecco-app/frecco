@@ -196,6 +196,7 @@ class App extends Component {
 
   handleChangePostLocation(event) {
     this.setState({ postData: { ...this.state.postData, location: event.target.value } });
+    console.log(this.state.postData.location)
   }
 
   handleChangePostCategory(event) {
