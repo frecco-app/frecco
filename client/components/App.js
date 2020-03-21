@@ -248,11 +248,14 @@ class App extends Component {
       },
       body: JSON.stringify(data)
     })
-      .then((res) => {
-        if (!res.ok) {
+      .then((res) => res.json())
+      .then((json) => {
+        if (!(Array.isArray(json) && json.length > 0)) {
           console.log('signup error');
-          this.setState({ signupMessage: 'Invalid signup information.' });
+          this.setState({ loginMessage: 'Invalid signup information' });
         } else {
+          this.setState({ posts: json });
+          this.filterPosts();
           // redirect to new page
           this.props.history.push('/header2');
         }
@@ -273,11 +276,14 @@ class App extends Component {
       },
       body: JSON.stringify(data)
     })
-      .then((res) => {
-        if (!res.ok) {
+      .then((res) => res.json())
+      .then((json) => {
+        if (!(Array.isArray(json) && json.length > 0)) {
           console.log('login error');
           this.setState({ loginMessage: 'Invalid login information' });
         } else {
+          this.setState({ posts: json });
+          this.filterPosts();
           // redirect to new page
           this.props.history.push('/header2');
         }
@@ -285,13 +291,28 @@ class App extends Component {
   }
 
   logout() {
-    this.setState({
-      username: null,
-      password: null,
-      firstname: null,
-      lastname: null
-    });
-    this.props.history.push('/');
+    fetch('/users/logout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then((res) => {
+        if (!res.ok) {
+          console.log('logout error');
+          this.setState({ loginMessage: 'Invalid logout information' });
+        } else {
+          this.setState({
+            username: null,
+            password: null,
+            firstname: null,
+            lastname: null,
+            posts: [],
+            filteredPosts: []
+          });
+          this.props.history.push('/');
+        }
+      });
   }
 
   filterPosts() {

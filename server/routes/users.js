@@ -40,7 +40,8 @@ router.post('/login',
   cookieController.encrypt,
   cookieController.setSSID,
   sessionController.start,
-  (req, res) => res.sendStatus(204));
+  userController.getReviews,
+  (req, res) => res.status(200).json(res.locals.reviews));
 
 // Endpoint for user logout
 router.post('/logout',
