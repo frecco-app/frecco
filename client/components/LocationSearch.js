@@ -41,7 +41,7 @@ export default function GoogleMaps(props) {
   if (typeof window !== 'undefined' && !loaded.current) {
     if (!document.querySelector('#google-maps')) {
       loadScript(
-        'https://maps.googleapis.com/maps/api/js?key=AIzaSyDep5ghJvDcH3G3578GOSKOcmRXZnusul0&libraries=places',
+        'https://maps.googleapis.com/maps/api/js?key=AIzaSyCjVgJBAxrvAb-PjPKopGe1LfD3MNcY4M0&libraries=places',
         document.querySelector('head'),
         'google-maps',
       );
@@ -72,12 +72,12 @@ export default function GoogleMaps(props) {
       return undefined;
     }
 
-    if (inputValue === '') {
+    if (props.postData.location === '') {
       setOptions([]);
       return undefined;
     }
 
-    fetch({ input: inputValue }, results => {
+    fetch({ input: props.postData.location }, results => {
       if (active) {
         setOptions(results || []);
       }
@@ -86,7 +86,7 @@ export default function GoogleMaps(props) {
     return () => {
       active = false;
     };
-  }, [inputValue, fetch]);
+  }, [props.postData.location, fetch]);
 
   return (
     <Autocomplete
@@ -103,7 +103,7 @@ export default function GoogleMaps(props) {
           label="Add a location"
           variant="outlined"
           fullWidth
-          onChange={handleChange}
+          onChange={props.handleChangePostLocation}
           
         />
       )}
