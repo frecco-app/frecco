@@ -310,19 +310,22 @@ userController.getReviews = (req, res, next) => {
 
 
 userController.likeReview = (req, res, next) => {
+  const params = [res.locals.userId, req.body.review_id];
   // when user likes a review, increment # of likes on the review and add new row to the likes table
   if (req.body.isLiked === false) {
     const str = 'INSERT INTO likes (user_id, review_id) VALUES ($1, $2);';
-    const str2 = 'UPDATE reviews SET likes = likes + 1 WHERE id = $2;';
-    const params = [res.locals.userId, req.body.review_id];
+    const str2 = `UPDATE reviews SET likes = likes + 1 WHERE id = ${req.body.review_id};`;
     db.query(str, params)
-      .then(db.query(str2, params))
+      .then(db.query(str2))
       .then(() => next())
       .catch((err) => next(err));
-  }
-  // do the opposite to unlike: decrement and delete
-  else {
-    return next();
+  } else { // do the opposite to unlike: decrement and delete
+    const str = 'DELETE FROM likes WHERE user_id = $1 AND review_id = $2;';
+    const str2 = `UPDATE reviews SET likes = likes - 1 WHERE id = ${req.body.review_id};`;
+    db.query(str, params)
+      .then(db.query(str2))
+      .then(() => next())
+      .catch((err) => next(err));
   }
 };
 
