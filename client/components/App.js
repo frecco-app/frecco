@@ -105,7 +105,7 @@ class App extends Component {
     // Handle recieved posts
     this.state.socket.on('post', (post) => {
       this.setState({
-        posts: [...this.state.posts, post]
+        posts: [post, ...this.state.posts]
       });
       this.filterPosts();
     });
@@ -191,8 +191,9 @@ class App extends Component {
     this.setState({ postData: { ...this.state.postData, reviewText: event.target.value } });
   }
 
-  handleChangePostLocation(event) {
-    this.setState({ postData: { ...this.state.postData, location: event.target.value } });
+  handleChangePostLocation(event, value) {
+    console.log(value);
+    this.setState({ postData: { ...this.state.postData, location: value.description } });
   }
 
   handleChangePostCategory(event) {
@@ -205,6 +206,7 @@ class App extends Component {
 
   // post form data to server
   handlePostForm() {
+    console.log('location to go with post request', this.state.postData.location);
     const data = {
       username: this.state.username,
       location: this.state.postData.location,

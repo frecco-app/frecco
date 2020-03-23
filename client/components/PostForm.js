@@ -1,4 +1,5 @@
 import React, {Component} from "react";
+import LocationSearch from './LocationSearch';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -23,12 +24,13 @@ function PostForm(props) {
             </div>
             <form id='post-form'>
                 <div id='ff-dd'>
-                    <FormControl style={{minWidth: 120}}>
+                    <LocationSearch handleChangePostLocation={props.handleChangePostLocation} postData={props.postData} />
+                    {/* <FormControl style={{minWidth: 120}}>
                         <InputLabel>Location</InputLabel>
                         <Select value={props.postData.location ? props.postData.location : ""} onChange={props.handleChangePostLocation} id='locations-dd'>
                             {locationOptions}
                         </Select>
-                    </FormControl>
+                    </FormControl> */}
                     &nbsp;&nbsp;
                     <FormControl style={{minWidth: 120}}>
                         <InputLabel>Category</InputLabel>
