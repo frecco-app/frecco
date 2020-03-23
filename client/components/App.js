@@ -49,7 +49,8 @@ class App extends Component {
         recommendation: null,
         review_text: null
       },
-      follow_user: null // {user_id: #, username: # }
+      follow_user: null, // {user_id: #, username: # },
+      likedPosts: []
     };
     // methods to handle signup/login
     this.signup = this.signup.bind(this);

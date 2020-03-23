@@ -67,8 +67,17 @@ router.post('/follow',
   userController.follow,
   (req, res) => res.status(200).json(res.locals.followed));
 
+router.post('/like',
+  sessionController.verify,
+  userController.likeReview,
+  (req, res) => res.sendStatus(200));
+
 router.get('/getreview', userController.getReviews, (req, res) => {
   res.status(200).json(res.locals.reviews);
+});
+
+router.get('/getlikes', sessionController.verify, userController.getReviews, (req, res) => {
+  res.status(200).json(res.locals.likes);
 });
 
 module.exports = router;
