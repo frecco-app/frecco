@@ -8,6 +8,18 @@ import Header2 from './Header2';
 import Header3 from './Header3';
 import LeftContainer from './LeftContainer';
 import RightContainer from './RightContainer';
+import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles'
+
+const theme = createMuiTheme({
+  palette: {
+      primary: {
+          main: '#17151b'
+          }
+      },
+      secondary: {
+        main: '#fe5722' 
+      }
+  });
 
 class App extends Component {
   constructor(props) {
@@ -400,67 +412,70 @@ class App extends Component {
   }
 
   render() {
+    
     return (
-      <Fragment>
-          <Switch>
-              <Route exact path='/' render={() => <Header1
-                message={this.state.loginMessage}
-                login={this.login}
-                handleChangeUsername={this.handleChangeUsername}
-                handleChangePassword={this.handleChangePassword} />}
-              />
-              <Route exact path='/header2' render={() => 
-                <Fragment>
-                  <Header2 username={this.state.username} logout={this.logout}/>
-                  <div id='wrapper'>
-                    <LeftContainer
-                      postData={this.state.postData}
-                      handleChangePostCategory={this.handleChangePostCategory}
-                      handleChangePostLocation={this.handleChangePostLocation}
-                      postLocationMessage={this.state.postLocationMessage} 
-                      handleChangePostRating={this.handleChangePostRating}
-                      handleChangeRecommendation={this.handleChangeRecommendation}
-                      handleChangeReview={this.handleChangeReview}
-                      handlePostForm={this.handlePostForm}
-                      categories={this.state.categories}
-                      locations={this.state.locations}
-                      potentialFollows={this.state.potentialFollows}
-                      handleChangeFollow={this.handleChangeFollow}
-                      addFollow={this.addFollow}
-                      username = {this.state.username}
-                      firstname = {this.state.firstname}
-                      posts = {this.state.posts}
-                      friends = {this.state.friends.length}
-                    />
-                    <RightContainer
-                      filterPosts={this.filterPosts}
-                      filteredPosts={this.state.filteredPosts}
-                      handleChangeCategory={this.handleChangeCategory}
-                      handleChangeLocation={this.handleChangeLocation}
-                      handleChangeRating={this.handleChangeRating}
-                      location={this.state.postFilter.location}
-                      category={this.state.postFilter.category}
-                      minrating={this.state.postFilter.minrating}
-                      friends={this.state.friends}
-                      handleChangeFriendsFilter={this.handleChangeFriendsFilter}
-                      categories={this.state.categories}
-                      locations={this.state.locations}
-                      postFilter={this.state.postFilter}
-                    />
-                  </div>
-                </Fragment>
-              }
-              />
-              <Route exact path='/header3' render={() => <Header3
-                message={this.state.signupMessage}
-                signup={this.signup}
-                handleChangeUsername={this.handleChangeUsername}
-                handleChangePassword={this.handleChangePassword}
-                handleChangeFirstname={this.handleChangeFirstname}
-                handleChangeLastname={this.handleChangeLastname} />}
-              />
-          </Switch>
-      </Fragment>
+      <ThemeProvider theme={theme}> 
+        <Fragment>
+            <Switch>
+                <Route exact path='/' render={() => <Header1
+                  message={this.state.loginMessage}
+                  login={this.login}
+                  handleChangeUsername={this.handleChangeUsername}
+                  handleChangePassword={this.handleChangePassword} />}
+                />
+                <Route exact path='/header2' render={() => 
+                  <Fragment>
+                    <Header2 username={this.state.username} logout={this.logout}/>
+                    <div id='wrapper'>
+                      <LeftContainer
+                        postData={this.state.postData}
+                        handleChangePostCategory={this.handleChangePostCategory}
+                        handleChangePostLocation={this.handleChangePostLocation}
+                        postLocationMessage={this.state.postLocationMessage} 
+                        handleChangePostRating={this.handleChangePostRating}
+                        handleChangeRecommendation={this.handleChangeRecommendation}
+                        handleChangeReview={this.handleChangeReview}
+                        handlePostForm={this.handlePostForm}
+                        categories={this.state.categories}
+                        locations={this.state.locations}
+                        potentialFollows={this.state.potentialFollows}
+                        handleChangeFollow={this.handleChangeFollow}
+                        addFollow={this.addFollow}
+                        username = {this.state.username}
+                        firstname = {this.state.firstname}
+                        posts = {this.state.posts}
+                        friends = {this.state.friends.length}
+                      />
+                      <RightContainer
+                        filterPosts={this.filterPosts}
+                        filteredPosts={this.state.filteredPosts}
+                        handleChangeCategory={this.handleChangeCategory}
+                        handleChangeLocation={this.handleChangeLocation}
+                        handleChangeRating={this.handleChangeRating}
+                        location={this.state.postFilter.location}
+                        category={this.state.postFilter.category}
+                        minrating={this.state.postFilter.minrating}
+                        friends={this.state.friends}
+                        handleChangeFriendsFilter={this.handleChangeFriendsFilter}
+                        categories={this.state.categories}
+                        locations={this.state.locations}
+                        postFilter={this.state.postFilter}
+                      />
+                    </div>
+                  </Fragment>
+                }
+                />
+                <Route exact path='/header3' render={() => <Header3
+                  message={this.state.signupMessage}
+                  signup={this.signup}
+                  handleChangeUsername={this.handleChangeUsername}
+                  handleChangePassword={this.handleChangePassword}
+                  handleChangeFirstname={this.handleChangeFirstname}
+                  handleChangeLastname={this.handleChangeLastname} />}
+                />
+            </Switch>
+        </Fragment>
+      </ThemeProvider> 
     );
   }
 }

@@ -22,7 +22,6 @@ function UserDashboard(props) {
   else avgRating = ratingSum / postCount;
   return (
     <div>
-      <h3>User Dashboard</h3>
       <div id='user-dashboard'>
             <span id = 'user-dashboard-left'>
                <p>Name: {props.firstname}</p>

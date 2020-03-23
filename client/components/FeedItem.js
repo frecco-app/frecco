@@ -7,8 +7,8 @@ function FeedItem(props) {
                  <span className='feed-item-prop'> <span className='bold'>{`${props.locationDetail}, `}</span>{props.location}</span>
                  <span className='feed-item-prop'> Category: {props.category} </span>
             </div>
-            <strong>{props.recommendation}</strong> 
-            <div className='feed-item-top-container'>
+            <div className='feed-item-mid-container' >{props.recommendation}</div> 
+            <div className='feed-item-bottom-container'>
                 <span className='feed-item-prop'> Reviewed by: {props.username} </span>
                 <span className='feed-item-prop'> Rating: {props.rating} </span>
             </div>
