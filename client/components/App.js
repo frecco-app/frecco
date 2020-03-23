@@ -393,8 +393,8 @@ class App extends Component {
           }
         });
         this.setState({
-          friends,
-          potentialFollows
+          friends: friends,
+          potentialFollows: potentialFollows
         });
       });
   }
@@ -429,6 +429,8 @@ class App extends Component {
                       addFollow={this.addFollow}
                       username = {this.state.username}
                       firstname = {this.state.firstname}
+                      posts = {this.state.posts}
+                      friends = {this.state.friends.length}
                     />
                     <RightContainer
                       filterPosts={this.filterPosts}
