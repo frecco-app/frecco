@@ -1,13 +1,15 @@
 import React from 'react';
 import { Button } from '@material-ui/core';
-import { AiOutlineHeart } from 'react-icons/ai';
+import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 
 function FeedItem(props) {
-  
-    return (
-        
+  let heartIcon;
+  if (props.isLiked === false) heartIcon = <AiOutlineHeart onClick={(event) => props.handleLikeReview(event, props.id, props.isLiked)} style={{ cursor: 'pointer' }}/>
+  else heartIcon = <AiFillHeart onClick={(event) => props.handleLikeReview(event, props.id, props.isLiked)} style={{ cursor: 'pointer' }}/>
+  return (
+
         <div className='feed-item'>
-          
+
             <div className='feed-item-top-container'>
                  <span className='feed-item-prop'> {props.location} </span>
                  <span className='feed-item-prop'> Category: {props.category} </span>
@@ -18,10 +20,9 @@ function FeedItem(props) {
                 <span className='feed-item-prop'> Rating: {props.rating} </span>
             </div>
             <div className = 'review-text-box'>
-            {props.review_text}
-            {props.isLiked}
-            <AiOutlineHeart onClick={(event) => props.handleLikeReview(event, props.id, props.isLiked)} style={{ cursor: 'pointer' }}/>             Likes: {props.likes}
+                {props.review_text}
             </div>
+            {heartIcon}  {props.likes} likes
         </div>
     )
 

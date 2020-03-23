@@ -108,7 +108,7 @@ class App extends Component {
     this.fetchPosts();
 
     // fetch likes
-    this.fetchLikes();
+    //this.fetchLikes();
 
     // Handle recieved posts
     this.state.socket.on('post', (post) => {
@@ -338,6 +338,7 @@ class App extends Component {
             } else {
               this.setState({ posts: json[3] });
               this.filterPosts();
+              this.fetchLikes();
               // redirect to new page
               this.props.history.push('/header2');
             }
