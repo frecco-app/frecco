@@ -18,7 +18,8 @@ function UserDashboard(props) {
       }
     }
   }
-  avgRating = ratingSum / postCount;
+  if (postCount === 0) avgRating = 0;
+  else avgRating = ratingSum / postCount;
   return (
     <div>
       <h3>User Dashboard</h3>
