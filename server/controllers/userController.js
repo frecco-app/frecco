@@ -326,6 +326,8 @@ userController.getLikes = (req, res, next) => {
       // result.rows is an array of objects; each obj is a row in the likes table
       // mapping to get only an array of review_ids that the user currently likes
       res.locals.likes = result.rows.map((el) => el.review_id);
+    });
+  }
 // Returns a table with list of user IDs and usernames (not including own user) and will populate the followed_user column if they are friends, otherwise null
 // with current user or not 
 // Expects to receive current user's id in the request body
@@ -339,7 +341,6 @@ userController.getUsers = (req, res, next) => {
       return next();
     })
     .catch((err) => next(err));
-  
 };
 
 module.exports = userController;

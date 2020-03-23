@@ -473,14 +473,11 @@ class App extends Component {
              minrating={this.state.postFilter.minrating}
              friends={this.state.friends}
              handleChangeFriendsFilter={this.handleChangeFriendsFilter}
-<<<<<<< HEAD
              likedPosts={this.state.likedPosts}
              handleLikeReview={this.handleLikeReview}
-=======
              categories={this.state.categories}
              locations={this.state.locations}
              postFilter={this.state.postFilter}
->>>>>>> dev
              />
           </div>
       </Fragment>
