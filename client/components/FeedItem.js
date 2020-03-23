@@ -10,9 +10,12 @@ function FeedItem(props) {
   return (
 
         <div className='feed-item'>
+<<<<<<< HEAD
 
+=======
+>>>>>>> dev
             <div className='feed-item-top-container'>
-                 <span className='feed-item-prop'> {props.location} </span>
+                 <span className='feed-item-prop'> <span className='bold'>{`${props.locationDetail}, `}</span>{props.location}</span>
                  <span className='feed-item-prop'> Category: {props.category} </span>
             </div>
             <strong>{props.recommendation}</strong> 

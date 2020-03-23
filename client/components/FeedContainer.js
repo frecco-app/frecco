@@ -12,6 +12,7 @@ function FeedContainer(props) {
     // if (props.likedPosts.includes(post.id)) isLiked = true;
     feed.push(<FeedItem key={'feeditem'+i}
         id={post.id}
+        locationDetail={post.locationDetail}
         location={post.location}
         category={post.category}
         rating={post.rating}
