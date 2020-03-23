@@ -152,14 +152,23 @@ userController.submitReview = (req, res, next) => {
 
   db.query(str, params)
     .then((data) => {
-      [res.locals.review] = data.rows;
-      return next();
+      if (data.rows !== []) {
+        [res.locals.review] = data.rows;
+        res.locals.review.username = res.locals.username;
+        return next();
+      }
+
+      return next({
+        log: 'There was a problem submitting a review',
+        status: 400,
+        message: { err: 'There was a problem with submitting a review' }
+      });
     })
 
     .catch(() => next({
-      log: 'There was a problem with submitting a review',
+      log: 'There was a problem submitting a review',
       status: 500,
-      message: { err: 'There was a problem with submitting a review' }
+      message: { err: 'There was a problem submitting a review' }
     }));
 };
 
@@ -189,7 +198,7 @@ userController.getFollowers = (req, res, next) => {
 
 // Emit review through socket channel
 userController.emitReview = (req, res, next) => {
-  const { followers } = res.locals;
+  const followers = [...res.locals.followers, { username: res.locals.username }];
   for (let i = 0; i < followers.length; i++) {
     const { username } = followers[i];
     req.socket.to(username).emit('post', res.locals.review);
@@ -239,7 +248,6 @@ userController.deleteReview = (req, res, next) => {
 userController.follow = (req, res, next) => {
   const { userId } = res.locals;
   const { followedUser } = req.body;
-  console.log(req.body);
   const str = `INSERT INTO follows (user_id, followed_user)
                VALUES ($1, $2)`;
   const params = [userId, followedUser];
@@ -276,22 +284,11 @@ userController.follow = (req, res, next) => {
 */
 
 userController.getReviews = (req, res, next) => {
-  // const { location, category, rating } = req.body;
   const str = `SELECT r.*, u.username
                FROM reviews r LEFT JOIN users u
-               ON r.created_by = u.id ORDER BY id DESC`; // initial query string given no constraints
-  // const filterObj = { 'location': location, 'category': category, 'rating >': rating };
-  // const filterArr = [location, category, rating];
-  // // check if any of the elements are populated (if all the elements are NOT empty)
-  // if (!filterArr.every((element) => element === '')) {
-  //   str += 'WHERE'; // add a WHERE to query string if detects there is a constraint passed
-  //   // filters through object and concatenates e.g. "location = 'London' AND" if value is not empty
-  //   for (let key in filterObj) {
-  //     if (filterObj[key] !== '') str+= ` ${key}= '${filterObj[key]}' AND`
-  //   };
-  //   str = str.slice(0, -4); // removes trailing 'AND'
-  // }
-  // str += 'ORDER BY likes DESC;'; // appends ranking filter by highest likes and final semicolon necessary for query command
+               ON r.created_by = u.id
+               ORDER BY id DESC`; // initial query string given no constraints
+
   db.query(str)
     .then((data) => {
       res.locals.reviews = data.rows;

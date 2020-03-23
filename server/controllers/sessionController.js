@@ -22,20 +22,35 @@ sessionController.start = (req, res, next) => {
 
 // Verifies that authentication cookie and sends user_id as response
 sessionController.verify = (req, res, next) => {
-  const queryStr = `SELECT user_id FROM sessions
-                    WHERE ssid = $1`;
+  const queryStr = `SELECT s.user_id, u.username
+                    FROM (
+                      SELECT user_id FROM sessions
+                      WHERE ssid = $1
+                    ) s
+                    INNER JOIN users u
+                    ON s.user_id = u.id`;
   const params = [req.cookies.xpgnssid];
 
   db.query(queryStr, params)
     .then((data) => {
-      // Responds with user_id
-      res.locals.userId = data.rows[0].user_id;
-      return next();
+      if (data.rows[0]) {
+        // Responds with user_id
+        res.locals.userId = data.rows[0].user_id;
+        res.locals.username = data.rows[0].username;
+        return next();
+      }
+
+      return next({
+        log: 'You must be logged in to complete that action',
+        status: 400,
+        message: { err: 'You must be logged in to complete that action' }
+      });
     })
+
     .catch(() => next({
-      log: 'You must be logged in to complete that action',
-      status: 400,
-      message: { err: 'You must be logged in to complete that action' }
+      log: 'There was a problem logging in',
+      status: 500,
+      message: { err: 'There was a problem logging in' }
     }));
 };
 

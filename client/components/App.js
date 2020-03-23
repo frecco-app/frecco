@@ -71,11 +71,9 @@ class App extends Component {
 
   handleChangeFollow(e, value) {
     this.setState({ follow_user: value });
-    console.log([...this.state.friends, value]);
   }
 
   addFollow() {
-    console.log(this.state.follow_user);
     const data = { followedUser: this.state.follow_user.user_id };
     fetch('/users/follow', {
       method: 'POST',
@@ -150,6 +148,7 @@ class App extends Component {
         });
       });
   }
+
   handleChangeFirstname(event) {
     this.setState({ firstname: event.target.value });
   }
@@ -246,11 +245,14 @@ class App extends Component {
       },
       body: JSON.stringify(data)
     })
-      .then((res) => {
-        if (!res.ok) {
+      .then((res) => res.json())
+      .then((json) => {
+        if (!(Array.isArray(json[3]) && json[3].length > 0)) {
           console.log('signup error');
-          this.setState({ signupMessage: 'Invalid signup information.' });
+          this.setState({ loginMessage: 'Invalid signup information' });
         } else {
+          this.setState({ posts: json[3] });
+          this.filterPosts();
           // redirect to new page
           this.props.history.push('/header2');
         }
@@ -290,19 +292,43 @@ class App extends Component {
               this.props.history.push('/header2');
               this.fetchUsers(json[0])
             }
+            if (!(Array.isArray(json[3]) && json[3].length > 0)) {
+            console.log('login error');
+            this.setState({ loginMessage: 'Invalid login information' });
+            } else {
+              this.setState({ posts: json[3] });
+              this.filterPosts();
+              // redirect to new page
+              this.props.history.push('/header2');
+            }
           });
       })
   }
 
   logout() {
-    this.setState({
-      username: null,
-      password: null,
-      firstname: null,
-      lastname: null,
+    fetch('/users/logout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
     })
-    this.props.history.push('/')
-  }
+      .then((res) => {
+        if (!res.ok) {
+          console.log('logout error');
+          this.setState({ loginMessage: 'Invalid logout information' });
+        } else {
+          this.setState({
+            username: null,
+            password: null,
+            firstname: null,
+            lastname: null,
+            posts: [],
+            filteredPosts: []
+          });
+          this.props.history.push('/');
+        }
+      });
+    }
 
   fetchPosts() {
     fetch('/users/getreview', {
