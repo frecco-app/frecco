@@ -41,6 +41,7 @@ router.post('/login',
   cookieController.setSSID,
   sessionController.start,
   userController.getReviews,
+  sessionController.manage,
   (req, res) => res.status(200).json([
     res.locals.user.id, res.locals.user.username, res.locals.user.firstname, res.locals.reviews
   ]));
