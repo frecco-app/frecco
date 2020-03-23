@@ -266,7 +266,6 @@ class App extends Component {
       username: this.state.username,
       password: this.state.password
     };
-
     fetch('/users/signup', {
       method: 'POST',
       headers: {
@@ -281,10 +280,19 @@ class App extends Component {
           this.setState({ loginMessage: 'Invalid signup information' });
         } else {
           const posts = json[3].map(post => this.parseLocation(post))
-          this.setState({ posts: posts });
+          const locations = Object.keys(posts.reduce((acc, post) => {
+              if (!acc.hasOwnProperty(post.location)) {
+                acc[post.location] = true;
+              }
+              return acc;
+            }, {}));
+          this.setState({ 
+            posts: posts,
+            locations: [...locations]
+          });
           this.filterPosts();
           // redirect to new page
-          this.props.history.push('/header2');
+          this.props.history.push('/header2'); 
         }
       });
   }
@@ -326,8 +334,18 @@ class App extends Component {
               this.setState({ loginMessage: 'Invalid login information' });
             } else {
               const posts = json[3].map(post => this.parseLocation(post))
-              this.setState({ posts: posts });
+              const locations = Object.keys(posts.reduce((acc, post) => {
+                if (!acc.hasOwnProperty(post.location)) {
+                  acc[post.location] = true;
+                }
+                return acc;
+              }, {}));
+              this.setState({ 
+                posts: posts,
+                locations: [...locations]
+              });
               this.filterPosts();
+              this.fetchLikes();
               // redirect to new page
               this.props.history.push('/header2');
             }
