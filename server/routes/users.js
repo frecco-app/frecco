@@ -40,10 +40,10 @@ router.post('/login',
   cookieController.encrypt,
   cookieController.setSSID,
   sessionController.start,
+  userController.getReviews,
   (req, res) => res.status(200).json([
     res.locals.user.id, res.locals.user.username, res.locals.user.firstname, res.locals.reviews
-  ])
-);
+  ]));
 
 // Endpoint for user logout
 router.post('/logout',
