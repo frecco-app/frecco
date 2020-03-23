@@ -41,6 +41,7 @@ router.post('/login',
   cookieController.setSSID,
   sessionController.start,
   userController.getReviews,
+  sessionController.manage,
   (req, res) => res.status(200).json([
     res.locals.user.id, res.locals.user.username, res.locals.user.firstname, res.locals.reviews
   ]));
@@ -70,6 +71,11 @@ router.post('/follow',
   userController.follow,
   (req, res) => res.status(200).json(res.locals.followed));
 
+router.post('/like',
+  sessionController.verify,
+  userController.likeReview,
+  (req, res) => res.sendStatus(200));
+
 router.get('/getreview',
   sessionController.verify,
   userController.getReviews,
@@ -77,6 +83,10 @@ router.get('/getreview',
 
 router.get('/getusers', userController.getUsers, (req, res) => {
   res.status(200).json(res.locals.followedUsers);
+});
+
+router.get('/getlikes', sessionController.verify, userController.getLikes, (req, res) => {
+  res.status(200).json(res.locals.likes);
 });
 
 module.exports = router;

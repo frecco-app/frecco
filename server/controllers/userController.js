@@ -298,6 +298,38 @@ userController.getReviews = (req, res, next) => {
 };
 
 
+userController.likeReview = (req, res, next) => {
+  const params = [res.locals.userId, req.body.review_id];
+  // when user likes a review, increment # of likes on the review and add new row to the likes table
+  if (req.body.isLiked == false) {
+    const str = 'INSERT INTO likes (user_id, review_id) VALUES ($1, $2);';
+    const str2 = `UPDATE reviews SET likes = likes + 1 WHERE id = ${req.body.review_id};`;
+    db.query(str, params)
+      .then(db.query(str2))
+      .then(() => next())
+      .catch((err) => next(err));
+  } else { // do the opposite to unlike: decrement and delete
+    const str = 'DELETE FROM likes WHERE user_id = $1 AND review_id = $2;';
+    const str2 = `UPDATE reviews SET likes = likes - 1 WHERE id = ${req.body.review_id};`;
+    db.query(str, params)
+      .then(db.query(str2))
+      .then(() => next())
+      .catch((err) => next(err));
+  }
+};
+
+// Get posts that user currently likes
+userController.getLikes = (req, res, next) => {
+  const str = `SELECT * FROM likes WHERE user_id = ${res.locals.userId}`;
+  db.query(str)
+    .then((result) => {
+      // result.rows is an array of objects; each obj is a row in the likes table
+      // mapping to get only an array of review_ids that the user currently likes
+      res.locals.likes = result.rows.map((el) => el.review_id);
+      return next();
+    })
+    .catch((err) => next(err));
+};
 // Returns a table with list of user IDs and usernames (not including own user) and will populate the followed_user column if they are friends, otherwise null
 // with current user or not 
 // Expects to receive current user's id in the request body

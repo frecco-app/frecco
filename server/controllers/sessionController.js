@@ -69,4 +69,35 @@ sessionController.end = (req, res, next) => {
     }));
 };
 
+// Enforces max of three sessions per user
+sessionController.manage = (req, res, next) => {
+  const queryStr = `SELECT id FROM sessions
+                    WHERE user_id = $1
+                    ORDER BY id DESC`;
+  const delStr = `DELETE FROM sessions
+                  WHERE user_id = $1
+                  AND id <= $2`;
+
+  db.query(queryStr, [res.locals.user.id])
+    .then((data) => {
+      if (data.rows.length > 3) {
+        const threshold = data.rows[3].id;
+        db.query(delStr, [res.locals.user.id, threshold])
+          .then(() => next())
+          .catch(() => next({
+            log: 'A problem occured managing sessions',
+            status: 500,
+            message: { err: 'A problem occured managing sessions' }
+          }));
+      }
+      return next();
+    })
+
+    .catch(() => next({
+      log: 'A problem occured managing sessions',
+      status: 500,
+      message: { err: 'A problem occured managing sessions' }
+    }));
+};
+
 module.exports = sessionController;

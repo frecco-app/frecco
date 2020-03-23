@@ -41,7 +41,9 @@ class App extends Component {
         recommendation: null,
         review_text: null
       },
-      follow_user: null // {user_id: #, username: # }
+      follow_user: null, // {user_id: #, username: # },
+      likedPosts: [],
+      numberLikes: null // drilling this down to rerender
     };
     // methods to handle signup/login
     this.signup = this.signup.bind(this);
@@ -69,6 +71,9 @@ class App extends Component {
     // methods for following
     this.handleChangeFollow = this.handleChangeFollow.bind(this);
     this.addFollow = this.addFollow.bind(this);
+    // like or unlike a post
+    this.handleLikeReview = this.handleLikeReview.bind(this);
+    //this.likeReview = this.handleLikeReview.bind(this);
   }
 
   handleChangeFollow(e, value) {
@@ -104,6 +109,10 @@ class App extends Component {
 
     // fetch posts only once
     this.fetchPosts();
+
+    // fetch likes
+    //this.fetchLikes();
+
     // Handle recieved posts
     this.state.socket.on('post', (post) => {
       post = this.parseLocation(post);
@@ -113,6 +122,8 @@ class App extends Component {
       });
       this.filterPosts();
     });
+
+
   }
 
   fetchUser() {
@@ -160,6 +171,38 @@ class App extends Component {
           locations: [...Object.keys(locations)]
         });
       });
+  }
+
+  fetchLikes() {
+  //  console.log('before fetch ' + this.state.likedPosts.length);
+    fetch('/users/getlikes', {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      }
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        this.setState({
+          likedPosts: json
+
+        })
+  //     console.log('after fetch ' + this.state.likedPosts.length);
+      });
+  }
+
+  // Will have a button on the FeedItem component
+  handleLikeReview(event, int, bool) {
+    const data = { review_id: int, isLiked: bool };
+    fetch('/users/like', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    }).then((res) => res.json())
+      .then(this.fetchLikes())
+      .catch((err) => console.error(err));
   }
 
   handleChangeFirstname(event) {
@@ -218,6 +261,8 @@ class App extends Component {
   handleChangePostRating(event) {
     this.setState({ postData: { ...this.state.postData, rating: event.target.value } });
   }
+
+ 
 
   // post form data to server
   handlePostForm() {
@@ -334,6 +379,7 @@ class App extends Component {
                 locations: [...locations]
               });
               this.filterPosts();
+              this.fetchLikes();
               // redirect to new page
               this.props.history.push('/header2');
             }
@@ -419,6 +465,7 @@ class App extends Component {
       });
   }
 
+
   render() {
     return (
       <Fragment>
@@ -466,6 +513,8 @@ class App extends Component {
                       categories={this.state.categories}
                       locations={this.state.locations}
                       postFilter={this.state.postFilter}
+                      likedPosts={this.state.likedPosts}
+                      handleLikeReview={this.handleLikeReview}
                     />
                   </div>
                 </Fragment>
