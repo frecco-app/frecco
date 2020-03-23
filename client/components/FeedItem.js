@@ -3,17 +3,12 @@ import { Button } from '@material-ui/core';
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 
 function FeedItem(props) {
-  console.log('post # ' + props.id + ' isLiked? ' + props.isLiked + ' ' + props.likes + 'times');
   let heartIcon;
   if (props.isLiked === false) heartIcon = <AiOutlineHeart onClick={(event) => props.handleLikeReview(event, props.id, props.isLiked)} style={{ cursor: 'pointer' }}/>
   else heartIcon = <AiFillHeart onClick={(event) => props.handleLikeReview(event, props.id, props.isLiked)} style={{ cursor: 'pointer' }}/>
   return (
 
         <div className='feed-item'>
-<<<<<<< HEAD
-
-=======
->>>>>>> dev
             <div className='feed-item-top-container'>
                  <span className='feed-item-prop'> <span className='bold'>{`${props.locationDetail}, `}</span>{props.location}</span>
                  <span className='feed-item-prop'> Category: {props.category} </span>
