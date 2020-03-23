@@ -7,7 +7,7 @@ function FeedContainer(props) {
   for (let i = 0; i < props.filteredPosts.length; i ++) {
  
     const post = props.filteredPosts[i];
-    const isLiked = props.likedPosts.includes(post.id).toString();
+    const isLiked = props.likedPosts.includes(post.id);
     
     // if (props.likedPosts.includes(post.id)) isLiked = true;
     feed.push(<FeedItem key={'feeditem'+i}
