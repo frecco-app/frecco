@@ -11,36 +11,34 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';        
 
 
-const locationOptions = ['Paris','Netherlands','China'];
-const locationItems = [];
-locationOptions.forEach((loc, i) => (
-    locationItems.push(<MenuItem key={'loc'+i} value={loc}>{loc}</MenuItem>)
-)); 
-
-const categoryOptions = ['Accomodation','Food','Attraction','Activity'];
-const categoryItems = [];
-categoryOptions.forEach((cat, i) => (
-    categoryItems.push(<MenuItem key={'cat'+i} value={cat}>{cat}</MenuItem>)
-)); 
-
 export default function FilterForm(props) {
+    const locationItems = [];
+    props.locations.forEach((loc, i) => (
+        locationItems.push(<MenuItem key={'f-loc-'+i} value={loc}>{loc}</MenuItem>)
+    )); 
+
+    const categoryItems = [];
+    props.categories.forEach((cat, i) => (
+        categoryItems.push(<MenuItem key={'f-cat-'+i} value={cat}>{cat}</MenuItem>)
+    )); 
+
     return (
     <div id='filter-form' >
-        <FormControl style={{minWidth: 120}}>
+        <FormControl style={{minWidth: 130}}>
             <InputLabel>Location</InputLabel>
-            <Select value={props.location ? props.location : ""} onChange={props.handleChangeLocation}>
+            <Select value={props.postFilter.location ? props.postFilter.location : ""} onChange={props.handleChangeLocation}>
                 {locationItems}
             </Select>
         </FormControl>
         &nbsp;&nbsp;
-        <FormControl style={{minWidth: 120}}>
+        <FormControl style={{minWidth: 130}}>
             <InputLabel>Category</InputLabel>
-            <Select value={props.category ? props.category : ""} onChange={props.handleChangeCategory}>
+            <Select value={props.postFilter.category ? props.postFilter.category : ""} onChange={props.handleChangeCategory}>
                 {categoryItems}
             </Select>
         </FormControl>
         &nbsp;&nbsp;
-        <FormControl style={{minWidth: 120}}>
+        <FormControl style={{minWidth: 130}}>
             <InputLabel>Min. Rating</InputLabel>
             <Select value={props.minrating ? props.minrating :1} onChange={props.handleChangeRating}>
                 <MenuItem value={1}>1</MenuItem>
@@ -51,7 +49,7 @@ export default function FilterForm(props) {
             </Select>
         </FormControl>
         &nbsp;&nbsp;
-        <div style={{ width : 150}}>
+        <div style={{ width : 160}}>
             <Autocomplete
                 multiple
                 id='filterFriends'
@@ -63,9 +61,8 @@ export default function FilterForm(props) {
                 onChange={(e,value) => props.handleChangeFriendsFilter(e,value)}
             />    
         </div>
-        
         &nbsp;&nbsp;
-        <Button style={{ height : 30 }} onClick={props.filterPosts} variant='contained'>Filter</Button>
+        <Button style={{ height : 50 }} onClick={props.filterPosts} variant='contained'>Filter</Button>
     </div>
     )
 }

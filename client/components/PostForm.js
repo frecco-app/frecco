@@ -1,21 +1,20 @@
 import React, {Component} from "react";
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
+import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import Slider from '@material-ui/core/Slider';
 
 function PostForm(props) {
     let i = 0
     let ratings = [1, 2, 3, 4, 5]
+    const locations = ['Texas','Paris','Beijing','New York City','Miami','Las Vegas','Orlando','Seoul','Shanghai','Tokyo','Istanbul','Abu Dhabi','Dubai','Berlin']
     //popuating location and categroy dropdown menu with state
-    let categoryOptions = props.categories.map(el => <option key={`cat-${i++}`} value={el}>{el}</option>)
-    let locationOptions = props.locations.map(el => <option key={`loc-${i++}`} value={el}>{el}</option>)
-    let ratingOptions = ratings.map(el => <option key={`rat-${i++}`} value={el}>{el}</option>)
+    let categoryOptions = props.categories.map(el => <MenuItem key={`cat-${i++}`} value={el}>{el}</MenuItem>)
+    let locationOptions = locations.map(el => <MenuItem key={`loc-${i++}`} value={el}>{el}</MenuItem>)
+    let ratingOptions = ratings.map(el => <MenuItem key={`rat-${i++}`} value={el}>{el}</MenuItem>)
 
     return (
         <div>

@@ -41,7 +41,9 @@ router.post('/login',
   cookieController.setSSID,
   sessionController.start,
   userController.getReviews,
-  (req, res) => res.status(200).json(res.locals.reviews));
+  (req, res) => res.status(200).json([
+    res.locals.user.id, res.locals.user.username, res.locals.user.firstname, res.locals.reviews
+  ]));
 
 // Endpoint for user logout
 router.post('/logout',
@@ -72,5 +74,9 @@ router.get('/getreview',
   sessionController.verify,
   userController.getReviews,
   (req, res) => res.status(200).json(res.locals.reviews));
+
+router.get('/getusers', userController.getUsers, (req, res) => {
+  res.status(200).json(res.locals.followedUsers);
+});
 
 module.exports = router;

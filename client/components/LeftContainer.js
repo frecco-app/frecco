@@ -8,7 +8,10 @@ class LeftContainer extends React.Component {
     render() {
         return (
             <div id='left-container'>
-                <UserDashboard />
+                <UserDashboard
+                username = {this.props.username}
+                firstname = {this.props.firstname}
+                />
                 <FriendsContainer 
                 potentialFollows={this.props.potentialFollows} 
                 handleChangeFollow={this.props.handleChangeFollow}

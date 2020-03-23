@@ -286,7 +286,8 @@ userController.follow = (req, res, next) => {
 userController.getReviews = (req, res, next) => {
   const str = `SELECT r.*, u.username
                FROM reviews r LEFT JOIN users u
-               ON r.created_by = u.id`; // initial query string given no constraints
+               ON r.created_by = u.id
+               ORDER BY id DESC`; // initial query string given no constraints
 
   db.query(str)
     .then((data) => {
@@ -296,5 +297,20 @@ userController.getReviews = (req, res, next) => {
     .catch((err) => next(err));
 };
 
+
+// Returns a table with list of user IDs and usernames (not including own user) and will populate the followed_user column if they are friends, otherwise null
+// with current user or not 
+// Expects to receive current user's id in the request body
+userController.getUsers = (req, res, next) => {
+  const { userId } = req.query;
+  const str = 'SELECT u.id, u.username, f.followed_user FROM users u LEFT JOIN follows f ON u.id = f.followed_user AND $1 = f.user_id WHERE $1 != u.id';
+  const params = [userId];
+  db.query(str, params)
+    .then((data) => {
+      res.locals.followedUsers = data.rows;
+      return next();
+    })
+    .catch((err) => next(err));
+};
 
 module.exports = userController;
