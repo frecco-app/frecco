@@ -144,8 +144,8 @@ userController.submitReview = (req, res, next) => {
     location, category, rating, recommendation, reviewText, userId
   } = { ...req.body, userId: res.locals.userId };
 
-  const str = `INSERT INTO reviews (location, category, rating, recommendation, review_text, created_by)
-               VALUES ($1, $2, $3, $4, $5, $6)
+  const str = `INSERT INTO reviews (location, category, rating, recommendation, review_text, created_by, likes)
+               VALUES ($1, $2, $3, $4, $5, $6, 0)
                RETURNING *`;
 
   const params = [location, category, rating, recommendation, reviewText, userId];

@@ -41,7 +41,8 @@ class App extends Component {
         review_text: null
       },
       follow_user: null, // {user_id: #, username: # },
-      likedPosts: []
+      likedPosts: [],
+      numberLikes: null // drilling this down to rerender
     };
     // methods to handle signup/login
     this.signup = this.signup.bind(this);
@@ -140,6 +141,7 @@ class App extends Component {
     })
       .then((res) => res.json())
       .then((json) => {
+        console.log(json)
         this.setState({
           posts: json,
           filteredPosts: json
@@ -160,6 +162,7 @@ class App extends Component {
   }
 
   fetchLikes() {
+  //  console.log('before fetch ' + this.state.likedPosts.length);
     fetch('/users/getlikes', {
       headers: {
         'Content-Type': 'application/json',
@@ -170,7 +173,9 @@ class App extends Component {
       .then((json) => {
         this.setState({
           likedPosts: json
-        });
+
+        })
+  //     console.log('after fetch ' + this.state.likedPosts.length);
       });
   }
 
@@ -184,8 +189,15 @@ class App extends Component {
       },
       body: JSON.stringify(data)
     }).then((res) => res.json())
-    .then(this.fetchLikes())
-    .catch((err) => console.error(err));
+      .then(() => {
+        this.fetchLikes();
+        // get updated # of likes on current pots
+        const currPostLikes = this.state.posts.filter(el => el.id === int).likes;
+        this.setState({numberLikes: currPostLikes})
+      });
+      //  this.filterPosts();
+    
+      .catch((err) => console.error(err));
   }
 
   handleChangeFirstname(event) {
@@ -479,6 +491,7 @@ class App extends Component {
              categories={this.state.categories}
              locations={this.state.locations}
              postFilter={this.state.postFilter}
+             numberLikes={this.state.numberLikes}
              />
           </div>
       </Fragment>

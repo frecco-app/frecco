@@ -24,7 +24,8 @@ class RightContainer extends React.Component {
                 <FeedContainer 
                     filteredPosts={this.props.filteredPosts}
                     likedPosts={this.props.likedPosts}
-                    handleLikeReview={this.props.handleLikeReview}/>
+                    handleLikeReview={this.props.handleLikeReview}
+                    numberLikes={this.props.numberLikes}/>
             </div>
             
         )
