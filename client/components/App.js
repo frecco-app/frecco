@@ -78,7 +78,8 @@ class App extends Component {
     this.handleChangeFollow = this.handleChangeFollow.bind(this);
     this.addFollow = this.addFollow.bind(this);
     // like or unlike a post
-    
+    this.handleLikeReview = this.handleLikeReview.bind(this);
+    //this.likeReview = this.handleLikeReview.bind(this);
   }
 
   handleChangeFollow(e, value) {
@@ -127,7 +128,7 @@ class App extends Component {
       this.filterPosts();
     });
 
-    console.log(this.state)
+
   }
 
   componentWillUnmount() {
@@ -175,9 +176,18 @@ class App extends Component {
       });
   }
 
-    // like or unlike a post on button click
-
-  
+  // Will have a button on the FeedItem component
+  handleLikeReview(event, int, bool) {
+    const data = { review_id: int, isLiked: bool };
+    fetch('/users/like', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    }).then((res) => res.json())
+    .catch((err) => console.error(err));
+  }
 
   handleChangeFirstname(event) {
     this.setState({ firstname: event.target.value });
@@ -232,6 +242,8 @@ class App extends Component {
   handleChangePostRating(event) {
     this.setState({ postData: { ...this.state.postData, rating: event.target.value } });
   }
+
+ 
 
   // post form data to server
   handlePostForm() {
@@ -414,6 +426,7 @@ class App extends Component {
              friends={this.state.friends}
              handleChangeFriendsFilter={this.handleChangeFriendsFilter}
              likedPosts={this.state.likedPosts}
+             handleLikeReview={this.handleLikeReview}
              />
           </div>
       </Fragment>

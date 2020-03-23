@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from '@material-ui/core';
 
 function FeedItem(props) {
   
@@ -18,6 +19,7 @@ function FeedItem(props) {
             <div className = 'review-text-box'>
             {props.review_text}
             {props.isLiked}
+            <Button onClick={(event) => props.handleLikeReview(event, props.id, props.isLiked)}> Like </Button>
             </div>
         </div>
     )

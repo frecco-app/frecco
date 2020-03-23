@@ -8,9 +8,10 @@ function FeedContainer(props) {
  
     const post = props.filteredPosts[i];
     const isLiked = props.likedPosts.includes(post.id).toString();
-
+    
     // if (props.likedPosts.includes(post.id)) isLiked = true;
     feed.push(<FeedItem key={'feeditem'+i}
+        id={post.id}
         location={post.location}
         category={post.category}
         rating={post.rating}
@@ -18,6 +19,8 @@ function FeedContainer(props) {
         review_text={post.review_text}
         username={post.username}
         isLiked={isLiked}
+        handleLikeReview={props.handleLikeReview}
+        //likeReview={props.likeReview}
         />);
   }
   return (

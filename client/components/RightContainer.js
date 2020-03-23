@@ -6,6 +6,7 @@ import FilterForm from "./FilterForm";
 class RightContainer extends React.Component {
    
     render() {
+
         return (
             <div id='right-container'>
                 <FilterForm 
@@ -19,7 +20,10 @@ class RightContainer extends React.Component {
                     friends={this.props.friends}
                     handleChangeFriendsFilter={this.props.handleChangeFriendsFilter}
                  />
-                <FeedContainer filteredPosts={this.props.filteredPosts} likedPosts={this.props.likedPosts}/>
+                <FeedContainer 
+                    filteredPosts={this.props.filteredPosts}
+                    likedPosts={this.props.likedPosts}
+                    handleLikeReview={this.props.handleLikeReview}/>
             </div>
             
         )
