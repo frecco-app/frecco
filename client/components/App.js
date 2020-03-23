@@ -21,6 +21,7 @@ class App extends Component {
       lastname: null,
       loginMessage: null,
       signupMessage: null,
+      postLocationMessage: null,
       posts: [],
       filteredPosts: [],
       friends: [],
@@ -64,6 +65,7 @@ class App extends Component {
     this.handleChangePostRating = this.handleChangePostRating.bind(this);
     this.handleChangePostLocation = this.handleChangePostLocation.bind(this);
     this.handleChangePostCategory = this.handleChangePostCategory.bind(this);
+    this.parseLocation = this.parseLocation.bind(this);
     // methods for following
     this.handleChangeFollow = this.handleChangeFollow.bind(this);
     this.addFollow = this.addFollow.bind(this);
@@ -104,8 +106,9 @@ class App extends Component {
     this.fetchPosts();
     // Handle recieved posts
     this.state.socket.on('post', (post) => {
+      post = this.parseLocation(post);
       this.setState({
-        posts: [...this.state.posts, post]
+        posts: [post, ...this.state.posts]
       });
       this.filterPosts();
     });
@@ -120,7 +123,13 @@ class App extends Component {
     })
       .then((res) => res.json());
   }
-
+  parseLocation(post) {
+    const locationArr = post.location.split('   ');
+    const location = locationArr.length === 1 ? locationArr[0] : locationArr[1];
+    const newPost = {...post, location: location}
+    newPost['locationDetail'] = locationArr.length === 1 ? '' : locationArr[0];
+    return newPost;
+  }
   fetchPosts() {
     fetch('/users/getreview', {
       headers: {
@@ -129,6 +138,9 @@ class App extends Component {
       }
     })
       .then((res) => res.json())
+      .then((json) => {
+        return json.map((post) => this.parseLocation(post));
+      })
       .then((json) => {
         this.setState({
           posts: json,
@@ -191,8 +203,12 @@ class App extends Component {
     this.setState({ postData: { ...this.state.postData, reviewText: event.target.value } });
   }
 
-  handleChangePostLocation(event) {
-    this.setState({ postData: { ...this.state.postData, location: event.target.value } });
+  handleChangePostLocation(event, value) {
+    if (!value.structured_formatting.hasOwnProperty('secondary_text')) {
+      this.setState({ postLocationMessage: 'Please specify a more specific location' });
+    }
+    this.setState({ postLocationMessage: null });
+    this.setState({ postData: { ...this.state.postData, location: `${value.structured_formatting.main_text}   ${value.structured_formatting.secondary_text}` } });
   }
 
   handleChangePostCategory(event) {
@@ -205,6 +221,7 @@ class App extends Component {
 
   // post form data to server
   handlePostForm() {
+    console.log('location to go with post request', this.state.postData.location);
     const data = {
       username: this.state.username,
       location: this.state.postData.location,
@@ -251,7 +268,8 @@ class App extends Component {
           console.log('signup error');
           this.setState({ loginMessage: 'Invalid signup information' });
         } else {
-          this.setState({ posts: json[3] });
+          const posts = json[3].map(post => this.parseLocation(post))
+          this.setState({ posts: posts });
           this.filterPosts();
           // redirect to new page
           this.props.history.push('/header2');
@@ -295,7 +313,8 @@ class App extends Component {
               console.log('login error');
               this.setState({ loginMessage: 'Invalid login information' });
             } else {
-              this.setState({ posts: json[3] });
+              const posts = json[3].map(post => this.parseLocation(post))
+              this.setState({ posts: posts });
               this.filterPosts();
               // redirect to new page
               this.props.history.push('/header2');
@@ -390,9 +409,45 @@ class App extends Component {
                 handleChangeUsername={this.handleChangeUsername}
                 handleChangePassword={this.handleChangePassword} />}
               />
-              <Route exact path='/header2' render={() => <Header2
-                username={this.state.username}
-                logout={this.logout}/>}
+              <Route exact path='/header2' render={() => 
+                <Fragment>
+                  <Header2 username={this.state.username} logout={this.logout}/>
+                  <div id='wrapper'>
+                    <LeftContainer
+                      postData={this.state.postData}
+                      handleChangePostCategory={this.handleChangePostCategory}
+                      handleChangePostLocation={this.handleChangePostLocation}
+                      postLocationMessage={this.state.postLocationMessage} 
+                      handleChangePostRating={this.handleChangePostRating}
+                      handleChangeRecommendation={this.handleChangeRecommendation}
+                      handleChangeReview={this.handleChangeReview}
+                      handlePostForm={this.handlePostForm}
+                      categories={this.state.categories}
+                      locations={this.state.locations}
+                      potentialFollows={this.state.potentialFollows}
+                      handleChangeFollow={this.handleChangeFollow}
+                      addFollow={this.addFollow}
+                      username = {this.state.username}
+                      firstname = {this.state.firstname}
+                    />
+                    <RightContainer
+                      filterPosts={this.filterPosts}
+                      filteredPosts={this.state.filteredPosts}
+                      handleChangeCategory={this.handleChangeCategory}
+                      handleChangeLocation={this.handleChangeLocation}
+                      handleChangeRating={this.handleChangeRating}
+                      location={this.state.postFilter.location}
+                      category={this.state.postFilter.category}
+                      minrating={this.state.postFilter.minrating}
+                      friends={this.state.friends}
+                      handleChangeFriendsFilter={this.handleChangeFriendsFilter}
+                      categories={this.state.categories}
+                      locations={this.state.locations}
+                      postFilter={this.state.postFilter}
+                    />
+                  </div>
+                </Fragment>
+              }
               />
               <Route exact path='/header3' render={() => <Header3
                 message={this.state.signupMessage}
@@ -403,39 +458,6 @@ class App extends Component {
                 handleChangeLastname={this.handleChangeLastname} />}
               />
           </Switch>
-          <div id='wrapper'>
-            <LeftContainer
-            postData={this.state.postData}
-            handleChangePostCategory={this.handleChangePostCategory}
-            handleChangePostLocation={this.handleChangePostLocation}
-            handleChangePostRating={this.handleChangePostRating}
-            handleChangeRecommendation={this.handleChangeRecommendation}
-            handleChangeReview={this.handleChangeReview}
-            handlePostForm={this.handlePostForm}
-            categories={this.state.categories}
-            locations={this.state.locations}
-            potentialFollows={this.state.potentialFollows}
-            handleChangeFollow={this.handleChangeFollow}
-            addFollow={this.addFollow}
-            username = {this.state.username}
-            firstname = {this.state.firstname}
-            />
-            <RightContainer
-             filterPosts={this.filterPosts}
-             filteredPosts={this.state.filteredPosts}
-             handleChangeCategory={this.handleChangeCategory}
-             handleChangeLocation={this.handleChangeLocation}
-             handleChangeRating={this.handleChangeRating}
-             location={this.state.postFilter.location}
-             category={this.state.postFilter.category}
-             minrating={this.state.postFilter.minrating}
-             friends={this.state.friends}
-             handleChangeFriendsFilter={this.handleChangeFriendsFilter}
-             categories={this.state.categories}
-             locations={this.state.locations}
-             postFilter={this.state.postFilter}
-             />
-          </div>
       </Fragment>
     );
   }

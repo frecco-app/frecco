@@ -1,4 +1,5 @@
 import React, {Component} from "react";
+import LocationSearch from './LocationSearch';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -10,10 +11,8 @@ import Select from '@material-ui/core/Select';
 function PostForm(props) {
     let i = 0
     let ratings = [1, 2, 3, 4, 5]
-    const locations = ['Texas','Paris','Beijing','New York City','Miami','Las Vegas','Orlando','Seoul','Shanghai','Tokyo','Istanbul','Abu Dhabi','Dubai','Berlin']
     //popuating location and categroy dropdown menu with state
     let categoryOptions = props.categories.map(el => <MenuItem key={`cat-${i++}`} value={el}>{el}</MenuItem>)
-    let locationOptions = locations.map(el => <MenuItem key={`loc-${i++}`} value={el}>{el}</MenuItem>)
     let ratingOptions = ratings.map(el => <MenuItem key={`rat-${i++}`} value={el}>{el}</MenuItem>)
 
     return (
@@ -23,12 +22,8 @@ function PostForm(props) {
             </div>
             <form id='post-form'>
                 <div id='ff-dd'>
-                    <FormControl style={{minWidth: 120}}>
-                        <InputLabel>Location</InputLabel>
-                        <Select value={props.postData.location ? props.postData.location : ""} onChange={props.handleChangePostLocation} id='locations-dd'>
-                            {locationOptions}
-                        </Select>
-                    </FormControl>
+                    <LocationSearch handleChangePostLocation={props.handleChangePostLocation} postData={props.postData} />
+                    <div id='postLocationMessage'>{props.postLocationMessage}</div>
                     &nbsp;&nbsp;
                     <FormControl style={{minWidth: 120}}>
                         <InputLabel>Category</InputLabel>
