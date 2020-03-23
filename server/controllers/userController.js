@@ -298,7 +298,6 @@ userController.getReviews = (req, res, next) => {
 };
 
 
-<<<<<<< HEAD
 userController.likeReview = (req, res, next) => {
   const params = [res.locals.userId, req.body.review_id];
   // when user likes a review, increment # of likes on the review and add new row to the likes table
@@ -327,7 +326,6 @@ userController.getLikes = (req, res, next) => {
       // result.rows is an array of objects; each obj is a row in the likes table
       // mapping to get only an array of review_ids that the user currently likes
       res.locals.likes = result.rows.map((el) => el.review_id);
-=======
 // Returns a table with list of user IDs and usernames (not including own user) and will populate the followed_user column if they are friends, otherwise null
 // with current user or not 
 // Expects to receive current user's id in the request body
@@ -338,14 +336,10 @@ userController.getUsers = (req, res, next) => {
   db.query(str, params)
     .then((data) => {
       res.locals.followedUsers = data.rows;
->>>>>>> dev
       return next();
     })
     .catch((err) => next(err));
+  
 };
 
-<<<<<<< HEAD
-
-=======
->>>>>>> dev
 module.exports = userController;

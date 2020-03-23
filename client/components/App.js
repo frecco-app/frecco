@@ -106,14 +106,10 @@ class App extends Component {
 
     // fetch posts only once
     this.fetchPosts();
-<<<<<<< HEAD
-    this.fetchFriends();
 
     // fetch likes
     this.fetchLikes();
 
-=======
->>>>>>> dev
     // Handle recieved posts
     this.state.socket.on('post', (post) => {
       this.setState({

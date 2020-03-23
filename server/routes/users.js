@@ -70,15 +70,11 @@ router.post('/follow',
   userController.follow,
   (req, res) => res.status(200).json(res.locals.followed));
 
-<<<<<<< HEAD
 router.post('/like',
   sessionController.verify,
   userController.likeReview,
   (req, res) => res.sendStatus(200));
 
-router.get('/getreview', userController.getReviews, (req, res) => {
-  res.status(200).json(res.locals.reviews);
-=======
 router.get('/getreview',
   sessionController.verify,
   userController.getReviews,
@@ -86,7 +82,6 @@ router.get('/getreview',
 
 router.get('/getusers', userController.getUsers, (req, res) => {
   res.status(200).json(res.locals.followedUsers);
->>>>>>> dev
 });
 
 router.get('/getlikes', sessionController.verify, userController.getLikes, (req, res) => {
