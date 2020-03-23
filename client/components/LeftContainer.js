@@ -11,8 +11,10 @@ class LeftContainer extends React.Component {
                 <UserDashboard
                 username = {this.props.username}
                 firstname = {this.props.firstname}
+                posts = {this.props.posts}
+                friends = {this.props.friends}
                 />
-                <FriendsContainer 
+                <FriendsContainer
                 potentialFollows={this.props.potentialFollows} 
                 handleChangeFollow={this.props.handleChangeFollow}
                 addFollow={this.props.addFollow}/>
@@ -20,6 +22,7 @@ class LeftContainer extends React.Component {
                 postData={this.props.postData}
                 handleChangePostCategory={this.props.handleChangePostCategory}
                 handleChangePostLocation={this.props.handleChangePostLocation}
+                postLocationMessage={this.props.postLocationMessage} 
                 handleChangeRecommendation={this.props.handleChangeRecommendation}
                 handleChangePostRating={this.props.handleChangePostRating}
                 handleChangeReview={this.props.handleChangeReview}
