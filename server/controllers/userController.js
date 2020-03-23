@@ -284,22 +284,11 @@ userController.follow = (req, res, next) => {
 */
 
 userController.getReviews = (req, res, next) => {
-  // const { location, category, rating } = req.body;
   const str = `SELECT r.*, u.username
                FROM reviews r LEFT JOIN users u
-               ON r.created_by = u.id`; // initial query string given no constraints
-  // const filterObj = { 'location': location, 'category': category, 'rating >': rating };
-  // const filterArr = [location, category, rating];
-  // // check if any of the elements are populated (if all the elements are NOT empty)
-  // if (!filterArr.every((element) => element === '')) {
-  //   str += 'WHERE'; // add a WHERE to query string if detects there is a constraint passed
-  //   // filters through object and concatenates e.g. "location = 'London' AND" if value is not empty
-  //   for (let key in filterObj) {
-  //     if (filterObj[key] !== '') str+= ` ${key}= '${filterObj[key]}' AND`
-  //   };
-  //   str = str.slice(0, -4); // removes trailing 'AND'
-  // }
-  // str += 'ORDER BY likes DESC;'; // appends ranking filter by highest likes and final semicolon necessary for query command
+               ON r.created_by = u.id
+               ORDER BY id DESC`; // initial query string given no constraints
+
   db.query(str)
     .then((data) => {
       res.locals.reviews = data.rows;
@@ -309,6 +298,7 @@ userController.getReviews = (req, res, next) => {
 };
 
 
+<<<<<<< HEAD
 userController.likeReview = (req, res, next) => {
   const params = [res.locals.userId, req.body.review_id];
   // when user likes a review, increment # of likes on the review and add new row to the likes table
@@ -337,10 +327,25 @@ userController.getLikes = (req, res, next) => {
       // result.rows is an array of objects; each obj is a row in the likes table
       // mapping to get only an array of review_ids that the user currently likes
       res.locals.likes = result.rows.map((el) => el.review_id);
+=======
+// Returns a table with list of user IDs and usernames (not including own user) and will populate the followed_user column if they are friends, otherwise null
+// with current user or not 
+// Expects to receive current user's id in the request body
+userController.getUsers = (req, res, next) => {
+  const { userId } = req.query;
+  const str = 'SELECT u.id, u.username, f.followed_user FROM users u LEFT JOIN follows f ON u.id = f.followed_user AND $1 = f.user_id WHERE $1 != u.id';
+  const params = [userId];
+  db.query(str, params)
+    .then((data) => {
+      res.locals.followedUsers = data.rows;
+>>>>>>> dev
       return next();
     })
     .catch((err) => next(err));
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> dev
 module.exports = userController;

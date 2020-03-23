@@ -40,7 +40,10 @@ router.post('/login',
   cookieController.encrypt,
   cookieController.setSSID,
   sessionController.start,
-  (req, res) => res.sendStatus(204));
+  userController.getReviews,
+  (req, res) => res.status(200).json([
+    res.locals.user.id, res.locals.user.username, res.locals.user.firstname, res.locals.reviews
+  ]));
 
 // Endpoint for user logout
 router.post('/logout',
@@ -67,6 +70,7 @@ router.post('/follow',
   userController.follow,
   (req, res) => res.status(200).json(res.locals.followed));
 
+<<<<<<< HEAD
 router.post('/like',
   sessionController.verify,
   userController.likeReview,
@@ -74,6 +78,15 @@ router.post('/like',
 
 router.get('/getreview', userController.getReviews, (req, res) => {
   res.status(200).json(res.locals.reviews);
+=======
+router.get('/getreview',
+  sessionController.verify,
+  userController.getReviews,
+  (req, res) => res.status(200).json(res.locals.reviews));
+
+router.get('/getusers', userController.getUsers, (req, res) => {
+  res.status(200).json(res.locals.followedUsers);
+>>>>>>> dev
 });
 
 router.get('/getlikes', sessionController.verify, userController.getLikes, (req, res) => {

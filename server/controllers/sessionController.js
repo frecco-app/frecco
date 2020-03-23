@@ -33,15 +33,24 @@ sessionController.verify = (req, res, next) => {
 
   db.query(queryStr, params)
     .then((data) => {
-      // Responds with user_id
-      res.locals.userId = data.rows[0].user_id;
-      res.locals.username = data.rows[0].username;
-      return next();
+      if (data.rows[0]) {
+        // Responds with user_id
+        res.locals.userId = data.rows[0].user_id;
+        res.locals.username = data.rows[0].username;
+        return next();
+      }
+
+      return next({
+        log: 'You must be logged in to complete that action',
+        status: 400,
+        message: { err: 'You must be logged in to complete that action' }
+      });
     })
+
     .catch(() => next({
-      log: 'You must be logged in to complete that action',
-      status: 400,
-      message: { err: 'You must be logged in to complete that action' }
+      log: 'There was a problem logging in',
+      status: 500,
+      message: { err: 'There was a problem logging in' }
     }));
 };
 

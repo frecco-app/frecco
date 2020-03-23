@@ -14,11 +14,12 @@ class RightContainer extends React.Component {
                     handleChangeCategory={this.props.handleChangeCategory}
                     handleChangeLocation={this.props.handleChangeLocation}
                     handleChangeRating={this.props.handleChangeRating}
-                    location={this.props.location}
-                    category={this.props.category}
+                    locations={this.props.locations}
+                    categories={this.props.categories}
                     minrating={this.props.minrating}
                     friends={this.props.friends}
                     handleChangeFriendsFilter={this.props.handleChangeFriendsFilter}
+                    postFilter={this.props.postFilter}
                  />
                 <FeedContainer 
                     filteredPosts={this.props.filteredPosts}
