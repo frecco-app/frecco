@@ -4,6 +4,7 @@ function UserDashboard(props) {
   //  loop through array of posts and render here when . 
   let postCount = 0;
   let ratingSum = 0;
+  let avgRating = 0;
   const locations = {};
   let locationCount = 0;
   for (let i = 0; i < props.posts.length; i++) {
@@ -17,7 +18,7 @@ function UserDashboard(props) {
       }
     }
   }
-  const avgRating = ratingSum / postCount;
+  avgRating = ratingSum / postCount;
   return (
     <div>
       <h3>User Dashboard</h3>
