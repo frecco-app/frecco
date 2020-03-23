@@ -21,6 +21,7 @@ class App extends Component {
       lastname: null,
       loginMessage: null,
       signupMessage: null,
+      postLocationMessage: null,
       posts: [],
       filteredPosts: [],
       friends: [],
@@ -64,6 +65,7 @@ class App extends Component {
     this.handleChangePostRating = this.handleChangePostRating.bind(this);
     this.handleChangePostLocation = this.handleChangePostLocation.bind(this);
     this.handleChangePostCategory = this.handleChangePostCategory.bind(this);
+    this.parseLocation = this.parseLocation.bind(this);
     // methods for following
     this.handleChangeFollow = this.handleChangeFollow.bind(this);
     this.addFollow = this.addFollow.bind(this);
@@ -104,6 +106,7 @@ class App extends Component {
     this.fetchPosts();
     // Handle recieved posts
     this.state.socket.on('post', (post) => {
+      post = this.parseLocation(post);
       this.setState({
         posts: [post, ...this.state.posts]
       });
@@ -120,7 +123,13 @@ class App extends Component {
     })
       .then((res) => res.json());
   }
-
+  parseLocation(post) {
+    const locationArr = post.location.split('   ');
+    const location = locationArr.length === 1 ? locationArr[0] : locationArr[1];
+    const newPost = {...post, location: location}
+    newPost['locationDetail'] = locationArr.length === 1 ? '' : locationArr[0];
+    return newPost;
+  }
   fetchPosts() {
     fetch('/users/getreview', {
       headers: {
@@ -129,6 +138,9 @@ class App extends Component {
       }
     })
       .then((res) => res.json())
+      .then((json) => {
+        return json.map((post) => this.parseLocation(post));
+      })
       .then((json) => {
         this.setState({
           posts: json,
@@ -192,8 +204,11 @@ class App extends Component {
   }
 
   handleChangePostLocation(event, value) {
-    console.log(value);
-    this.setState({ postData: { ...this.state.postData, location: value.description } });
+    if (!value.structured_formatting.hasOwnProperty('secondary_text')) {
+      this.setState({ postLocationMessage: 'Please specify a more specific location' });
+    }
+    this.setState({ postLocationMessage: null });
+    this.setState({ postData: { ...this.state.postData, location: `${value.structured_formatting.main_text}   ${value.structured_formatting.secondary_text}` } });
   }
 
   handleChangePostCategory(event) {
@@ -253,7 +268,8 @@ class App extends Component {
           console.log('signup error');
           this.setState({ loginMessage: 'Invalid signup information' });
         } else {
-          this.setState({ posts: json[3] });
+          const posts = json[3].map(post => this.parseLocation(post))
+          this.setState({ posts: posts });
           this.filterPosts();
           // redirect to new page
           this.props.history.push('/header2');
@@ -297,7 +313,8 @@ class App extends Component {
               console.log('login error');
               this.setState({ loginMessage: 'Invalid login information' });
             } else {
-              this.setState({ posts: json[3] });
+              const posts = json[3].map(post => this.parseLocation(post))
+              this.setState({ posts: posts });
               this.filterPosts();
               // redirect to new page
               this.props.history.push('/header2');
@@ -400,6 +417,7 @@ class App extends Component {
                       postData={this.state.postData}
                       handleChangePostCategory={this.handleChangePostCategory}
                       handleChangePostLocation={this.handleChangePostLocation}
+                      postLocationMessage={this.state.postLocationMessage} 
                       handleChangePostRating={this.handleChangePostRating}
                       handleChangeRecommendation={this.handleChangeRecommendation}
                       handleChangeReview={this.handleChangeReview}
