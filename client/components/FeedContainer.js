@@ -20,6 +20,8 @@ function FeedContainer(props) {
         username={post.username}
         isLiked={isLiked}
         handleLikeReview={props.handleLikeReview}
+        likes={post.likes}
+        likedPosts={post.likedPosts} // prop drilling for sake of re-render :(
         //likeReview={props.likeReview}
         />);
   }

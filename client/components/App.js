@@ -186,6 +186,7 @@ class App extends Component {
       },
       body: JSON.stringify(data)
     }).then((res) => res.json())
+    .then(this.fetchLikes())
     .catch((err) => console.error(err));
   }
 

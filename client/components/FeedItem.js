@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from '@material-ui/core';
+import { AiOutlineHeart } from 'react-icons/ai';
 
 function FeedItem(props) {
   
@@ -19,7 +20,7 @@ function FeedItem(props) {
             <div className = 'review-text-box'>
             {props.review_text}
             {props.isLiked}
-            <Button onClick={(event) => props.handleLikeReview(event, props.id, props.isLiked)}> Like </Button>
+            <AiOutlineHeart onClick={(event) => props.handleLikeReview(event, props.id, props.isLiked)} style={{ cursor: 'pointer' }}/>             Likes: {props.likes}
             </div>
         </div>
     )
