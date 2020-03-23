@@ -12,9 +12,8 @@ class LeftContainer extends React.Component {
                 username = {this.props.username}
                 firstname = {this.props.firstname}
                 posts = {this.props.posts}
-                friends = {this.props.friends}
                 />
-                <FriendsContainer 
+                <FriendsContainer
                 potentialFollows={this.props.potentialFollows} 
                 handleChangeFollow={this.props.handleChangeFollow}
                 addFollow={this.props.addFollow}/>

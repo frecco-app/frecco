@@ -420,7 +420,6 @@ class App extends Component {
             username = {this.state.username}
             firstname = {this.state.firstname}
             posts = {this.state.posts}
-            friends = {this.state.friends.length}
             />
             <RightContainer
              filterPosts={this.filterPosts}

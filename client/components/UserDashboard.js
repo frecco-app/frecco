@@ -4,13 +4,20 @@ function UserDashboard(props) {
   //  loop through array of posts and render here when . 
   let postCount = 0;
   let ratingSum = 0;
+  const locations = {};
+  let locationCount = 0;
   for (let i = 0; i < props.posts.length; i++) {
-    if (props.posts[i].username === props.username) {
+    const post = props.posts[i];
+    if (post.username === props.username) {
       postCount++;
-      ratingSum += props.posts[i].rating;
+      ratingSum += post.rating;
+      if (locations[post.location] === undefined) {
+        locations[post.location] = true;
+        locationCount += 1;
+      }
     }
   }
-  let avgRating = ratingSum / postCount;
+  const avgRating = ratingSum / postCount;
   return (
     <div>
       <h3>User Dashboard</h3>
@@ -18,10 +25,13 @@ function UserDashboard(props) {
             <span id = 'user-dashboard-left'>
                <p>Name: {props.firstname}</p>
                <p>Username: {props.username}</p>
-               <p>Posts : {postCount} </p>
+               <p>Followed Users: {props.friends}</p>
+
             </span>
             <span id = 'user-dashboard-right'>
+                <p>Posts : {postCount} </p>
                 <p>Average Rating: {avgRating}</p>
+                <p>Locations Visited: {locationCount}</p>
             </span>
           </div>
     </div>
