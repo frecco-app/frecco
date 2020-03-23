@@ -327,9 +327,11 @@ userController.likeReview = (req, res, next) => {
 // Get posts that user currently likes
 userController.getLikes = (req, res, next) => {
   const str = `SELECT * FROM likes WHERE user_id = ${res.locals.userId}`;
-  db.query(str, params)
-    .then((data) => {
-      res.locals.likes = data.rows;
+  db.query(str)
+    .then((result) => {
+      // result.rows is an array of objects; each obj is a row in the likes table
+      // mapping to get only an array of review_ids that the user currently likes
+      res.locals.likes = result.rows.map((el) => el.review_id);
       return next();
     })
     .catch((err) => next(err));

@@ -1,7 +1,9 @@
 import React from 'react';
 
 function FeedItem(props) {
+  
     return (
+        
         <div className='feed-item'>
           
             <div className='feed-item-top-container'>
@@ -15,6 +17,7 @@ function FeedItem(props) {
             </div>
             <div className = 'review-text-box'>
             {props.review_text}
+            {props.isLiked}
             </div>
         </div>
     )

@@ -19,7 +19,7 @@ class RightContainer extends React.Component {
                     friends={this.props.friends}
                     handleChangeFriendsFilter={this.props.handleChangeFriendsFilter}
                  />
-                <FeedContainer filteredPosts={this.props.filteredPosts}/>
+                <FeedContainer filteredPosts={this.props.filteredPosts} likedPosts={this.props.likedPosts}/>
             </div>
             
         )

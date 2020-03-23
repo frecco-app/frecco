@@ -77,6 +77,8 @@ class App extends Component {
     // methods for following
     this.handleChangeFollow = this.handleChangeFollow.bind(this);
     this.addFollow = this.addFollow.bind(this);
+    // like or unlike a post
+    
   }
 
   handleChangeFollow(e, value) {
@@ -114,6 +116,9 @@ class App extends Component {
     this.fetchPosts();
     this.fetchFriends();
 
+    // fetch likes
+    this.fetchLikes();
+
     // Handle recieved posts
     this.state.socket.on('post', (post) => {
       this.setState({
@@ -121,6 +126,8 @@ class App extends Component {
       });
       this.filterPosts();
     });
+
+    console.log(this.state)
   }
 
   componentWillUnmount() {
@@ -152,6 +159,25 @@ class App extends Component {
         });
       });
   }
+
+  fetchLikes() {
+    fetch('/users/getlikes', {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      }
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        this.setState({
+          likedPosts: json
+        });
+      });
+  }
+
+    // like or unlike a post on button click
+
+  
 
   handleChangeFirstname(event) {
     this.setState({ firstname: event.target.value });
@@ -338,6 +364,7 @@ class App extends Component {
       });
   }
 
+
   render() {
     return (
       <Fragment>
@@ -386,6 +413,7 @@ class App extends Component {
              minrating={this.state.postFilter.minrating}
              friends={this.state.friends}
              handleChangeFriendsFilter={this.handleChangeFriendsFilter}
+             likedPosts={this.state.likedPosts}
              />
           </div>
       </Fragment>

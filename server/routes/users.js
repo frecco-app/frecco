@@ -76,7 +76,7 @@ router.get('/getreview', userController.getReviews, (req, res) => {
   res.status(200).json(res.locals.reviews);
 });
 
-router.get('/getlikes', sessionController.verify, userController.getReviews, (req, res) => {
+router.get('/getlikes', sessionController.verify, userController.getLikes, (req, res) => {
   res.status(200).json(res.locals.likes);
 });
 
