@@ -200,14 +200,7 @@ class App extends Component {
       },
       body: JSON.stringify(data)
     }).then((res) => res.json())
-      .then(() => {
-        this.fetchLikes();
-        // get updated # of likes on current pots
-        const currPostLikes = this.state.posts.filter(el => el.id === int).likes;
-        this.setState({numberLikes: currPostLikes})
-      });
-      //  this.filterPosts();
-    
+      .then(this.fetchLikes())
       .catch((err) => console.error(err));
   }
 
