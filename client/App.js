@@ -1,14 +1,12 @@
 import React, { Component, Fragment } from 'react';
-import {
-  Link, Route, Switch, withRouter
-} from 'react-router-dom';
+import { Route, Switch, withRouter } from 'react-router-dom';
 import io from 'socket.io-client';
-import Header1 from './Header1';
-import Header2 from './Header2';
-import Header3 from './Header3';
-import LeftContainer from './LeftContainer';
-import RightContainer from './RightContainer';
-import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles'
+import LoginPage from './components/LoginPage';
+import HeaderMainPage from './components/HeaderMainPage';
+import RegisterPage from './components/RegisterPage';
+import LeftContainer from './containers/LeftContainer';
+import RightContainer from './containers/RightContainer';
+import { createMuiTheme } from '@material-ui/core/styles'
 
 const theme = createMuiTheme({
   palette: {
@@ -304,7 +302,7 @@ class App extends Component {
   }
 
   signup() {
-    // post data. if successfull go to header3
+    // post data. if successfull go to RegisterPage
     const data = {
       firstname: this.state.firstname,
       lastname: this.state.lastname,
@@ -337,15 +335,15 @@ class App extends Component {
           });
           this.filterPosts();
           // redirect to new page
-          this.props.history.push('/header2'); 
+          this.props.history.push('/mainpage'); 
         }
       });
   }
 
   login() {
     const data = {
-      username: document.getElementById('username').value,
-      password: document.getElementById('password').value
+      username: this.state.username,
+      password: this.state.password
     };
     this.state.socket.emit('room', data.username);
 
@@ -371,7 +369,7 @@ class App extends Component {
                 user_id: json[0],
                 firstname: json[2]
               });
-              this.props.history.push('/header2');
+              this.props.history.push('/mainpage');
               this.fetchUsers(json[0]);
             }
             if (!(Array.isArray(json[3]) && json[3].length > 0)) {
@@ -392,7 +390,7 @@ class App extends Component {
               this.filterPosts();
               this.fetchLikes();
               // redirect to new page
-              this.props.history.push('/header2');
+              this.props.history.push('/mainpage');
             }
           });
       });
@@ -480,15 +478,15 @@ class App extends Component {
     return (
       <Fragment>
           <Switch>
-              <Route exact path='/' render={() => <Header1
+              <Route exact path='/' render={() => <LoginPage
                 message={this.state.loginMessage}
                 login={this.login}
                 handleChangeUsername={this.handleChangeUsername}
                 handleChangePassword={this.handleChangePassword} />}
               />
-              <Route exact path='/header2' render={() => 
+              <Route exact path='/mainpage' render={() => 
                 <Fragment>
-                  <Header2 username={this.state.username} logout={this.logout}/>
+                  <HeaderMainPage username={this.state.username} logout={this.logout}/>
                   <div id='wrapper'>
                     <LeftContainer
                       postData={this.state.postData}
@@ -530,7 +528,7 @@ class App extends Component {
                 </Fragment>
               }
               />
-              <Route exact path='/header3' render={() => <Header3
+              <Route exact path='/register' render={() => <RegisterPage
                 message={this.state.signupMessage}
                 signup={this.signup}
                 handleChangeUsername={this.handleChangeUsername}

@@ -1,5 +1,5 @@
-import React, {Component} from "react";
-import FeedItem from "./FeedItem";
+import React from 'react';
+import FeedItem from './FeedItem';
 
 function FeedContainer(props) {
     // loop through array of posts and render here 

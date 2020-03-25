@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "NODE_ENV=production nodemon server/server.js",
+    "prestart": "NODE_ENV=production webpack",
     "build": "NODE_ENV=production webpack",
     "dev": "NODE_ENV=development concurrently \"nodemon server/server.js\" \"webpack-dev-server --open --hot\"",
     "test": "jest --watch"
