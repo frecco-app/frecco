@@ -19,11 +19,12 @@ const theme = createMuiTheme({
       }
   });
 
+const socket = io('http://localhost:3000/');
+
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      socket: io('http://localhost:3000/'),
       user_id: null,
       username: null,
       password: null,
@@ -84,6 +85,15 @@ class App extends Component {
     // like or unlike a post
     this.handleLikeReview = this.handleLikeReview.bind(this);
     //this.likeReview = this.handleLikeReview.bind(this);
+
+    socket.on('post', (post) => {
+      post = this.parseLocation(post);
+      this.setState({
+        posts: [post, ...this.state.posts]
+      });
+      this.filterPosts();
+    });
+
   }
 
   handleChangeFollow(e, value) {
@@ -114,7 +124,7 @@ class App extends Component {
     // Attempt to connect to room (catches refreshes during session)
     this.fetchUser()
       .then(({ username }) => {
-        if (username) this.state.socket.emit('room', username);
+        if (username) socket.emit('room', username);
       });
 
     // fetch posts only once
@@ -124,14 +134,7 @@ class App extends Component {
     //this.fetchLikes();
 
     // Handle recieved posts
-    this.state.socket.on('post', (post) => {
-      post = this.parseLocation(post);
-      this.setState({
-        posts: [post, ...this.state.posts]
-      });
-      this.filterPosts();
-    });
-
+    
 
   }
 
@@ -345,7 +348,7 @@ class App extends Component {
       username: this.state.username,
       password: this.state.password
     };
-    this.state.socket.emit('room', data.username);
+    socket.emit('room', data.username);
 
     fetch('/users/login', {
       method: 'POST',
