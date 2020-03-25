@@ -49,7 +49,7 @@ it('renders no feedItem components when filteredPosts is empty', () => {
 
 // Renders children when filteredPosts is populated
 it('renders feedItem component when filteredPost contains post data', () => {
-  const wrapper = setup({});
+  const wrapper = setup();
   const feedContainer = wrapper.find('#feed-container');
   expect(feedContainer.children().length).toBe(1);
 });
