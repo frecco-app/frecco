@@ -14,7 +14,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = (dispatch) => ({
   handleChangePostCategory: (category) => dispatch(handleChangePostCategory(category)),
-  handleChangePostLocation: (structuredFormatting) => dispatch(handleChangePostLocation(structuredFormatting)),
+  handleChangePostLocation: (e,value) => dispatch(handleChangePostLocation(value.structured_formatting)),
   handleChangePostRating: (rating) => dispatch(handleChangePostRating(rating)),
   handleChangeRecommendation: (recommendation) => dispatch(handleChangeRecommendation(recommendation)),
   handleChangeReview: (review) => dispatch(handleChangeReview(review)),

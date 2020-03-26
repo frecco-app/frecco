@@ -7,7 +7,7 @@ export const handleChangePostCategory = (category) => ({
 
 export const handleChangePostLocation = (structuredFormatting) => ({
     type: types.HC_POST_LOCATION,
-    payload: structuredFormatting.target.value
+    payload: structuredFormatting
 })
 
 export const handleChangePostRating = (rating) => ({
