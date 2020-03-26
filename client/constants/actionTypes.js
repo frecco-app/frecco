@@ -1,0 +1,6 @@
+export const HC_POST_CATEGORY = 'HC_POST_CATEGORY';
+export const HC_POST_LOCATION = 'HC_POST_LOCATION';
+export const HC_POST_RATING = 'HC_POST_RATING';
+export const HC_RECOMMENDATION = 'HC_RECOMMENDATION';
+export const HC_REVIEW = 'HC_REVIEW';
+export const H_POST_FORM = 'H_POST_FORM';

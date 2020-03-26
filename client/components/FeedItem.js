@@ -1,11 +1,25 @@
 import React from 'react';
-import { Button } from '@material-ui/core';
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 
 function FeedItem(props) {
   let heartIcon;
-  if (props.isLiked === false) heartIcon = <AiOutlineHeart onClick={(event) => props.handleLikeReview(event, props.id, props.isLiked)} style={{ cursor: 'pointer' }}/>
-  else heartIcon = <AiFillHeart onClick={(event) => props.handleLikeReview(event, props.id, props.isLiked)} style={{ cursor: 'pointer' }}/>
+  !props.isLiked
+    ? (heartIcon = (
+        <AiOutlineHeart
+          onClick={event =>
+            props.handleLikeReview(event, props.id, props.isLiked)
+          }
+          style={{ cursor: 'pointer' }}
+        />
+      ))
+    : (heartIcon = (
+        <AiFillHeart
+          onClick={event =>
+            props.handleLikeReview(event, props.id, props.isLiked)
+          }
+          style={{ cursor: 'pointer' }}
+        />
+      ));
   return (
 
         <div className='feed-item'>
@@ -29,6 +43,5 @@ function FeedItem(props) {
     )
 
 }
-
 
 export default FeedItem;

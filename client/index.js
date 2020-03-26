@@ -1,8 +1,11 @@
-import React from 'react'
-import App from './App'
-import { render } from 'react-dom'
-import styles from './stylesheets/styles.scss'
-import { Router } from 'react-router-dom';
-import history from './components/history';
+import React from 'react';
 
-render(<Router history={history}><App /></Router>, document.getElementById('root'));
+import { Provider } from 'react-redux';
+import { render } from 'react-dom';
+import { Router } from 'react-router-dom';
+import App from './App';
+import styles from './stylesheets/styles.scss';
+import history from './components/history';
+import store from './store';
+
+render(<Provider store= {store}><Router history={history}><App /></Router></Provider>, document.getElementById('root'));

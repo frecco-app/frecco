@@ -1,12 +1,12 @@
 import React, { Component, Fragment } from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import io from 'socket.io-client';
-import LoginPage from './components/LoginPage';
+import { createMuiTheme } from '@material-ui/core/styles';
 import HeaderMainPage from './components/HeaderMainPage';
 import RegisterPage from './components/RegisterPage';
 import LeftContainer from './containers/LeftContainer';
 import RightContainer from './containers/RightContainer';
-import { createMuiTheme } from '@material-ui/core/styles'
+import LoginPage from './components/LoginPage';
 
 const theme = createMuiTheme({
   palette: {
@@ -20,6 +20,7 @@ const theme = createMuiTheme({
   });
 
 const socket = io('http://localhost:3000/');
+
 
 class App extends Component {
   constructor(props) {
@@ -46,13 +47,13 @@ class App extends Component {
       },
       categories: ['Attraction', 'Food', 'Accomodation', 'Activity'],
       locations: [],
-      postData: {
-        location: null,
-        category: null,
-        rating: null,
-        recommendation: null,
-        review_text: null
-      },
+      // postData: {
+      //   location: null,
+      //   category: null,
+      //   rating: null,
+      //   recommendation: null,
+      //   review_text: null
+      // },
       follow_user: null, // {user_id: #, username: # },
       likedPosts: [],
       numberLikes: null // drilling this down to rerender
@@ -71,12 +72,12 @@ class App extends Component {
     this.fetchPosts = this.fetchPosts.bind(this);
     this.filterPosts = this.filterPosts.bind(this);
     // methods for posting
-    this.handlePostForm = this.handlePostForm.bind(this);
-    this.handleChangeRecommendation = this.handleChangeRecommendation.bind(this);
-    this.handleChangeReview = this.handleChangeReview.bind(this);
-    this.handleChangePostRating = this.handleChangePostRating.bind(this);
-    this.handleChangePostLocation = this.handleChangePostLocation.bind(this);
-    this.handleChangePostCategory = this.handleChangePostCategory.bind(this);
+    // this.handlePostForm = this.handlePostForm.bind(this);
+    // this.handleChangeRecommendation = this.handleChangeRecommendation.bind(this);
+    // this.handleChangeReview = this.handleChangeReview.bind(this);
+    // this.handleChangePostRating = this.handleChangePostRating.bind(this);
+    // this.handleChangePostLocation = this.handleChangePostLocation.bind(this);
+    // this.handleChangePostCategory = this.handleChangePostCategory.bind(this);
     this.parseLocation = this.parseLocation.bind(this);
     // methods for following
     this.handleChangeFollow = this.handleChangeFollow.bind(this);
@@ -239,58 +240,58 @@ class App extends Component {
   }
 
   // Post form Handles
-  handleChangeRecommendation(event) {
-    this.setState({ postData: { ...this.state.postData, recommendation: event.target.value } });
-  }
+  // handleChangeRecommendation(event) {
+  //   this.setState({ postData: { ...this.state.postData, recommendation: event.target.value } });
+  // }
 
-  handleChangeReview(event) {
-    this.setState({ postData: { ...this.state.postData, reviewText: event.target.value } });
-  }
+  // handleChangeReview(event) {
+  //   this.setState({ postData: { ...this.state.postData, reviewText: event.target.value } });
+  // }
 
-  handleChangePostLocation(event, value) {
-    if (!value.structured_formatting.hasOwnProperty('secondary_text')) {
-      this.setState({ postLocationMessage: 'Please specify a more specific location' });
-    }
-    this.setState({ postLocationMessage: null });
-    this.setState({ postData: { ...this.state.postData, location: `${value.structured_formatting.main_text}   ${value.structured_formatting.secondary_text}` } });
-  }
+  // handleChangePostLocation(event, value) {
+  //   if (!value.structured_formatting.hasOwnProperty('secondary_text')) {
+  //     this.setState({ postLocationMessage: 'Please specify a more specific location' });
+  //   }
+  //   this.setState({ postLocationMessage: null });
+  //   this.setState({ postData: { ...this.state.postData, location: `${value.structured_formatting.main_text}   ${value.structured_formatting.secondary_text}` } });
+  // }
 
-  handleChangePostCategory(event) {
-    this.setState({ postData: { ...this.state.postData, category: event.target.value } });
-  }
+  // handleChangePostCategory(event) {
+  //   this.setState({ postData: { ...this.state.postData, category: event.target.value } });
+  // }
 
-  handleChangePostRating(event) {
-    this.setState({ postData: { ...this.state.postData, rating: event.target.value } });
-  }
+  // handleChangePostRating(event) {
+  //   this.setState({ postData: { ...this.state.postData, rating: event.target.value } });
+  // }
 
  
 
   // post form data to server
-  handlePostForm() {
-    console.log('location to go with post request', this.state.postData.location);
-    const data = {
-      username: this.state.username,
-      location: this.state.postData.location,
-      category: this.state.postData.category,
-      rating: this.state.postData.rating,
-      recommendation: this.state.postData.recommendation,
-      reviewText: this.state.postData.reviewText
-    };
+  // handlePostForm() {
+  //   console.log('location to go with post request', this.state.postData.location);
+  //   const data = {
+  //     username: this.state.username,
+  //     location: this.state.postData.location,
+  //     category: this.state.postData.category,
+  //     rating: this.state.postData.rating,
+  //     recommendation: this.state.postData.recommendation,
+  //     reviewText: this.state.postData.reviewText
+  //   };
 
-    fetch('/users/submitreview', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-      .then(() => {
-        console.log('Success');
-      })
-      .catch(() => {
-        console.error('Error');
-      });
-  }
+  //   fetch('/users/submitreview', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json'
+  //     },
+  //     body: JSON.stringify(data)
+  //   })
+  //     .then(() => {
+  //       console.log('Success');
+  //     })
+  //     .catch(() => {
+  //       console.error('Error');
+  //     });
+  // }
 
   signup() {
     // post data. if successfull go to RegisterPage
@@ -488,13 +489,13 @@ class App extends Component {
                   <div id='wrapper'>
                     <LeftContainer
                       postData={this.state.postData}
-                      handleChangePostCategory={this.handleChangePostCategory}
-                      handleChangePostLocation={this.handleChangePostLocation}
+                      // handleChangePostCategory={this.handleChangePostCategory}
+                      // handleChangePostLocation={this.handleChangePostLocation}
                       postLocationMessage={this.state.postLocationMessage} 
-                      handleChangePostRating={this.handleChangePostRating}
-                      handleChangeRecommendation={this.handleChangeRecommendation}
-                      handleChangeReview={this.handleChangeReview}
-                      handlePostForm={this.handlePostForm}
+                      // handleChangePostRating={this.handleChangePostRating}
+                      // handleChangeRecommendation={this.handleChangeRecommendation}
+                      // handleChangeReview={this.handleChangeReview}
+                      // handlePostForm={this.handlePostForm}
                       categories={this.state.categories}
                       locations={this.state.locations}
                       potentialFollows={this.state.potentialFollows}
