@@ -1,5 +1,7 @@
-$snow: #fafbfb;
-$orange: #fe5722;
+$snow: #c6d8dd;
+$purple: rgb(226, 202, 226);
+$darkpurple: rgb(187, 145, 187);
+$lightpurple: rgb(241, 232, 241);
 $grey-font:#5a5a5a;
 $border: #dedede;
 $border-radius: 5px;
@@ -12,13 +14,18 @@ $box-shadow: 0px 3px 5px 1px rgba(0,0,0,0.09);
     
 }
 
+body {
+    background-color: $purple;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%239C92AC' fill-opacity='0.4' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
+}
+
 #header1, #header2, #header3 {
     padding-right: 5%;
     display: flex;
     justify-content: flex-end;
     margin: 10px;
     h1 {
-        color: $orange;
+        color: purple;
         font-weight: 800;
         padding-left: 5%;
         flex: 1;
@@ -41,7 +48,7 @@ $box-shadow: 0px 3px 5px 1px rgba(0,0,0,0.09);
 #filter-form {
     height: auto;
     padding: 10px;
-    background-color: #ecf0f1;
+    background-color: $darkpurple;
     display: flex;
     align-self: bottom;
     justify-content: center;
@@ -58,19 +65,21 @@ $box-shadow: 0px 3px 5px 1px rgba(0,0,0,0.09);
 #right-container {
     flex: 3;
     padding: 20px;
-    background-color: $snow;
+    background-color: $purple;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%239C92AC' fill-opacity='0.4' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
     overflow: auto;
 }
 
 #left-container {
     flex: 2;
-    background-color: $snow;
+    background-color: $purple;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%239C92AC' fill-opacity='0.4' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
     padding: 20px;
     overflow:auto;
 }
 
 #post-form-header {
-    background-color: #ecf0f1;
+    background-color: $darkpurple;
     padding: 15px;
     border-top: .5px solid $border;
     border-left: .5px solid $border;
@@ -84,7 +93,7 @@ $box-shadow: 0px 3px 5px 1px rgba(0,0,0,0.09);
 }
 
 #post-form {
-    background-color: white;
+    background-color: $lightpurple;
     padding: 20px;
     border: .5px solid $border;
     border-radius: 0px 0px 5px 5px;
@@ -100,7 +109,7 @@ $box-shadow: 0px 3px 5px 1px rgba(0,0,0,0.09);
 
 #feed-container {
     padding: 5px;
-    background-color: white;
+    background-color: $lightpurple;
     padding: 20px;
     border: .5px solid $border;
     border-radius: 0px 0x 5px 5px;
@@ -114,7 +123,7 @@ $box-shadow: 0px 3px 5px 1px rgba(0,0,0,0.09);
     border: .5px solid $border;
     border-radius: $border-radius;
     &:hover {
-        background-color: $snow;
+        background-color: $purple;
    }
 }
 
@@ -156,7 +165,7 @@ $box-shadow: 0px 3px 5px 1px rgba(0,0,0,0.09);
     justify-content: space-around;
     align-items: flex-start;
     color: $grey-font;
-    background-color: white;
+    background-color: $lightpurple;
     padding: 20px;
     height: 100px;
     border: .5px solid $border;
@@ -177,7 +186,7 @@ $box-shadow: 0px 3px 5px 1px rgba(0,0,0,0.09);
 
 
 #friends-container {
-    background-color: white;
+    background-color: $lightpurple;
     padding: 15px;
     margin: 10px 0px;
     height: auto;
