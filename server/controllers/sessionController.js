@@ -22,6 +22,7 @@ sessionController.start = (req, res, next) => {
 
 // Verifies that authentication cookie and sends user_id as response
 sessionController.verify = (req, res, next) => {
+  console.log('sessionController.verify')
   const queryStr = `SELECT s.user_id, u.username
                     FROM (
                       SELECT user_id FROM sessions
@@ -56,6 +57,7 @@ sessionController.verify = (req, res, next) => {
 
 // Removes authentication cookie and user_id from sessions table
 sessionController.end = (req, res, next) => {
+  console.log('sessionController.end')
   const queryStr = `DELETE FROM sessions
                     WHERE ssid = $1`;
   const params = [req.cookies.xpgnssid];
@@ -70,34 +72,34 @@ sessionController.end = (req, res, next) => {
 };
 
 // Enforces max of three sessions per user
-sessionController.manage = (req, res, next) => {
-  const queryStr = `SELECT id FROM sessions
-                    WHERE user_id = $1
-                    ORDER BY id DESC`;
-  const delStr = `DELETE FROM sessions
-                  WHERE user_id = $1
-                  AND id <= $2`;
+// sessionController.manage = (req, res, next) => {
+//   const queryStr = `SELECT id FROM sessions
+//                     WHERE user_id = $1
+//                     ORDER BY id DESC`;
+//   const delStr = `DELETE FROM sessions
+//                   WHERE user_id = $1
+//                   AND id <= $2`;
 
-  db.query(queryStr, [res.locals.user.id])
-    .then((data) => {
-      if (data.rows.length > 3) {
-        const threshold = data.rows[3].id;
-        db.query(delStr, [res.locals.user.id, threshold])
-          .then(() => next())
-          .catch(() => next({
-            log: 'A problem occured managing sessions',
-            status: 500,
-            message: { err: 'A problem occured managing sessions' }
-          }));
-      }
-      return next();
-    })
+//   db.query(queryStr, [res.locals.user.id])
+//     .then((data) => {
+//       if (data.rows.length > 3) {
+//         const threshold = data.rows[3].id;
+//         db.query(delStr, [res.locals.user.id, threshold])
+//           .then(() => next())
+//           .catch(() => next({
+//             log: 'A problem occured managing sessions',
+//             status: 500,
+//             message: { err: 'A problem occured managing sessions' }
+//           }));
+//       }
+//       return next();
+//     })
 
-    .catch(() => next({
-      log: 'A problem occured managing sessions',
-      status: 500,
-      message: { err: 'A problem occured managing sessions' }
-    }));
-};
+//     .catch(() => next({
+//       log: 'A problem occured managing sessions',
+//       status: 500,
+//       message: { err: 'A problem occured managing sessions' }
+//     }));
+// };
 
 module.exports = sessionController;

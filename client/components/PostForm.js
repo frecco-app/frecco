@@ -27,7 +27,7 @@ function PostForm(props) {
                     &nbsp;&nbsp;
                     <FormControl style={{minWidth: 120}}>
                         <InputLabel>Category</InputLabel>
-                        <Select value={props.postData.category ? props.postData.category  : ""} onChange={props.handleChangePostCategory} id='locations-dd'>
+                        <Select value={props.postData.category ? props.postData.category : ""} onChange={props.handleChangePostCategory} id='locations-dd'>
                             {categoryOptions}
                         </Select>
                     </FormControl>
