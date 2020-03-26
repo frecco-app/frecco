@@ -21,7 +21,10 @@ function FeedItem(props) {
             <div className = 'review-text-box'>
                 {props.review_text}
             </div>
-            {heartIcon}  {props.likes} likes
+            {heartIcon}  {props.likes} likes 
+            &nbsp;&nbsp; 
+            {props.current_username === props.username &&
+            <button id={props.id} onClick={props.handleDeleteReview}>Delete</button>}
         </div>
     )
 
