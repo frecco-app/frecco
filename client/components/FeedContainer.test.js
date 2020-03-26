@@ -28,11 +28,6 @@ const setup = (props = {}) => {
   return shallow(<FeedContainer {...setupProps} />);
 };
 
-// const setupMount = (props = {}) => {
-//   const setupProps = { ...defaultProps, ...props };
-//   return mount(<FeedContainer {...setupProps} />);
-// };
-
 // Renders w/o error
 it('renders without error', () => {
   const wrapper = setup();
