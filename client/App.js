@@ -1,14 +1,12 @@
 import React, { Component, Fragment } from 'react';
-import {
-  Link, Route, Switch, withRouter
-} from 'react-router-dom';
+import { Route, Switch, withRouter } from 'react-router-dom';
 import io from 'socket.io-client';
-import Header1 from './Header1';
-import Header2 from './Header2';
-import Header3 from './Header3';
-import LeftContainer from './LeftContainer';
-import RightContainer from './RightContainer';
-import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles'
+import { createMuiTheme } from '@material-ui/core/styles';
+import HeaderMainPage from './components/HeaderMainPage';
+import RegisterPage from './components/RegisterPage';
+import LeftContainer from './containers/LeftContainer';
+import RightContainer from './containers/RightContainer';
+import LoginPage from './components/LoginPage';
 
 const theme = createMuiTheme({
   palette: {
@@ -21,11 +19,13 @@ const theme = createMuiTheme({
       }
   });
 
+const socket = io('http://localhost:3000/');
+
+
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      socket: io('http://localhost:3000/'),
       user_id: null,
       username: null,
       password: null,
@@ -42,17 +42,18 @@ class App extends Component {
         location: null,
         category: null,
         minrating: 1,
-        friends: []
+        friends: [],
+        source: 1
       },
       categories: ['Attraction', 'Food', 'Accomodation', 'Activity'],
       locations: [],
-      postData: {
-        location: null,
-        category: null,
-        rating: null,
-        recommendation: null,
-        review_text: null
-      },
+      // postData: {
+      //   location: null,
+      //   category: null,
+      //   rating: null,
+      //   recommendation: null,
+      //   review_text: null
+      // },
       follow_user: null, // {user_id: #, username: # },
       likedPosts: [],
       numberLikes: null // drilling this down to rerender
@@ -61,10 +62,8 @@ class App extends Component {
     this.signup = this.signup.bind(this);
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
-    this.handleChangeFirstname = this.handleChangeFirstname.bind(this);
-    this.handleChangeLastname = this.handleChangeLastname.bind(this);
-    this.handleChangeUsername = this.handleChangeUsername.bind(this);
-    this.handleChangePassword = this.handleChangePassword.bind(this);
+    this.handleChangeItem = this.handleChangeItem.bind(this);
+    // methods to handle filtering reviews
     this.handleChangeLocation = this.handleChangeLocation.bind(this);
     this.handleChangeCategory = this.handleChangeCategory.bind(this);
     this.handleChangeRating = this.handleChangeRating.bind(this);
@@ -73,12 +72,12 @@ class App extends Component {
     this.fetchPosts = this.fetchPosts.bind(this);
     this.filterPosts = this.filterPosts.bind(this);
     // methods for posting
-    this.handlePostForm = this.handlePostForm.bind(this);
-    this.handleChangeRecommendation = this.handleChangeRecommendation.bind(this);
-    this.handleChangeReview = this.handleChangeReview.bind(this);
-    this.handleChangePostRating = this.handleChangePostRating.bind(this);
-    this.handleChangePostLocation = this.handleChangePostLocation.bind(this);
-    this.handleChangePostCategory = this.handleChangePostCategory.bind(this);
+    // this.handlePostForm = this.handlePostForm.bind(this);
+    // this.handleChangeRecommendation = this.handleChangeRecommendation.bind(this);
+    // this.handleChangeReview = this.handleChangeReview.bind(this);
+    // this.handleChangePostRating = this.handleChangePostRating.bind(this);
+    // this.handleChangePostLocation = this.handleChangePostLocation.bind(this);
+    // this.handleChangePostCategory = this.handleChangePostCategory.bind(this);
     this.parseLocation = this.parseLocation.bind(this);
     // methods for following
     this.handleChangeFollow = this.handleChangeFollow.bind(this);
@@ -86,6 +85,16 @@ class App extends Component {
     // like or unlike a post
     this.handleLikeReview = this.handleLikeReview.bind(this);
     //this.likeReview = this.handleLikeReview.bind(this);
+    // delete review
+    this.handleDeleteReview = this.handleDeleteReview.bind(this);
+
+    socket.on('post', (post) => {
+      post = this.parseLocation(post);
+      this.setState({
+        posts: [post, ...this.state.posts]
+      });
+      this.filterPosts();
+    });
   }
 
   handleChangeFollow(e, value) {
@@ -116,7 +125,7 @@ class App extends Component {
     // Attempt to connect to room (catches refreshes during session)
     this.fetchUser()
       .then(({ username }) => {
-        if (username) this.state.socket.emit('room', username);
+        if (username) socket.emit('room', username);
       });
 
     // fetch posts only once
@@ -126,14 +135,7 @@ class App extends Component {
     //this.fetchLikes();
 
     // Handle recieved posts
-    this.state.socket.on('post', (post) => {
-      post = this.parseLocation(post);
-      this.setState({
-        posts: [post, ...this.state.posts]
-      });
-      this.filterPosts();
-    });
-
+    
 
   }
 
@@ -216,20 +218,8 @@ class App extends Component {
       .catch((err) => console.error(err));
   }
 
-  handleChangeFirstname(event) {
-    this.setState({ firstname: event.target.value });
-  }
-
-  handleChangeLastname(event) {
-    this.setState({ lastname: event.target.value });
-  }
-
-  handleChangeUsername(event) {
-    this.setState({ username: event.target.value });
-  }
-
-  handleChangePassword(event) {
-    this.setState({ password: event.target.value });
+  handleChangeItem(event) {
+    this.setState({ [event.target.id]: event.target.value });
   }
 
   handleChangeLocation(event) {
@@ -244,67 +234,67 @@ class App extends Component {
     this.setState({ postFilter: { ...this.state.postFilter, minrating: event.target.value } });
   }
 
-  handleChangeFriendsFilter(event, value) {
-    this.setState({ postFilter: { ...this.state.postFilter, friends: value.map((a) => a.user_id) } });
+  handleChangeFriendsFilter(event) {
+    this.setState({ postFilter: { ...this.state.postFilter, source: event.target.value } });
     // value.map(a => String(a.user_id))
   }
 
   // Post form Handles
-  handleChangeRecommendation(event) {
-    this.setState({ postData: { ...this.state.postData, recommendation: event.target.value } });
-  }
+  // handleChangeRecommendation(event) {
+  //   this.setState({ postData: { ...this.state.postData, recommendation: event.target.value } });
+  // }
 
-  handleChangeReview(event) {
-    this.setState({ postData: { ...this.state.postData, reviewText: event.target.value } });
-  }
+  // handleChangeReview(event) {
+  //   this.setState({ postData: { ...this.state.postData, reviewText: event.target.value } });
+  // }
 
-  handleChangePostLocation(event, value) {
-    if (!value.structured_formatting.hasOwnProperty('secondary_text')) {
-      this.setState({ postLocationMessage: 'Please specify a more specific location' });
-    }
-    this.setState({ postLocationMessage: null });
-    this.setState({ postData: { ...this.state.postData, location: `${value.structured_formatting.main_text}   ${value.structured_formatting.secondary_text}` } });
-  }
+  // handleChangePostLocation(event, value) {
+  //   if (!value.structured_formatting.hasOwnProperty('secondary_text')) {
+  //     this.setState({ postLocationMessage: 'Please specify a more specific location' });
+  //   }
+  //   this.setState({ postLocationMessage: null });
+  //   this.setState({ postData: { ...this.state.postData, location: `${value.structured_formatting.main_text}   ${value.structured_formatting.secondary_text}` } });
+  // }
 
-  handleChangePostCategory(event) {
-    this.setState({ postData: { ...this.state.postData, category: event.target.value } });
-  }
+  // handleChangePostCategory(event) {
+  //   this.setState({ postData: { ...this.state.postData, category: event.target.value } });
+  // }
 
-  handleChangePostRating(event) {
-    this.setState({ postData: { ...this.state.postData, rating: event.target.value } });
-  }
+  // handleChangePostRating(event) {
+  //   this.setState({ postData: { ...this.state.postData, rating: event.target.value } });
+  // }
 
  
 
   // post form data to server
-  handlePostForm() {
-    console.log('location to go with post request', this.state.postData.location);
-    const data = {
-      username: this.state.username,
-      location: this.state.postData.location,
-      category: this.state.postData.category,
-      rating: this.state.postData.rating,
-      recommendation: this.state.postData.recommendation,
-      reviewText: this.state.postData.reviewText
-    };
+  // handlePostForm() {
+  //   console.log('location to go with post request', this.state.postData.location);
+  //   const data = {
+  //     username: this.state.username,
+  //     location: this.state.postData.location,
+  //     category: this.state.postData.category,
+  //     rating: this.state.postData.rating,
+  //     recommendation: this.state.postData.recommendation,
+  //     reviewText: this.state.postData.reviewText
+  //   };
 
-    fetch('/users/submitreview', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-      .then(() => {
-        console.log('Success');
-      })
-      .catch(() => {
-        console.error('Error');
-      });
-  }
+  //   fetch('/users/submitreview', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json'
+  //     },
+  //     body: JSON.stringify(data)
+  //   })
+  //     .then(() => {
+  //       console.log('Success');
+  //     })
+  //     .catch(() => {
+  //       console.error('Error');
+  //     });
+  // }
 
   signup() {
-    // post data. if successfull go to header3
+    // post data. if successfull go to RegisterPage
     const data = {
       firstname: this.state.firstname,
       lastname: this.state.lastname,
@@ -337,17 +327,17 @@ class App extends Component {
           });
           this.filterPosts();
           // redirect to new page
-          this.props.history.push('/header2'); 
+          this.props.history.push('/mainpage'); 
         }
       });
   }
 
   login() {
     const data = {
-      username: document.getElementById('username').value,
-      password: document.getElementById('password').value
+      username: this.state.username,
+      password: this.state.password
     };
-    this.state.socket.emit('room', data.username);
+    socket.emit('room', data.username);
 
     fetch('/users/login', {
       method: 'POST',
@@ -371,7 +361,7 @@ class App extends Component {
                 user_id: json[0],
                 firstname: json[2]
               });
-              this.props.history.push('/header2');
+              this.props.history.push('/mainpage');
               this.fetchUsers(json[0]);
             }
             if (!(Array.isArray(json[3]) && json[3].length > 0)) {
@@ -392,7 +382,7 @@ class App extends Component {
               this.filterPosts();
               this.fetchLikes();
               // redirect to new page
-              this.props.history.push('/header2');
+              this.props.history.push('/mainpage');
             }
           });
       });
@@ -428,23 +418,33 @@ class App extends Component {
     let newfilteredPosts = this.state.posts;
     newfilteredPosts = newfilteredPosts.filter((post) => {
       let result = true;
-      if (this.state.postFilter.location && (this.state.postFilter.location !== post.location)) {
+      if (this.state.postFilter.location && (this.state.postFilter.location !== 'all') && (this.state.postFilter.location !== post.location)) {
         result = false;
       }
-      if (this.state.postFilter.category && (this.state.postFilter.category !== post.category)) {
+      if (this.state.postFilter.category && (this.state.postFilter.category !== 'all') && (this.state.postFilter.category !== post.category)) {
         result = false;
       }
-      if (this.state.postFilter.minrating && (this.state.minrating > post.rating)) {
+      if (this.state.postFilter.minrating && (this.state.postFilter.minrating > post.rating)) {
         result = false;
       }
-      if (this.state.postFilter.friends.length > 0
-        && !(this.state.postFilter.friends.includes(Number(post.created_by)))
-      ) {
+      if (this.state.postFilter.source === 2 && (post.username !== this.state.username )) {
         result = false;
       }
       return result;
     });
     this.setState({ filteredPosts: newfilteredPosts });
+  }
+  
+  handleDeleteReview(event) {
+    event.preventDefault();
+    const num = Number(event.target.id);
+    fetch('/users/deletereview', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id: num })
+    });
   }
 
   fetchUsers(user_id) {
@@ -474,31 +474,28 @@ class App extends Component {
       });
   }
 
-
   render() {
-    
     return (
       <Fragment>
           <Switch>
-              <Route exact path='/' render={() => <Header1
+              <Route exact path='/' render={() => <LoginPage
                 message={this.state.loginMessage}
                 login={this.login}
-                handleChangeUsername={this.handleChangeUsername}
-                handleChangePassword={this.handleChangePassword} />}
+                handleChangeItem={this.handleChangeItem}/>}
               />
-              <Route exact path='/header2' render={() => 
+              <Route exact path='/mainpage' render={() => 
                 <Fragment>
-                  <Header2 username={this.state.username} logout={this.logout}/>
+                  <HeaderMainPage username={this.state.username} logout={this.logout}/>
                   <div id='wrapper'>
                     <LeftContainer
                       postData={this.state.postData}
-                      handleChangePostCategory={this.handleChangePostCategory}
-                      handleChangePostLocation={this.handleChangePostLocation}
+                      // handleChangePostCategory={this.handleChangePostCategory}
+                      // handleChangePostLocation={this.handleChangePostLocation}
                       postLocationMessage={this.state.postLocationMessage} 
-                      handleChangePostRating={this.handleChangePostRating}
-                      handleChangeRecommendation={this.handleChangeRecommendation}
-                      handleChangeReview={this.handleChangeReview}
-                      handlePostForm={this.handlePostForm}
+                      // handleChangePostRating={this.handleChangePostRating}
+                      // handleChangeRecommendation={this.handleChangeRecommendation}
+                      // handleChangeReview={this.handleChangeReview}
+                      // handlePostForm={this.handlePostForm}
                       categories={this.state.categories}
                       locations={this.state.locations}
                       potentialFollows={this.state.potentialFollows}
@@ -525,18 +522,17 @@ class App extends Component {
                       postFilter={this.state.postFilter}
                       likedPosts={this.state.likedPosts}
                       handleLikeReview={this.handleLikeReview}
+                      handleDeleteReview={this.handleDeleteReview}
+                      current_username = {this.state.username}
                     />
                   </div>
                 </Fragment>
               }
               />
-              <Route exact path='/header3' render={() => <Header3
+              <Route exact path='/register' render={() => <RegisterPage
                 message={this.state.signupMessage}
                 signup={this.signup}
-                handleChangeUsername={this.handleChangeUsername}
-                handleChangePassword={this.handleChangePassword}
-                handleChangeFirstname={this.handleChangeFirstname}
-                handleChangeLastname={this.handleChangeLastname} />}
+                handleChangeItem={this.handleChangeItem} />}
               />
           </Switch>
       </Fragment>
