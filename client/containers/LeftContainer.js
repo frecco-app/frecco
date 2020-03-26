@@ -1,7 +1,25 @@
 import React, { Component } from 'react';
+import {connect} from 'react-redux';
 import PostForm from '../components/PostForm';
 import FriendsContainer from '../components/FriendsContainer';
 import UserDashboard from '../components/UserDashboard';
+import {handleChangePostCategory, handleChangePostLocation, handleChangePostRating, handleChangeRecommendation, handleChangeReview, handlePostForm} from '../actions/actions';
+
+const mapStateToProps = state => ({
+  username: state.frecco.username,
+  firstname: state.frecco.firstname,
+  postLocationMessage: state.frecco.postLocationMessage,
+  postData: state.frecco.postData
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  handleChangePostCategory: (category) => dispatch(handleChangePostCategory(category)),
+  handleChangePostLocation: (structuredFormatting) => dispatch(handleChangePostLocation(structuredFormatting)),
+  handleChangePostRating: (rating) => dispatch(handleChangePostRating(rating)),
+  handleChangeRecommendation: (recommendation) => dispatch(handleChangeRecommendation(recommendation)),
+  handleChangeReview: (review) => dispatch(handleChangeReview(review)),
+  handlePostForm: () => dispatch(handlePostForm())
+});
 
 class LeftContainer extends Component {
   render() {
@@ -33,4 +51,4 @@ class LeftContainer extends Component {
   }
 }
 
-export default LeftContainer;
+export default connect(mapStateToProps, mapDispatchToProps)(LeftContainer);
