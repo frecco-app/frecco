@@ -24,6 +24,7 @@ cookieController.setSSID = (req, res, next) => {
   try {
     // Sets cookie
     res.cookie('xpgnssid', res.locals.cookie);
+    console.log('res.locals.cookie: ', res.locals.cookie);
     return next();
   } catch {
     return next({

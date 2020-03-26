@@ -62,10 +62,7 @@ class App extends Component {
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
     this.handleChangeItem = this.handleChangeItem.bind(this);
-    // this.handleChangeFirstname = this.handleChangeFirstname.bind(this);
-    // this.handleChangeLastname = this.handleChangeLastname.bind(this);
-    // this.handleChangeUsername = this.handleChangeUsername.bind(this);
-    // this.handleChangePassword = this.handleChangePassword.bind(this);
+    // methods to handle filtering reviews
     this.handleChangeLocation = this.handleChangeLocation.bind(this);
     this.handleChangeCategory = this.handleChangeCategory.bind(this);
     this.handleChangeRating = this.handleChangeRating.bind(this);
@@ -95,7 +92,6 @@ class App extends Component {
       });
       this.filterPosts();
     });
-
   }
 
   handleChangeFollow(e, value) {
@@ -463,9 +459,7 @@ class App extends Component {
       });
   }
 
-
   render() {
-    
     return (
       <Fragment>
           <Switch>
