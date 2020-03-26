@@ -19,11 +19,12 @@ const theme = createMuiTheme({
       }
   });
 
+const socket = io('http://localhost:3000/');
+
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      socket: io('http://localhost:3000/'),
       user_id: null,
       username: null,
       password: null,
@@ -40,7 +41,8 @@ class App extends Component {
         location: null,
         category: null,
         minrating: 1,
-        friends: []
+        friends: [],
+        source: 1
       },
       categories: ['Attraction', 'Food', 'Accomodation', 'Activity'],
       locations: [],
@@ -59,10 +61,8 @@ class App extends Component {
     this.signup = this.signup.bind(this);
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
-    this.handleChangeFirstname = this.handleChangeFirstname.bind(this);
-    this.handleChangeLastname = this.handleChangeLastname.bind(this);
-    this.handleChangeUsername = this.handleChangeUsername.bind(this);
-    this.handleChangePassword = this.handleChangePassword.bind(this);
+    this.handleChangeItem = this.handleChangeItem.bind(this);
+    // methods to handle filtering reviews
     this.handleChangeLocation = this.handleChangeLocation.bind(this);
     this.handleChangeCategory = this.handleChangeCategory.bind(this);
     this.handleChangeRating = this.handleChangeRating.bind(this);
@@ -84,6 +84,14 @@ class App extends Component {
     // like or unlike a post
     this.handleLikeReview = this.handleLikeReview.bind(this);
     //this.likeReview = this.handleLikeReview.bind(this);
+
+    socket.on('post', (post) => {
+      post = this.parseLocation(post);
+      this.setState({
+        posts: [post, ...this.state.posts]
+      });
+      this.filterPosts();
+    });
   }
 
   handleChangeFollow(e, value) {
@@ -114,7 +122,7 @@ class App extends Component {
     // Attempt to connect to room (catches refreshes during session)
     this.fetchUser()
       .then(({ username }) => {
-        if (username) this.state.socket.emit('room', username);
+        if (username) socket.emit('room', username);
       });
 
     // fetch posts only once
@@ -124,14 +132,7 @@ class App extends Component {
     //this.fetchLikes();
 
     // Handle recieved posts
-    this.state.socket.on('post', (post) => {
-      post = this.parseLocation(post);
-      this.setState({
-        posts: [post, ...this.state.posts]
-      });
-      this.filterPosts();
-    });
-
+    
 
   }
 
@@ -214,20 +215,8 @@ class App extends Component {
       .catch((err) => console.error(err));
   }
 
-  handleChangeFirstname(event) {
-    this.setState({ firstname: event.target.value });
-  }
-
-  handleChangeLastname(event) {
-    this.setState({ lastname: event.target.value });
-  }
-
-  handleChangeUsername(event) {
-    this.setState({ username: event.target.value });
-  }
-
-  handleChangePassword(event) {
-    this.setState({ password: event.target.value });
+  handleChangeItem(event) {
+    this.setState({ [event.target.id]: event.target.value });
   }
 
   handleChangeLocation(event) {
@@ -242,8 +231,8 @@ class App extends Component {
     this.setState({ postFilter: { ...this.state.postFilter, minrating: event.target.value } });
   }
 
-  handleChangeFriendsFilter(event, value) {
-    this.setState({ postFilter: { ...this.state.postFilter, friends: value.map((a) => a.user_id) } });
+  handleChangeFriendsFilter(event) {
+    this.setState({ postFilter: { ...this.state.postFilter, source: event.target.value } });
     // value.map(a => String(a.user_id))
   }
 
@@ -345,7 +334,7 @@ class App extends Component {
       username: this.state.username,
       password: this.state.password
     };
-    this.state.socket.emit('room', data.username);
+    socket.emit('room', data.username);
 
     fetch('/users/login', {
       method: 'POST',
@@ -432,12 +421,10 @@ class App extends Component {
       if (this.state.postFilter.category && (this.state.postFilter.category !== post.category)) {
         result = false;
       }
-      if (this.state.postFilter.minrating && (this.state.minrating > post.rating)) {
+      if (this.state.postFilter.minrating && (this.state.postFilter.minrating > post.rating)) {
         result = false;
       }
-      if (this.state.postFilter.friends.length > 0
-        && !(this.state.postFilter.friends.includes(Number(post.created_by)))
-      ) {
+      if (this.state.postFilter.source === 2 && (post.username !== this.state.username )) {
         result = false;
       }
       return result;
@@ -472,17 +459,14 @@ class App extends Component {
       });
   }
 
-
   render() {
-    
     return (
       <Fragment>
           <Switch>
               <Route exact path='/' render={() => <LoginPage
                 message={this.state.loginMessage}
                 login={this.login}
-                handleChangeUsername={this.handleChangeUsername}
-                handleChangePassword={this.handleChangePassword} />}
+                handleChangeItem={this.handleChangeItem}/>}
               />
               <Route exact path='/mainpage' render={() => 
                 <Fragment>
@@ -531,10 +515,7 @@ class App extends Component {
               <Route exact path='/register' render={() => <RegisterPage
                 message={this.state.signupMessage}
                 signup={this.signup}
-                handleChangeUsername={this.handleChangeUsername}
-                handleChangePassword={this.handleChangePassword}
-                handleChangeFirstname={this.handleChangeFirstname}
-                handleChangeLastname={this.handleChangeLastname} />}
+                handleChangeItem={this.handleChangeItem} />}
               />
           </Switch>
       </Fragment>

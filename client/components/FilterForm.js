@@ -49,7 +49,7 @@ export default function FilterForm(props) {
             </Select>
         </FormControl>
         &nbsp;&nbsp;
-        <div style={{ width : 160}}>
+        {/* <div style={{ width : 160}}>
             <Autocomplete
                 multiple
                 id='filterFriends'
@@ -60,7 +60,14 @@ export default function FilterForm(props) {
                 )}
                 onChange={(e,value) => props.handleChangeFriendsFilter(e,value)}
             />    
-        </div>
+        </div> */}
+        <FormControl style={{minWidth: 130}}>
+            <InputLabel>Source of Review</InputLabel>
+            <Select value={props.postFilter.source ? props.postFilter.source :1} onChange={props.handleChangeFriendsFilter}>
+                <MenuItem value={1}>All</MenuItem>
+                <MenuItem value={2}>Self</MenuItem>
+            </Select>
+        </FormControl>
         &nbsp;&nbsp;
         <Button style={{ height : 50 }} onClick={props.filterPosts} variant='contained'>Filter</Button>
     </div>
