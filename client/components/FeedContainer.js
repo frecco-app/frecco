@@ -23,6 +23,8 @@ function FeedContainer(props) {
         handleLikeReview={props.handleLikeReview}
         likes={post.likes}
         numberLikes={props.numberLikes}
+        handleDeleteReview={props.handleDeleteReview}
+        current_username = {props.current_username}
         //likeReview={props.likeReview}
         />);
   }

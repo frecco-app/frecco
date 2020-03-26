@@ -154,6 +154,7 @@ userController.submitReview = (req, res, next) => {
     .then((data) => {
       if (data.rows !== []) {
         [res.locals.review] = data.rows;
+        console.log('data.rows: ', data.rows);
         res.locals.review.username = res.locals.username;
         return next();
       }
@@ -228,8 +229,12 @@ userController.deleteReview = (req, res, next) => {
   const str = `DELETE from reviews
                WHERE id = $1`;
   const params = [req.body.id];
+  console.log('before query deleteReview');
   db.query(str, params)
-    .then(() => next())
+    .then(() => {
+      console.log('after then deleteReview');
+      next();
+    })
     .catch((err) => next(err));
 };
 

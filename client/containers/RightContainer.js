@@ -22,7 +22,9 @@ class RightContainer extends Component {
 							filteredPosts={this.props.filteredPosts}
 							likedPosts={this.props.likedPosts}
 							handleLikeReview={this.props.handleLikeReview}
-							numberLikes={this.props.numberLikes}/>
+							numberLikes={this.props.numberLikes}
+							handleDeleteReview={this.props.handleDeleteReview}
+							current_username = {this.props.current_username}/>
 			</div>
 		);
 	}
