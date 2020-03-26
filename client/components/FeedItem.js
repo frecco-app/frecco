@@ -1,5 +1,4 @@
 import React from 'react';
-import { Button } from '@material-ui/core';
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 
 function FeedItem(props) {
