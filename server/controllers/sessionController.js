@@ -22,6 +22,7 @@ sessionController.start = (req, res, next) => {
 
 // Verifies that authentication cookie and sends user_id as response
 sessionController.verify = (req, res, next) => {
+  console.log('sessionController.verify')
   const queryStr = `SELECT s.user_id, u.username
                     FROM (
                       SELECT user_id FROM sessions
@@ -56,6 +57,7 @@ sessionController.verify = (req, res, next) => {
 
 // Removes authentication cookie and user_id from sessions table
 sessionController.end = (req, res, next) => {
+  console.log('sessionController.end')
   const queryStr = `DELETE FROM sessions
                     WHERE ssid = $1`;
   const params = [req.cookies.xpgnssid];

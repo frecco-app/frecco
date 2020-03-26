@@ -36,6 +36,7 @@ cookieController.setSSID = (req, res, next) => {
 
 // Removes authentication cookie
 cookieController.removeSSID = (req, res, next) => {
+  console.log('cookieController.removeSSID')
   try {
     // Removes cookie
     res.clearCookie('xpgnssid');
