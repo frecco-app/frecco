@@ -66,6 +66,10 @@ router.post('/submitreview',
   userController.emitReview,
   (req, res) => res.sendStatus(204));
 
+router.post('/deletereview',
+  userController.deleteReview,
+  (req, res) => res.sendStatus(204));
+
 router.post('/follow',
   sessionController.verify,
   userController.follow,

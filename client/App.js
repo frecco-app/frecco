@@ -85,6 +85,8 @@ class App extends Component {
     // like or unlike a post
     this.handleLikeReview = this.handleLikeReview.bind(this);
     //this.likeReview = this.handleLikeReview.bind(this);
+    // delete review
+    this.handleDeleteReview = this.handleDeleteReview.bind(this);
 
     socket.on('post', (post) => {
       post = this.parseLocation(post);
@@ -416,10 +418,10 @@ class App extends Component {
     let newfilteredPosts = this.state.posts;
     newfilteredPosts = newfilteredPosts.filter((post) => {
       let result = true;
-      if (this.state.postFilter.location && (this.state.postFilter.location !== post.location)) {
+      if (this.state.postFilter.location && (this.state.postFilter.location !== 'all') && (this.state.postFilter.location !== post.location)) {
         result = false;
       }
-      if (this.state.postFilter.category && (this.state.postFilter.category !== post.category)) {
+      if (this.state.postFilter.category && (this.state.postFilter.category !== 'all') && (this.state.postFilter.category !== post.category)) {
         result = false;
       }
       if (this.state.postFilter.minrating && (this.state.postFilter.minrating > post.rating)) {
@@ -431,6 +433,18 @@ class App extends Component {
       return result;
     });
     this.setState({ filteredPosts: newfilteredPosts });
+  }
+  
+  handleDeleteReview(event) {
+    event.preventDefault();
+    const num = Number(event.target.id);
+    fetch('/users/deletereview', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id: num })
+    });
   }
 
   fetchUsers(user_id) {
@@ -508,6 +522,8 @@ class App extends Component {
                       postFilter={this.state.postFilter}
                       likedPosts={this.state.likedPosts}
                       handleLikeReview={this.handleLikeReview}
+                      handleDeleteReview={this.handleDeleteReview}
+                      current_username = {this.state.username}
                     />
                   </div>
                 </Fragment>
