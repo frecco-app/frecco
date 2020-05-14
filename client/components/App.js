@@ -8,6 +8,18 @@ import Header2 from './Header2';
 import Header3 from './Header3';
 import LeftContainer from './LeftContainer';
 import RightContainer from './RightContainer';
+import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles'
+
+const theme = createMuiTheme({
+  palette: {
+      primary: {
+          main: '#17151b'
+          }
+      },
+      secondary: {
+        main: '#fe5722' 
+      }
+  });
 
 class App extends Component {
   constructor(props) {
@@ -299,7 +311,6 @@ class App extends Component {
       username: this.state.username,
       password: this.state.password
     };
-
     fetch('/users/signup', {
       method: 'POST',
       headers: {
@@ -326,7 +337,7 @@ class App extends Component {
           });
           this.filterPosts();
           // redirect to new page
-          this.props.history.push('/header2');
+          this.props.history.push('/header2'); 
         }
       });
   }
@@ -467,6 +478,7 @@ class App extends Component {
 
 
   render() {
+    
     return (
       <Fragment>
           <Switch>

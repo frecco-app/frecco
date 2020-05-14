@@ -57,7 +57,7 @@ function PostForm(props) {
                     id='review' 
                     style={{width: '100%'}}
                     variant="outlined" />
-                    <Button onClick={props.handlePostForm}>Post</Button>
+                    <Button variant="outlined" color="primary" onClick={props.handlePostForm}>Post</Button>
                 </div>
             </form>
         </div>
