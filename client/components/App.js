@@ -129,7 +129,8 @@ class App extends Component {
     this.state.socket.on('post', (post) => {
       post = this.parseLocation(post);
       this.setState({
-        posts: [post, ...this.state.posts]
+        posts: [post, ...this.state.posts], 
+        locations: [post.location, ...this.state.location]
       });
       this.filterPosts();
     });
@@ -246,7 +247,6 @@ class App extends Component {
 
   handleChangeFriendsFilter(event, value) {
     this.setState({ postFilter: { ...this.state.postFilter, friends: value.map((a) => a.user_id) } });
-    // value.map(a => String(a.user_id))
   }
 
   // Post form Handles
@@ -426,6 +426,7 @@ class App extends Component {
   filterPosts() {
     // filter posts to show, based on user selection
     let newfilteredPosts = this.state.posts;
+    console.log('this.state.postFilter.friends', this.state.postFilter.friends);
     newfilteredPosts = newfilteredPosts.filter((post) => {
       let result = true;
       if (this.state.postFilter.location && (this.state.postFilter.location !== post.location)) {
@@ -437,12 +438,12 @@ class App extends Component {
       if (this.state.postFilter.minrating && (this.state.minrating > post.rating)) {
         result = false;
       }
-      if (this.state.postFilter.friends.length > 0
-        && !(this.state.postFilter.friends.includes(Number(post.created_by)))
-      ) {
-        result = false;
+      if (this.state.postFilter.friends.length > 0) {
+        if (!(this.state.postFilter.friends.includes(Number(post.created_by)))){
+          result = false;
+        }
       }
-      return result;
+      return result
     });
     this.setState({ filteredPosts: newfilteredPosts });
   }
@@ -459,9 +460,10 @@ class App extends Component {
         const friends = [];
         const potentialFollows = [];
         json.forEach((user) => {
+          console.log(user)
           if (user.followed_user !== null) {
             friends.push({
-              user_id: user.user_id, username: user.username
+              user_id: user.id, username: user.username
             });
           } else {
             potentialFollows.push({ user_id: user.id, username: user.username });

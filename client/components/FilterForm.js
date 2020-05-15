@@ -52,7 +52,7 @@ export default function FilterForm(props) {
         <div style={{ width : 160}}>
             <Autocomplete
                 multiple
-                id='filterFriends'
+                id='filterFriendsForm'
                 options={props.friends}
                 getOptionLabel={option => option.username}
                 renderInput={params => (
