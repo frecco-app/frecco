@@ -1,16 +1,21 @@
-import React, {Component} from "react";
-import FeedItem from "./FeedItem";
+import React from 'react';
+import uuid from 'uuid';
+import FeedItem from './FeedItem';
+
+/**
+ * Loops through posts & renders each post component.
+ */
 
 function FeedContainer(props) {
-    // loop through array of posts and render here 
   const feed = [];
-  for (let i = 0; i < props.filteredPosts.length; i ++) {
- 
+  for (let i = 0; i < props.filteredPosts.length; i++) {
     const post = props.filteredPosts[i];
     const isLiked = props.likedPosts.includes(post.id);
-    
+
     // if (props.likedPosts.includes(post.id)) isLiked = true;
-    feed.push(<FeedItem key={'feeditem'+i}
+    feed.push(
+      <FeedItem
+        key={uuid.v4()}
         id={post.id}
         locationDetail={post.locationDetail}
         location={post.location}
@@ -23,14 +28,10 @@ function FeedContainer(props) {
         handleLikeReview={props.handleLikeReview}
         likes={post.likes}
         numberLikes={props.numberLikes}
-        //likeReview={props.likeReview}
-        />);
+      />
+    );
   }
-  return (
-    <div id='feed-container'>
-        {feed}
-    </div>
-  );
+  return <div id="feed-container">{feed}</div>;
 }
 
 export default FeedContainer;
